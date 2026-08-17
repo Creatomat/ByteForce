@@ -1,5 +1,6 @@
 # ByteForce
-The official ByteForce hackathon team development repository 
+The official ByteForce hackathon team development repository  
+Competing in the 2026 Smart India Hackathon
 
 ## AI Code of ethics
 
