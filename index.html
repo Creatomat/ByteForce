@@ -1,0 +1,1404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Recollect — Cognitive Care, Routine Support & Monitoring</title>
+  <meta name="description" content="Recollect is a local-first cognitive care companion and monitoring platform designed for seniors, family caregivers, and community health workers.">
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="css/bundle.css">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- ==========================================================================
+       AUTHENTICATED APPLICATION HEADER (Adapts to Active Role Session)
+       design.md Section 1 Principle 3 & Section 6.1: Patient view hides technical state
+       ========================================================================== -->
+  <header class="global-header" role="banner" id="appHeader">
+    <div style="display:flex; align-items:center; gap:0.75rem;">
+      <a href="#" class="brand-badge" id="brandHomeLink" onclick="return false;">
+        <span class="brand-leaf">🌿</span>
+        <span data-i18n="brand_title">Recollect</span>
+      </a>
+
+      <!-- Dynamically Rendered Active User Badge (Hidden on Login Screen) -->
+      <div id="activeUserBadge" class="authenticated-role-badge" style="display:none;">
+        <span class="user-avatar" id="activeUserAvatar">👵</span>
+        <span id="activeUserName">Eleanor Vance</span>
+        <span id="activeUserRoleTitle" style="font-size:0.8rem; color:var(--on-surface-variant); font-weight:600;">(Senior Space)</span>
+      </div>
+    </div>
+
+    <!-- Header Action Controls -->
+    <div class="system-status-pills">
+      <!-- Network Simulation Pill (Hidden in Patient Mode per design.md Section 6.1) -->
+      <button class="status-pill online" id="networkToggleBtn" onclick="app.toggleNetworkMode()" title="Toggle simulated network connectivity">
+        <span id="netStatusDot">🟢</span> <span id="netStatusText">Online</span>
+      </button>
+
+      <!-- Low-Power Mode Toggle (Hidden in Patient Mode per design.md Section 3.1) -->
+      <button class="status-pill power-saving" id="powerModeBtn" onclick="app.togglePowerMode()" title="Toggle low-power mode">
+        <span>⚡</span> <span id="powerModeText">Normal</span>
+      </button>
+
+      <!-- Language Selector (Hidden in Patient Mode per design.md Section 3.1) -->
+      <select class="lang-selector" id="langSelect" onchange="app.changeLanguage(this.value)" aria-label="Select Language">
+        <option value="en">English</option>
+        <option value="as">অসমীয়া (Assamese)</option>
+        <option value="bn">বাংলা (Bengali)</option>
+        <option value="kha">Khasi (Meghalaya)</option>
+        <option value="hi">हिन्दी (Hindi)</option>
+      </select>
+
+      <!-- Patient-Specific Emergency Help Pill (Visible only in Patient Mode) -->
+      <button class="emergency-trigger-btn" id="emergencyHelpBtn" onclick="app.triggerEmergencyHelp()" style="display:none;" aria-label="Call emergency help">
+        <span>🚨</span> Call Help
+      </button>
+
+      <!-- Patient Mode Subtle Caregiver Settings Affordance (PIN Protected per design.md Section 3.5) -->
+      <button class="caregiver-gate-subtle-btn" id="patientCaregiverSettingsBtn" onclick="app.openCaregiverSettings()" style="display:none;" title="Caregiver Settings">
+        <span>⚙️</span> Caregiver Settings
+      </button>
+
+      <!-- Caregiver / Doctor Logout Action -->
+      <button class="logout-action-btn" id="appLogoutBtn" onclick="app.logoutUser()" style="display:none;" title="Log out from current dashboard">
+        <span>🚪</span> Switch Account / Log Out
+      </button>
+    </div>
+  </header>
+
+  <!-- ==========================================================================
+       MAIN APP VIEWPORT
+       ========================================================================== -->
+  <main class="app-viewport" id="appMain">
+
+    <!-- ======================================================================
+         1. DEDICATED APP LOGIN & SPACE SELECTION SCREEN (PRD FR-7.1, FR-9.11)
+         ====================================================================== -->
+    <section class="view-section active-view" id="view-login">
+      <div class="login-screen-wrapper">
+        <div class="login-hero-header">
+          <span class="app-icon-large">🌿</span>
+          <h1>Welcome to Recollect</h1>
+          <p>Please select your profile to enter your dedicated dashboard. Caregiver, Patient, and Clinical dashboards are strictly segregated.</p>
+        </div>
+
+        <div class="login-cards-container">
+          
+          <!-- Card 1: Senior Patient Space (Eleanor Vance) -->
+          <article class="role-login-card patient-entry">
+            <div>
+              <div class="profile-avatar-row">
+                <div class="profile-avatar-circle">👵</div>
+                <div class="profile-info">
+                  <h3>Eleanor Vance</h3>
+                  <span>Senior Patient Space</span>
+                </div>
+              </div>
+              <div class="profile-details-box">
+                <p>🧘 <strong>Bedside Tablet Mode:</strong> Large text, 1-tap reminders, photo memory games & reassuring calm audio.</p>
+              </div>
+            </div>
+            <button class="profile-action-btn primary-btn" onclick="app.loginAsRole('patient')">
+              <span>👵</span> Tap Here to Enter (Eleanor)
+            </button>
+          </article>
+
+          <!-- Card 2: Family Caregiver Portal (Sarah Vance) -->
+          <article class="role-login-card">
+            <div>
+              <div class="profile-avatar-row">
+                <div class="profile-avatar-circle" style="background:#dbeafe; border-color:#3b82f6;">👩</div>
+                <div class="profile-info">
+                  <h3>Sarah Vance</h3>
+                  <span>Family Caregiver</span>
+                </div>
+              </div>
+              <div class="profile-details-box">
+                <p>🛡️ <strong>Family Oversight:</strong> Live sync timeline, overdue alerts, memory journal, trends & reminder manager.</p>
+              </div>
+              <div class="pin-login-box">
+                <label for="cgPinInput" style="font-size:0.9rem; font-weight:700;">Caregiver PIN (Demo: 1234):</label>
+                <input type="password" id="cgPinInput" class="pin-input-field" maxlength="4" placeholder="••••" value="1234">
+              </div>
+            </div>
+            <button class="profile-action-btn secondary-btn" style="margin-top:1rem;" onclick="app.loginAsRole('caregiver')">
+              <span>🛡️</span> Log In as Caregiver
+            </button>
+          </article>
+
+          <!-- Card 3: Doctor & ASHA Health Worker Portal (Dr. Thorne) -->
+          <article class="role-login-card">
+            <div>
+              <div class="profile-avatar-row">
+                <div class="profile-avatar-circle" style="background:#e2e8f0; border-color:#64748b;">🩺</div>
+                <div class="profile-info">
+                  <h3>Dr. Thorne / ASHA Lead</h3>
+                  <span>Clinical & Community Health</span>
+                </div>
+              </div>
+              <div class="profile-details-box">
+                <p>📊 <strong>Clinical Hub:</strong> Cognitive telemetry, explainable Phase-1 flags, structured weekly PDF reports & ASHA view.</p>
+              </div>
+              <div class="pin-login-box">
+                <label for="clinPinInput" style="font-size:0.9rem; font-weight:700;">Clinical Passcode (Demo: 9999):</label>
+                <input type="password" id="clinPinInput" class="pin-input-field" maxlength="4" placeholder="••••" value="9999">
+              </div>
+            </div>
+            <button class="profile-action-btn clinical-btn" style="margin-top:1rem;" onclick="app.loginAsRole('clinical')">
+              <span>📊</span> Log In to Clinical Hub
+            </button>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         2. SENIOR PATIENT BED-SIDE SPACE (RECOLLECT TOUCH UI)
+         design.md Section 1, 2, 3: Calm over clever, 1 decision per screen,
+         20pt typography, single prominent reminder card, single-column secondary row.
+         ====================================================================== -->
+    <section class="view-section" id="view-patient">
+      <div class="patient-container">
+        
+        <!-- Orientation Anchor Bar (design.md Section 3.1) -->
+        <header class="orientation-anchor-bar">
+          <div class="orientation-meta">
+            <span data-i18n="weather_info">Morning Sunshine • 72° Mild</span>
+            <span>🌿 Eleanor's Tablet</span>
+          </div>
+          <h1 class="orientation-greeting" data-i18n="greeting_morning">Good Morning, Eleanor!</h1>
+          <p class="orientation-date" data-i18n="date_display">Thursday, October 24</p>
+        </header>
+
+        <!-- Auditory Narration Trigger (design.md Section 7 & PRD FR-9.8) -->
+        <button class="listen-day-btn" id="listenDayBtn" onclick="app.playDayNarration()" aria-label="Tap to listen to your day">
+          <span id="speakerIcon">🔊</span> <span data-i18n="listen_day">Tap to listen to your day</span>
+        </button>
+
+        <!-- Single Prominent Next/Due Reminder Card (design.md Section 3.1 Principle 2) -->
+        <article class="single-routine-prominent-card" id="currentRoutineCard">
+          <div class="prominent-badge-row">
+            <span class="routine-tag-pill">
+              <span>⏰</span> <span data-i18n="current_routine">Right now • 9:00 AM routine</span>
+            </span>
+            <span id="routineTimeTag" style="font-weight:700; color:var(--on-surface-variant); font-size:1.15rem;">Scheduled for 9:00 AM</span>
+          </div>
+
+          <div class="routine-title-box">
+            <h2 data-i18n="routine_name" style="font-size:2.2rem; font-weight:800;">Morning Medicine</h2>
+            <p data-i18n="routine_sub" style="font-size:1.4rem; color:var(--on-surface-variant);">Take 1 pill with a full glass of cool water</p>
+          </div>
+
+          <!-- Photographic & Specification Visual -->
+          <div class="routine-visual-grid">
+            <div class="routine-macro-photo-container" style="cursor:pointer;" onclick="app.openReminderAttention()" title="Tap to view full screen">
+              <svg viewBox="0 0 400 240" width="100%" height="100%" style="background:#e8dfd8; border-radius:16px;">
+                <defs>
+                  <linearGradient id="woodGrad" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#dfcfbe"/>
+                    <stop offset="100%" stop-color="#c8b5a1"/>
+                  </linearGradient>
+                  <linearGradient id="glassGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#bae6fd" stop-opacity="0.8"/>
+                    <stop offset="100%" stop-color="#38bdf8" stop-opacity="0.9"/>
+                  </linearGradient>
+                  <linearGradient id="pillGrad" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#fef08a"/>
+                    <stop offset="100%" stop-color="#eab308"/>
+                  </linearGradient>
+                </defs>
+                <rect width="400" height="240" fill="url(#woodGrad)"/>
+                <!-- Water Glass -->
+                <rect x="230" y="40" width="110" height="150" rx="14" fill="url(#glassGrad)" stroke="#0284c7" stroke-width="2"/>
+                <ellipse cx="285" cy="50" rx="50" ry="12" fill="#e0f2fe" opacity="0.6"/>
+                <path d="M 245 75 Q 285 85 325 75 L 320 170 Q 285 180 250 170 Z" fill="#7dd3fc" opacity="0.75"/>
+                <text x="285" y="130" font-size="14" font-weight="700" fill="#0369a1" text-anchor="middle">Cool Water</text>
+                
+                <!-- Yellow Tablet -->
+                <ellipse cx="120" cy="130" rx="55" ry="32" fill="url(#pillGrad)" stroke="#ca8a04" stroke-width="3"/>
+                <line x1="120" y1="102" x2="120" y2="158" stroke="#a16207" stroke-width="2" stroke-dasharray="3,2"/>
+                <text x="120" y="136" font-size="16" font-weight="bold" fill="#854d0e" text-anchor="middle">V 42</text>
+              </svg>
+            </div>
+
+            <div class="routine-pills-spec">
+              <div class="spec-tile">
+                <span class="spec-icon">💊</span>
+                <div class="spec-txt">
+                  <strong style="font-size:1.25rem;">1 Pill</strong>
+                  <span style="font-size:1.05rem;">Yellow Oval V 42 (Lisinopril 10mg)</span>
+                </div>
+              </div>
+              <div class="spec-tile">
+                <span class="spec-icon">🥤</span>
+                <div class="spec-txt">
+                  <strong style="font-size:1.25rem;">1 Glass</strong>
+                  <span style="font-size:1.05rem;">Full of fresh cool water</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Single-Tap Large Action Button (Sentence case per design.md Section 2.1) -->
+          <button class="take-med-big-btn" id="takeMedBtn" onclick="app.confirmMorningMedicine()" aria-label="I took my medicine">
+            <span>✓</span> <span data-i18n="take_med_btn">I took my medicine</span>
+          </button>
+          
+          <div style="display:flex; justify-content:center;">
+            <button type="button" class="cg-btn" style="background:transparent; border:none; color:var(--primary); font-weight:700; font-size:1.15rem; cursor:pointer;" onclick="app.openReminderAttention()">
+              <span>🔍</span> Tap for Full-Screen View
+            </button>
+          </div>
+        </article>
+
+        <!-- Secondary Column of Large Icon Buttons (design.md Section 3.1 & 2.4) -->
+        <nav class="patient-secondary-column" aria-label="Main Patient Actions">
+          
+          <!-- Secondary Action 1: Play a Game (Opens Games Hub) -->
+          <article class="secondary-patient-card">
+            <div class="secondary-card-info">
+              <span class="secondary-card-icon">🌸</span>
+              <div class="secondary-card-text">
+                <h3 data-i18n="action_play_game">Play a Game</h3>
+                <p>Gentle brain activities & memories at your pace</p>
+              </div>
+            </div>
+            <button class="secondary-patient-btn game-btn" onclick="app.openGamesHub()">
+              <span>🌸</span> <span data-i18n="play_game_btn">Play Memory Game</span>
+            </button>
+          </article>
+
+          <!-- Secondary Action 2: How I'm Feeling Today (Mood Check-in) -->
+          <article class="secondary-patient-card">
+            <div class="secondary-card-info">
+              <span class="secondary-card-icon">💚</span>
+              <div class="secondary-card-text">
+                <h3 data-i18n="action_how_feeling">How I am Feeling Today</h3>
+                <p>One-tap gentle mood check-in</p>
+              </div>
+            </div>
+            <button class="secondary-patient-btn mood-btn-action" onclick="app.openMoodModal()">
+              <span>💚</span> Check In
+            </button>
+          </article>
+
+          <!-- Secondary Action 3: Call Sarah (Always Visible per FR-4.6) -->
+          <article class="secondary-patient-card">
+            <div class="secondary-card-info">
+              <span class="secondary-card-icon">📞</span>
+              <div class="secondary-card-text">
+                <h3 data-i18n="call_family">Call Sarah (Daughter)</h3>
+                <p data-i18n="family_status">Always here for you • Available to chat</p>
+              </div>
+            </div>
+            <button class="secondary-patient-btn call-btn-action" onclick="app.callSarah()">
+              <span>📞</span> Call Sarah
+            </button>
+          </article>
+
+        </nav>
+
+        <!-- Reassurance Banner -->
+        <div class="reassurance-banner">
+          <span>💚</span>
+          <span data-i18n="reassurance">You are doing wonderfully today! Everything is right on track.</span>
+        </div>
+
+        <!-- Mandatory Non-Diagnostic In-App Disclaimer (PRD Section 6.3 & rules.md Section 2) -->
+        <p class="disclaimer-text" data-i18n="disclaimer_patient">
+          Supportive engagement tool, not a clinical treatment or diagnostic device.
+        </p>
+
+        <!-- Discreet Caregiver Settings Access at Bottom (design.md Section 3.5) -->
+        <div class="patient-caregiver-gate-footer">
+          <button class="caregiver-gate-subtle-btn" onclick="app.openCaregiverSettings()">
+            <span>🔒</span> <span data-i18n="caregiver_settings">Caregiver Settings & Profile Switch</span>
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         3. FAMILY CAREGIVER PLATFORM (SARAH'S HUB)
+         design.md Section 4: Today View, Trends View, Journal, Care Team, Alert Tiers
+         ====================================================================== -->
+    <section class="view-section" id="view-caregiver">
+      <div class="caregiver-container">
+        
+        <!-- Live Patient Status Bar with Persistent Emergency Access (design.md Section 4.7) -->
+        <header class="caregiver-hero-bar">
+          <div class="patient-live-pill">
+            <div class="patient-avatar-thumb">👵</div>
+            <div class="patient-live-details">
+              <h3>Eleanor Vance (Mother)</h3>
+              <p>Active in Living Room • Bedside Tablet Paired</p>
+            </div>
+          </div>
+          
+          <div class="caregiver-quick-actions">
+            <!-- Staleness / Live Sync Badge (Architecture Section 5 & design.md Section 6.1) -->
+            <span class="status-pill online" id="cgSyncBadge">
+              <span>🔄</span> <strong id="cgSyncText">Live Hub Sync: 9:02 AM</strong>
+            </span>
+            <button class="cg-btn" onclick="app.openNewReminderModal()">
+              <span>➕</span> Add Reminder
+            </button>
+            <button class="cg-btn primary" onclick="app.callEleanor()">
+              <span>📞</span> Call Eleanor
+            </button>
+            <!-- Persistent High-Contrast Emergency Quick-Access Button (Section 4.7) -->
+            <button class="emergency-trigger-btn" onclick="app.triggerCaregiverEmergency()" title="One tap emergency escalation">
+              <span>🚨</span> Emergency Quick Call
+            </button>
+          </div>
+        </header>
+
+        <!-- Caregiver Tabbed Navigation Bar -->
+        <div class="caregiver-tabs-bar">
+          <button class="cg-tab-btn active" id="cgTabBtnToday" onclick="app.setCaregiverTab('today')">
+            <span>🗓️</span> Today's Schedule
+          </button>
+          <button class="cg-tab-btn" id="cgTabBtnTrends" onclick="app.setCaregiverTab('trends')">
+            <span>📈</span> Trends & Analytics
+          </button>
+          <button class="cg-tab-btn" id="cgTabBtnJournal" onclick="app.setCaregiverTab('journal')">
+            <span>📝</span> Family Memory Journal
+          </button>
+          <button class="cg-tab-btn" id="cgTabBtnCareTeam" onclick="app.setCaregiverTab('careteam')">
+            <span>👥</span> Care Team & Messages
+          </button>
+          <button class="cg-tab-btn" id="cgTabBtnAlerts" onclick="app.setCaregiverTab('alerts')">
+            <span>🔔</span> Alert Escalation Settings
+          </button>
+        </div>
+
+        <!-- Overdue Routine Alert Banner (Only place RED is used, design.md Section 2.2 & 4.8) -->
+        <article class="overdue-alert-banner" id="cgOverdueBanner" style="display:none;">
+          <div class="overdue-alert-header">
+            <h4><span>🚨</span> Critical Routine Reminder Overdue</h4>
+            <span class="overdue-time-badge" id="overdueDurationText">35m Overdue</span>
+          </div>
+          <p style="font-size:1.1rem; color:#78350f;">
+            <strong>Morning Blood Pressure Pill (Lisinopril 10mg)</strong> has not been confirmed. 5-minute escalation target window active.
+          </p>
+          <div class="overdue-action-row">
+            <button class="cg-btn primary" onclick="app.callEleanor()">
+              <span>📢</span> Call Eleanor's Tablet
+            </button>
+            <button class="cg-btn" onclick="app.caregiverMarkTaken()">
+              <span>✓</span> Mark Taken by Caregiver
+            </button>
+            <button class="cg-btn" onclick="app.simulateSmsEscalation()">
+              <span>📱</span> Test SMS/USSD Fallback
+            </button>
+          </div>
+        </article>
+
+        <!-- CAREGIVER TAB 1: TODAY'S SCHEDULE -->
+        <div id="cgTabContentToday">
+          <div class="cg-panel-card">
+            <div class="cg-panel-header">
+              <h3><span>🗓️</span> Today's Visual Schedule Checklist</h3>
+              <button class="cg-btn" style="height:36px; padding:0 0.85rem; font-size:0.85rem;" onclick="app.refreshCaregiverTimeline()">
+                <span>🔄</span> Refresh
+              </button>
+            </div>
+            
+            <div class="timeline-stream" id="cgTimelineStream">
+              <!-- Rendered dynamically -->
+            </div>
+          </div>
+        </div>
+
+        <!-- CAREGIVER TAB 2: TRENDS & ANALYTICS (design.md Section 4.2) -->
+        <div id="cgTabContentTrends" style="display:none;">
+          <div class="cg-panel-card">
+            <div class="cg-panel-header">
+              <div>
+                <h3><span>📈</span> Cognitive & Routine Adherence Trends</h3>
+                <p style="font-size:0.95rem; color:var(--on-surface-variant); margin-top:0.25rem;">
+                  Weekly adherence %, composite score, and mood plotted across time.
+                </p>
+              </div>
+              <div class="timeframe-pill-group">
+                <button class="timeframe-pill" onclick="app.setTimeframe('daily', this)">Daily</button>
+                <button class="timeframe-pill active" onclick="app.setTimeframe('weekly', this)">Weekly</button>
+                <button class="timeframe-pill" onclick="app.setTimeframe('monthly', this)">Monthly</button>
+                <button class="timeframe-pill" onclick="app.setTimeframe('quarterly', this)">Quarterly</button>
+              </div>
+            </div>
+
+            <!-- Adherence Trend SVG Chart -->
+            <div class="trends-chart-container">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+                <strong>Routine Adherence & Composite Score Timeline</strong>
+                <span style="font-size:0.9rem; color:#059669; font-weight:700;">🟢 Baseline Stable (94% adherence)</span>
+              </div>
+              
+              <!-- Responsive SVG Line/Bar Chart -->
+              <svg viewBox="0 0 700 200" width="100%" height="180" style="background:#f8fafc; border-radius:12px; border:1px solid #e2e8f0;">
+                <!-- Grid Lines -->
+                <line x1="50" y1="30" x2="680" y2="30" stroke="#e2e8f0" stroke-dasharray="4"/>
+                <line x1="50" y1="80" x2="680" y2="80" stroke="#e2e8f0" stroke-dasharray="4"/>
+                <line x1="50" y1="130" x2="680" y2="130" stroke="#e2e8f0" stroke-dasharray="4"/>
+                <!-- Y-Labels -->
+                <text x="15" y="35" font-size="12" fill="#64748b">100%</text>
+                <text x="15" y="85" font-size="12" fill="#64748b">80%</text>
+                <text x="15" y="135" font-size="12" fill="#64748b">60%</text>
+                
+                <!-- Adherence Polyline (Green) -->
+                <polyline fill="none" stroke="#059669" stroke-width="3.5" points="
+                  80,55  170,45  260,60  350,40  440,50  530,45  620,42
+                "/>
+                <!-- Score Polyline (Blue) -->
+                <polyline fill="none" stroke="#2563eb" stroke-width="2.5" stroke-dasharray="6,4" points="
+                  80,70  170,68  260,75  350,65  440,68  530,62  620,60
+                "/>
+                <!-- Data dots -->
+                <circle cx="80" cy="55" r="5" fill="#059669"/>
+                <circle cx="170" cy="45" r="5" fill="#059669"/>
+                <circle cx="260" cy="60" r="5" fill="#059669"/>
+                <circle cx="350" cy="40" r="5" fill="#059669"/>
+                <circle cx="440" cy="50" r="5" fill="#059669"/>
+                <circle cx="530" cy="45" r="5" fill="#059669"/>
+                <circle cx="620" cy="42" r="6" fill="#059669" stroke="#fff" stroke-width="2"/>
+
+                <!-- X-Labels -->
+                <text x="80" y="180" font-size="12" fill="#64748b" text-anchor="middle">Oct 18</text>
+                <text x="170" y="180" font-size="12" fill="#64748b" text-anchor="middle">Oct 19</text>
+                <text x="260" y="180" font-size="12" fill="#64748b" text-anchor="middle">Oct 20</text>
+                <text x="350" y="180" font-size="12" fill="#64748b" text-anchor="middle">Oct 21</text>
+                <text x="440" y="180" font-size="12" fill="#64748b" text-anchor="middle">Oct 22</text>
+                <text x="530" y="180" font-size="12" fill="#64748b" text-anchor="middle">Oct 23</text>
+                <text x="620" y="180" font-size="12" fill="#0f172a" font-weight="bold" text-anchor="middle">Today</text>
+              </svg>
+              <div style="display:flex; gap:1.5rem; justify-content:center; margin-top:0.5rem; font-size:0.85rem;">
+                <span>🟢 <strong>Adherence Rate</strong> (Avg 94%)</span>
+                <span>🔵 <strong>Composite Score</strong> (Avg 91/100)</span>
+              </div>
+            </div>
+
+            <!-- Notable-Change Flags with Expandable Evidence (design.md Section 4.2 & 6.3) -->
+            <h4 style="margin-top:1.5rem; font-size:1.15rem; color:var(--on-surface);">Notable Activity Observations (Expand for Evidence)</h4>
+            <div class="flag-evidence-accordion">
+              <div class="flag-accordion-summary" onclick="app.toggleFlagAccordion(this)">
+                <span>⚠️ Routine Latency: Morning pill delay observed on Oct 20 (+18 mins)</span>
+                <span>▼</span>
+              </div>
+              <div class="flag-expanded-content" style="display:none;">
+                <p><strong>Underlying Raw Evidence:</strong> Tablet chime rang at 9:00 AM; response registered at 9:18 AM (1,080s latency). Caregiver note: <em>"Eleanor was listening to old gramophone records in the morning room."</em></p>
+                <p style="margin-top:0.4rem;"><strong>Recommendation:</strong> Stable variation, worth continuing observation.</p>
+              </div>
+            </div>
+
+            <!-- Mandatory Persistent Non-Diagnostic Footnote (design.md Section 4.2 & 6.2) -->
+            <div class="persistent-disclaimer-card">
+              <span>ℹ️</span>
+              <p data-i18n="disclaimer_standard">
+                This score reflects engagement and activity trends. It is not a medical diagnosis. Please consult your doctor about any concerns.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- CAREGIVER TAB 3: FAMILY MEMORY JOURNAL (design.md Section 4.3) -->
+        <div id="cgTabContentJournal" style="display:none;">
+          <div class="cg-panel-card">
+            <div class="cg-panel-header">
+              <h3><span>📝</span> Family Memory Journal & Clinical Notes</h3>
+            </div>
+            <p style="font-size:0.95rem; color:var(--on-surface-variant);">
+              Add timestamped observations that appear alongside clinical scores for Dr. Thorne.
+            </p>
+
+            <div class="notes-input-box" style="margin-top:1rem;">
+              <textarea class="notes-textarea" id="caregiverNoteInput" placeholder="e.g., Eleanor had bright recall looking at seaside photos today..."></textarea>
+              <div style="display:flex; gap:0.5rem; justify-content:space-between;">
+                <select class="note-tag-select" id="noteTagSelect">
+                  <option value="Cognitive Spark">✨ Cognitive Spark</option>
+                  <option value="Calm & Engaged">🌿 Calm & Engaged</option>
+                  <option value="A Bit Tired">🛋️ A Bit Tired</option>
+                  <option value="Mild Confusion">❓ Mild Confusion</option>
+                </select>
+                <button class="cg-btn primary" onclick="app.submitCaregiverNote()">
+                  <span>💾</span> Save Note
+                </button>
+              </div>
+            </div>
+
+            <!-- Notes History -->
+            <div class="notes-history-list" id="cgNotesList">
+              <!-- Rendered dynamically -->
+            </div>
+          </div>
+        </div>
+
+        <!-- CAREGIVER TAB 4: CARE TEAM & MESSAGING (design.md Section 4.5 & 4.6) -->
+        <div id="cgTabContentCareTeam" style="display:none;">
+          <div class="cg-panel-card">
+            <div class="cg-panel-header">
+              <h3><span>👥</span> Linked Family Caregivers (FR-4.4)</h3>
+            </div>
+            <div class="shared-caregiver-chips">
+              <div class="caregiver-chip">
+                <span>👩</span> <strong>Sarah Vance</strong> <span>(Primary Daughter)</span>
+              </div>
+              <div class="caregiver-chip">
+                <span>👧</span> <strong>Priya Vance</strong> <span>(Secondary Sibling)</span>
+              </div>
+            </div>
+
+            <h4 style="font-size:1.1rem; margin:1rem 0 0.5rem;">Caregiver Activity & Hand-off Log</h4>
+            <div class="notes-history-list" id="cgSharedActivityLog">
+              <div class="note-item-card">
+                <div class="note-meta-row">
+                  <strong>Priya Vance</strong>
+                  <span>Today 8:15 AM</span>
+                </div>
+                <p style="font-size:0.95rem;">Checked in for breakfast. Eleanor enjoyed warm berry tea and toast.</p>
+              </div>
+              <div class="note-item-card">
+                <div class="note-meta-row">
+                  <strong>Sarah Vance</strong>
+                  <span>Today 9:02 AM</span>
+                </div>
+                <p style="font-size:0.95rem;">Confirmed Lisinopril 10mg tablet was taken with water.</p>
+              </div>
+            </div>
+
+            <hr style="margin:1.5rem 0; border:none; border-top:1.5px solid var(--outline-variant);">
+
+            <!-- Async Doctor Messaging Thread (design.md Section 4.6) -->
+            <div class="cg-panel-header">
+              <h3><span>🩺</span> Dr. Thorne — Non-Emergency Clinical Channel (FR-4.5)</h3>
+            </div>
+            <div class="doctor-msg-banner">
+              <span>💬 <strong>Non-Emergency Channel:</strong> Replies typically within 24–48 hours. For immediate medical needs, use Emergency Quick Call.</span>
+            </div>
+
+            <div class="doctor-messages-stream" id="doctorMessagesStream">
+              <div class="doctor-msg-bubble from-caregiver">
+                <strong>Sarah:</strong> Dr. Thorne, Eleanor was very energetic during the memory game today. Her accuracy is stable.
+              </div>
+              <div class="doctor-msg-bubble from-doctor">
+                <strong>Dr. Thorne:</strong> Excellent to hear. Keep observing the morning medication routine. The 94% weekly adherence is very reassuring.
+              </div>
+            </div>
+
+            <div style="display:flex; gap:0.5rem; margin-top:0.75rem;">
+              <input type="text" id="doctorMsgInput" class="form-input" style="flex:1;" placeholder="Write a non-emergency message to Dr. Thorne...">
+              <button class="cg-btn primary" onclick="app.sendDoctorMessage()">Send</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- CAREGIVER TAB 5: ALERT ESCALATION SETTINGS (design.md Section 4.8) -->
+        <div id="cgTabContentAlerts" style="display:none;">
+          <div class="cg-panel-card">
+            <h3><span>🔔</span> Alert Escalation & Notification Preferences (FR-1.4, FR-4.3)</h3>
+            <p style="font-size:0.95rem; color:var(--on-surface-variant); margin-top:0.25rem;">
+              Caregiver notification SLA: Critical alerts delivered within <strong>5 minutes</strong>.
+            </p>
+
+            <div class="settings-option-row">
+              <div class="settings-option-label">
+                <strong>Instant Critical Push Notifications</strong>
+                <span>Direct notification on missed high-priority medications</span>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" checked id="togglePushAlerts">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            <div class="settings-option-row">
+              <div class="settings-option-label">
+                <strong>SMS / USSD Fallback (+91 98765 43210)</strong>
+                <span>Automatic fallback when mobile data or connectivity is unavailable</span>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" checked id="toggleSmsFallback">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            <div class="settings-option-row">
+              <div class="settings-option-label">
+                <strong>Unacknowledged Alert Window</strong>
+                <span>Time before escalating to secondary contact</span>
+              </div>
+              <select class="form-select" style="width:160px;">
+                <option value="30">30 Minutes (Default)</option>
+                <option value="45">45 Minutes</option>
+                <option value="60">60 Minutes</option>
+              </select>
+            </div>
+
+            <div class="settings-option-row">
+              <div class="settings-option-label">
+                <strong>Batch Routine Digest</strong>
+                <span>Group non-critical notifications to prevent alert fatigue</span>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" checked id="toggleDigestAlerts">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         4. CLINICAL & COMMUNITY HEALTH (DOCTOR / ASHA / ANM) HUB
+         design.md Section 5: Standard Weekly Doctor Report (Top Disclaimer),
+         ASHA Action View, Clinical Insight Repeated Framing
+         ====================================================================== -->
+    <section class="view-section" id="view-clinical">
+      <div class="clinical-container">
+        
+        <header class="clinical-header-box">
+          <div class="clinical-title-grp">
+            <h2>Clinical Telemetry & Health Team Hub</h2>
+            <p>Dr. Thorne (Neurology) • ASHA Lead / Community Health Worker View</p>
+          </div>
+          
+          <div class="clinical-nav-pills">
+            <button class="clin-tab-btn active" id="clinViewStandard" onclick="app.setClinicalTab('standard')">Doctor Portal</button>
+            <button class="clin-tab-btn" id="clinViewAsha" onclick="app.setClinicalTab('asha')">ASHA / ANM Action View</button>
+            <button class="clin-tab-btn" id="clinViewReport" onclick="app.setClinicalTab('report')">Structured Weekly PDF</button>
+          </div>
+        </header>
+
+        <!-- Mandatory Non-Diagnostic Disclaimer Box (Rules Section 2 & 5) -->
+        <div class="clinical-disclaimer-box">
+          <strong>Mandatory Clinical Advisory:</strong> This platform is an assistive cognitive engagement and routine monitoring decision-support tool. It does <strong>not</strong> independently diagnose dementia, stage disease severity, or provide clinical treatments. All observations are based on logged activity timelines.
+        </div>
+
+        <!-- DOCTOR STANDARD TAB -->
+        <div id="clinTabContentStandard">
+          <!-- Composite Score & Telemetry Cards -->
+          <div class="telemetry-cards-row">
+            <div class="score-metric-card">
+              <span class="metric-label">Composite Weekly Score</span>
+              <span class="metric-val" id="metricCompositeScore">91 / 100</span>
+              <span class="metric-trend">🟢 Stable Engagement (+2% vs baseline)</span>
+            </div>
+            <div class="score-metric-card">
+              <span class="metric-label">Routine Adherence</span>
+              <span class="metric-val" id="metricAdherence">94%</span>
+              <span class="metric-trend">16 of 17 reminders acknowledged</span>
+            </div>
+            <div class="score-metric-card">
+              <span class="metric-label">Memory Game Accuracy</span>
+              <span class="metric-val" id="metricGameScore">88%</span>
+              <span class="metric-trend">Avg Hesitation: 1,320 ms</span>
+            </div>
+            <div class="score-metric-card">
+              <span class="metric-label">Active Flags for Review</span>
+              <span class="metric-val" id="metricFlagsCount" style="color:#d97706;">1 Watch</span>
+              <span class="metric-trend">Explainable rule triggers</span>
+            </div>
+          </div>
+
+          <!-- Explainable AI Behavior Flags Section (PRD FR-8.7, FR-8.8 & Rules Section 2) -->
+          <section class="cg-panel-card" style="margin-top:1.5rem;">
+            <div class="cg-panel-header">
+              <h3><span>🔍</span> Explainable Behavior Flags & Telemetry Signals</h3>
+              <button class="cg-btn" style="height:36px; font-size:0.85rem;" onclick="app.runRuleEngineCheck()">
+                <span>⚙️</span> Re-evaluate Rule Engine
+              </button>
+            </div>
+            <p style="font-size:0.95rem; color:var(--on-surface-variant);">
+              Every flag carries transparent human-readable evidence traceable to specific raw logs. Clinicians can confirm, dismiss, or annotate each item.
+            </p>
+
+            <div class="behavior-flags-stack" id="behaviorFlagsList">
+              <!-- Rendered via app.js -->
+            </div>
+          </section>
+
+          <!-- Doctor-Facing Clinical Insight Panel (design.md Section 5.3) -->
+          <section class="cg-panel-card" style="margin-top:1.5rem;">
+            <div class="cg-panel-header">
+              <h3><span>🔬</span> Clinical Insight Observations (Phase 5)</h3>
+            </div>
+            <div class="insight-panel-disclaimer">
+              "This is an observation, not a diagnosis." — Panel Level Notice
+            </div>
+            <div class="note-item-card" style="background:#f8fafc;">
+              <div class="insight-panel-disclaimer" style="margin-bottom:0.4rem;">
+                This is an observation, not a diagnosis.
+              </div>
+              <strong>Observation:</strong> Morning medication latency shows a mild, non-clinically-significant 3-minute elongation over 14 days.<br>
+              <strong>Supporting Telemetry:</strong> 14 data points evaluated, median latency 240s vs historical baseline 210s.
+            </div>
+          </section>
+
+          <!-- Telemedicine Referral & Handoff (PRD FR-9.14) -->
+          <section class="cg-panel-card" style="margin-top:1.5rem; background:#f0fdf4; border-color:#86efac;">
+            <div class="cg-panel-header">
+              <h3 style="color:#065f46;"><span>🏥</span> Telemedicine Handoff & District Referral</h3>
+            </div>
+            <p style="color:#065f46; font-size:1rem;">
+              Initiate a direct case handoff to Ayushman Bharat Digital Health or district telemedicine specialist for Eleanor Vance.
+            </p>
+            <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
+              <button class="cg-btn primary" onclick="app.initiateTelemedicineReferral()">
+                <span>📡</span> Send Telemedicine Referral Packet
+              </button>
+              <button class="cg-btn" onclick="app.exportComplianceData()">
+                <span>📦</span> Export DPDP/GDPR Data Bundle
+              </button>
+            </div>
+          </section>
+        </div>
+
+        <!-- ASHA / COMMUNITY HEALTH WORKER SIMPLIFIED REPORT (design.md Section 5.2, FR-9.15) -->
+        <div id="clinTabContentAsha" style="display:none;">
+          <article class="asha-action-card">
+            <h3><span>🌾</span> ASHA & ANM Simplified Mobile Action Report</h3>
+            <p style="font-size:1.05rem; color:#1e40af; margin-top:0.25rem;">
+              Single-line action status formatted for basic mobile screens in rural districts:
+            </p>
+
+            <!-- Prominent Action Recommendation Cue (design.md Section 5.2) -->
+            <div style="background:#eff6ff; border:2px solid #3b82f6; border-radius:12px; padding:1rem; margin:1rem 0;">
+              <div style="font-size:1.15rem; font-weight:800; color:#1e3a8a;">
+                Weekly Status: Adherence 94% • 0 missed critical medications
+              </div>
+              <div style="font-size:1.2rem; font-weight:800; color:#059669; margin-top:0.5rem;">
+                Recommended action: Routine weekly check-in. No emergency home visit required.
+              </div>
+            </div>
+
+            <div class="asha-priority-list">
+              <div class="asha-priority-item">
+                <div>
+                  <strong style="font-size:1.15rem; color:#1e293b;">1. Medication Checkpoint (Lisinopril 10mg)</strong>
+                  <p style="color:#475569;">Pillbox confirmed at 9:02 AM today. Inspect tablet storage during weekly visit.</p>
+                </div>
+                <span class="routine-status-pill done-badge">Normal</span>
+              </div>
+
+              <div class="asha-priority-item">
+                <div>
+                  <strong style="font-size:1.15rem; color:#1e293b;">2. Water & Hydration Check</strong>
+                  <p style="color:#475569;">Ensure clean boiled/filtered water pitcher is reachable at Eleanor's bedside.</p>
+                </div>
+                <span class="routine-status-pill done-badge">Actioned</span>
+              </div>
+
+              <div class="asha-priority-item">
+                <div>
+                  <strong style="font-size:1.15rem; color:#1e293b;">3. Family Language Comfort</strong>
+                  <p style="color:#475569;">High engagement during regional voice day narration.</p>
+                </div>
+                <span class="routine-status-pill done-badge">Positive</span>
+              </div>
+            </div>
+
+            <button class="cg-btn primary" style="align-self:flex-start; margin-top:1rem;" onclick="app.logAshaHomeVisit()">
+              <span>✍️</span> Log Completed Home Visit Check
+            </button>
+          </article>
+        </div>
+
+        <!-- STRUCTURED WEEKLY DOCTOR REPORT (design.md Section 5.1, FR-5.1–5.3) -->
+        <div id="clinTabContentReport" style="display:none;">
+          <div class="doctor-report-paper" id="printableDoctorReport">
+            
+            <!-- (1) Patient Name + Period Header -->
+            <div class="report-header-grid">
+              <div>
+                <h3 style="font-size:1.4rem; color:var(--primary); font-family:var(--font-heading);">Recollect — Structured Weekly Clinical Telemetry</h3>
+                <p><strong>Patient:</strong> Eleanor Vance (DOB: 1948-03-14, Age 78)</p>
+                <p><strong>Caregiver:</strong> Sarah Vance (Daughter, Primary)</p>
+              </div>
+              <div style="text-align:right;">
+                <p><strong>Report Period:</strong> Oct 18, 2026 – Oct 24, 2026</p>
+                <p><strong>Physician:</strong> Dr. Thorne (Neurology)</p>
+                <p><strong>Status:</strong> <span style="color:#059669; font-weight:bold;">Adherence High (94%)</span></p>
+              </div>
+            </div>
+
+            <!-- (2) NON-DIAGNOSTIC DISCLAIMER PROMINENTLY AT TOP (design.md Section 5.1) -->
+            <div class="report-top-disclaimer">
+              <span>⚠️</span>
+              <div>
+                <strong>Non-Diagnostic Advisory:</strong> This report reflects engagement and activity trends. It is not a medical diagnosis. Evaluated strictly for decision support.
+              </div>
+            </div>
+
+            <!-- (3) Quantitative Routine Adherence & Task Latency -->
+            <div class="report-section-block">
+              <h4>1. Quantitative Routine Adherence & Task Latency</h4>
+              <p>• Total Scheduled Reminders: 21 | Acknowledged on time: 19 (90.4%)</p>
+              <p>• Average Response Latency: 4.2 minutes from scheduled chime</p>
+              <p>• Missed Critical Medication Incidents: 0 in current 7-day reporting cycle</p>
+            </div>
+
+            <!-- (4) Cognitive Activity & Engagement Trends -->
+            <div class="report-section-block">
+              <h4>2. Cognitive Activity & Engagement Trends</h4>
+              <p>• Photo Memory Sessions Completed: 4 sessions (Total duration: 18.5 mins)</p>
+              <p>• Normalized Accuracy Score: 88 / 100 (Variance: -2% within stable baseline bounds)</p>
+              <p>• Average Decision Hesitation: 1,320 ms (No significant latency spikes detected)</p>
+            </div>
+
+            <!-- (5) Notable Flags with Explainable Evidence -->
+            <div class="report-section-block">
+              <h4>3. Notable Activity Flags with Explainable Evidence</h4>
+              <p>• Rule Trigger: <code>routine_latency_streak</code> (Evaluated: 0 Alert Severity, 1 Watch)</p>
+              <p>• Evidence: Oct 20 morning routine delayed 18 mins due to audio engagement in living room.</p>
+            </div>
+
+            <!-- (6) Qualitative Caregiver Observations -->
+            <div class="report-section-block">
+              <h4>4. Qualitative Caregiver Observations (Sarah Vance)</h4>
+              <p>• <em>"Eleanor had bright recall looking at seaside trip photos. She smiled and remembered the salt water taffy shop."</em> [Tag: Cognitive Spark]</p>
+              <p>• <em>"Peaceful morning routine, completed medication with water smoothly."</em> [Tag: Calm & Engaged]</p>
+            </div>
+
+            <!-- (7) Mood / Wellbeing Summary & Incident Log -->
+            <div class="report-section-block">
+              <h4>5. Mood / Wellbeing Summary & Escalation Incident Log</h4>
+              <p>• Mood Self-Report: 85% Joyful or Peaceful; 15% A Bit Tired</p>
+              <p>• Missed Task / Escalation Incidents: 0 critical escalations</p>
+            </div>
+
+            <!-- Threaded Doctor Reply Mechanism (design.md Section 5.1, FR-5.5) -->
+            <div class="doctor-reply-box">
+              <h4 style="font-size:1.1rem; color:#1e293b;">Physician Threaded Clinical Note / Reply to Caregiver (FR-5.5)</h4>
+              <textarea id="doctorReportReplyInput" class="notes-textarea" style="height:70px; margin-top:0.5rem;" placeholder="Enter physician feedback to be transmitted to Sarah's dashboard..."></textarea>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-top:0.5rem;">
+                <span style="font-size:0.85rem; color:#64748b;">Notifies Sarah Vance in Family Dashboard</span>
+                <button class="cg-btn primary" onclick="app.sendDoctorReportReply()">Send Reply to Caregiver</button>
+              </div>
+            </div>
+
+            <div style="display:flex; gap:0.75rem; margin-top:1rem;">
+              <button class="cg-btn primary" onclick="window.print()">
+                <span>🖨️</span> Print / Save PDF
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==========================================================================
+       MODAL 1: REMINDER FULL-ATTENTION PROMPT TAKEOVER (design.md Section 3.2, FR-1.2, FR-1.3)
+       Takes over entire screen; 3 vertically stacked buttons (Done, Snooze, Need Help)
+       ========================================================================== -->
+  <div class="reminder-attention-takeover" id="reminderAttentionModal" role="dialog" aria-modal="true" aria-labelledby="attentionTitle">
+    <div class="attention-card">
+      <div class="attention-category-badge">💊</div>
+      
+      <h2 class="attention-title" id="attentionTitle">Time for your morning medication</h2>
+      <p class="attention-instructions" id="attentionInstructions">Take 1 yellow oval tablet with a full glass of cool water</p>
+
+      <!-- Centered Photo Visual of Pill & Glass -->
+      <div class="attention-visual-box">
+        <svg viewBox="0 0 400 220" width="100%" height="100%" style="background:#e8dfd8;">
+          <defs>
+            <linearGradient id="attWood" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#dfcfbe"/>
+              <stop offset="100%" stop-color="#c8b5a1"/>
+            </linearGradient>
+            <linearGradient id="attGlass" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#bae6fd" stop-opacity="0.8"/>
+              <stop offset="100%" stop-color="#38bdf8" stop-opacity="0.9"/>
+            </linearGradient>
+            <linearGradient id="attPill" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#fef08a"/>
+              <stop offset="100%" stop-color="#eab308"/>
+            </linearGradient>
+          </defs>
+          <rect width="400" height="220" fill="url(#attWood)"/>
+          <!-- Water Glass -->
+          <rect x="230" y="30" width="110" height="150" rx="14" fill="url(#attGlass)" stroke="#0284c7" stroke-width="2"/>
+          <ellipse cx="285" cy="40" rx="50" ry="12" fill="#e0f2fe" opacity="0.6"/>
+          <path d="M 245 65 Q 285 75 325 65 L 320 160 Q 285 170 250 160 Z" fill="#7dd3fc" opacity="0.75"/>
+          <text x="285" y="120" font-size="14" font-weight="700" fill="#0369a1" text-anchor="middle">Cool Water</text>
+          
+          <!-- Yellow Tablet -->
+          <ellipse cx="120" cy="120" rx="55" ry="32" fill="url(#attPill)" stroke="#ca8a04" stroke-width="3"/>
+          <line x1="120" y1="92" x2="120" y2="148" stroke="#a16207" stroke-width="2" stroke-dasharray="3,2"/>
+          <text x="120" y="126" font-size="16" font-weight="bold" fill="#854d0e" text-anchor="middle">V 42</text>
+        </svg>
+      </div>
+
+      <!-- Voice Mode Listening Indicator (design.md Section 3.2) -->
+      <div class="voice-listening-indicator" id="voiceListeningBadge">
+        <span class="listening-pulse-dot"></span>
+        <span id="voiceListeningText">Listening for "Done"...</span>
+      </div>
+
+      <!-- Exactly Three Large Vertically-Stacked Actions (Done, Snooze, Need Help) -->
+      <div class="attention-actions-stack">
+        <button class="attention-action-btn btn-done" onclick="app.confirmMorningMedicine()" aria-label="Done, I took my medicine">
+          <span>✓</span> <span data-i18n="btn_done">Done</span>
+        </button>
+        
+        <button class="attention-action-btn btn-snooze" onclick="app.snoozeReminder()" aria-label="Remind me in 10 minutes">
+          <span>⏰</span> <span data-i18n="btn_snooze">Remind me in 10 minutes</span>
+        </button>
+        
+        <button class="attention-action-btn btn-help" onclick="app.requestReminderHelp()" aria-label="Need help from Sarah">
+          <span>🤝</span> <span data-i18n="btn_need_help">Need help from Sarah</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL 2: GAMES HUB (design.md Section 3.3)
+       4 Categories (Memory, Attention, Language, Problem Solving) + Swappable Packs
+       ========================================================================== -->
+  <div class="modal-overlay" id="gamesHubModal" role="dialog" aria-modal="true" aria-labelledby="gamesHubTitle">
+    <div class="modal-window" style="max-width:760px;">
+      <div class="modal-header">
+        <h3 id="gamesHubTitle" data-i18n="game_hub_title">🌸 Brain & Memory Games</h3>
+        <button class="modal-close-btn" onclick="app.closeGamesHub()" aria-label="Close Games Hub">✕</button>
+      </div>
+      
+      <p style="font-size:1.25rem; color:var(--on-surface-variant);" data-i18n="game_hub_subtitle">
+        Gentle activities at your own pace with no timers, ever.
+      </p>
+
+      <!-- Swappable Pack Bar (Family Photos vs Regional Northeast Pack) -->
+      <div class="pack-switch-bar">
+        <span style="font-weight:700; font-size:1.05rem;">Card Theme Pack:</span>
+        <div style="display:flex; gap:0.5rem;">
+          <button class="cg-btn primary" id="packBtnFamily" onclick="app.switchPhotoPack('family')">
+            <span>📷</span> Family Photos
+          </button>
+          <button class="cg-btn" id="packBtnCultural" onclick="app.switchPhotoPack('cultural')">
+            <span>🌿</span> Northeast Cultural Pack
+          </button>
+        </div>
+      </div>
+
+      <!-- 4 Categories Tile Grid (2 per row max) -->
+      <div class="games-hub-grid">
+        <!-- Category 1: Memory -->
+        <article class="game-category-tile active-category" onclick="app.startCategoryGame('memory')">
+          <div class="category-tile-header">
+            <span class="category-tile-icon">🧩</span>
+            <div class="category-tile-text">
+              <h4 data-i18n="game_category_memory">Memory</h4>
+              <p id="packSubtitleLabel">Family Photo Match</p>
+            </div>
+          </div>
+          <button class="tile-action-button play-btn">Play Memory Game</button>
+        </article>
+
+        <!-- Category 2: Attention -->
+        <article class="game-category-tile" onclick="app.startCategoryGame('attention')">
+          <div class="category-tile-header">
+            <span class="category-tile-icon">🔍</span>
+            <div class="category-tile-text">
+              <h4 data-i18n="game_category_attention">Attention</h4>
+              <p>Garden Flower Focus</p>
+            </div>
+          </div>
+          <button class="tile-action-button play-btn" style="background:#0284c7;">Play Attention Game</button>
+        </article>
+
+        <!-- Category 3: Language -->
+        <article class="game-category-tile" onclick="app.startCategoryGame('language')">
+          <div class="category-tile-header">
+            <span class="category-tile-icon">🗣️</span>
+            <div class="category-tile-text">
+              <h4 data-i18n="game_category_language">Language</h4>
+              <p>Word & Object Recall</p>
+            </div>
+          </div>
+          <button class="tile-action-button play-btn" style="background:#059669;">Play Language Game</button>
+        </article>
+
+        <!-- Category 4: Problem Solving -->
+        <article class="game-category-tile" onclick="app.startCategoryGame('problem')">
+          <div class="category-tile-header">
+            <span class="category-tile-icon">🧩</span>
+            <div class="category-tile-text">
+              <h4 data-i18n="game_category_problem">Problem Solving</h4>
+              <p>Daily Routine Steps</p>
+            </div>
+          </div>
+          <button class="tile-action-button play-btn" style="background:#7c3aed;">Play Routine Game</button>
+        </article>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL 3: IN-GAME SESSION (No Timers, Gentle Positive Feedback)
+       ========================================================================== -->
+  <div class="modal-overlay" id="gameModal" role="dialog" aria-modal="true" aria-labelledby="gameModalTitle">
+    <div class="modal-window" style="max-width:720px;">
+      <div class="modal-header">
+        <h3 id="gameModalTitle">🌸 Family Photo Memory Game</h3>
+        <button class="modal-close-btn" onclick="app.closeMemoryGameModal()" aria-label="Close Game">✕</button>
+      </div>
+
+      <div class="game-header-bar">
+        <span class="game-peace-tag">
+          <span>🌿</span> <span data-i18n="game_peace_tag">No Timers, Ever • Take all your time, Eleanor</span>
+        </span>
+        <button class="cg-btn" style="height:40px; font-size:0.9rem;" onclick="app.playGameAudioInstruction()">
+          <span>🔊</span> Read Instructions
+        </button>
+      </div>
+
+      <!-- Encouraging Feedback Banner (Zero red/harsh buzzer per design.md Section 2.2) -->
+      <div class="game-feedback-banner" id="gameFeedbackBanner">
+        💚 Welcome to your garden memories! Touch two cards to peek.
+      </div>
+
+      <!-- 4-Card Matching Grid -->
+      <div class="game-grid" id="memoryGameGrid">
+        <!-- Rendered dynamically in app.js -->
+      </div>
+
+      <!-- Game Controls & Garden Blooming Progress -->
+      <div class="game-controls-row">
+        <button class="hint-btn" id="gameHintBtn" onclick="app.giveGameHint()">
+          <span>💡</span> <span data-i18n="game_hint_btn">Give Me a Gentle Hint</span>
+        </button>
+
+        <div class="game-progress-indicators">
+          <span>Garden Progress:</span>
+          <span class="bloom-dot bloomed" id="bloomDot1">🌻</span>
+          <span class="bloom-dot" id="bloomDot2">🌱</span>
+          <span class="bloom-dot" id="bloomDot3">🌱</span>
+          <span class="bloom-dot" id="bloomDot4">🌱</span>
+        </div>
+
+        <button class="cg-btn" onclick="app.closeMemoryGameModal()">
+          <span>⏸️</span> Pause & Rest Anytime
+        </button>
+      </div>
+
+      <p class="disclaimer-text">
+        Supportive engagement tool, not a clinical treatment or diagnostic device.
+      </p>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL 4: WARM SCORE-FREE GAME COMPLETION (design.md Section 3.3)
+       Never exposes raw numeric scores to the patient
+       ========================================================================== -->
+  <div class="modal-overlay" id="gameCompleteModal" role="dialog" aria-modal="true" aria-labelledby="completeTitle">
+    <div class="modal-window" style="max-width:540px; text-align:center;">
+      <div style="font-size:4rem; margin-bottom:0.5rem;">🌻</div>
+      <h3 id="completeTitle" style="font-size:2rem; color:var(--primary); font-family:var(--font-heading);" data-i18n="game_completion_title">
+        Great job today, Eleanor!
+      </h3>
+      <p style="font-size:1.35rem; color:var(--on-surface-variant); margin:1rem 0;" data-i18n="game_completion_msg">
+        Your garden memories bloomed beautifully. Have a peaceful rest of your morning.
+      </p>
+      <button class="attention-action-btn btn-done" onclick="app.closeGameCompletionModal()">
+        <span>🌸</span> Return to Home Screen
+      </button>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL 5: MOOD CHECK-IN (Self-report & Caregiver-assisted, design.md Section 3.4)
+       ========================================================================== -->
+  <div class="modal-overlay" id="moodModal" role="dialog" aria-modal="true" aria-labelledby="moodModalTitle">
+    <div class="modal-window" style="max-width:580px;">
+      <div class="modal-header">
+        <h3 id="moodModalTitle" data-i18n="mood_title">How are you feeling right now?</h3>
+        <button class="modal-close-btn" onclick="app.closeMoodModal()" aria-label="Close Mood Modal">✕</button>
+      </div>
+      <p style="font-size:1.25rem; color:var(--on-surface-variant);">
+        Tap a joyful face to check in today:
+      </p>
+      
+      <div class="mood-selector-row" style="margin:1.5rem 0;">
+        <button class="mood-btn" onclick="app.logMood(5, 'Sunny & Joyful', this)">
+          <span style="font-size:2.5rem;">☀️</span> <span style="font-size:1rem;">Joyful</span>
+        </button>
+        <button class="mood-btn selected" onclick="app.logMood(4, 'Calm & Peaceful', this)">
+          <span style="font-size:2.5rem;">🌸</span> <span style="font-size:1rem;">Peaceful</span>
+        </button>
+        <button class="mood-btn" onclick="app.logMood(3, 'A Bit Tired', this)">
+          <span style="font-size:2.5rem;">🛋️</span> <span style="font-size:1rem;">Tired</span>
+        </button>
+        <button class="mood-btn" onclick="app.logMood(2, 'Need Gentle Support', this)">
+          <span style="font-size:2.5rem;">🤝</span> <span style="font-size:1rem;">Support</span>
+        </button>
+      </div>
+
+      <!-- Caregiver-Assisted Option (FR-6.2) -->
+      <div style="background:#f8fafc; border:1.5px solid var(--outline-variant); border-radius:8px; padding:0.75rem 1rem; margin-bottom:1rem; display:flex; align-items:center; gap:0.5rem;">
+        <input type="checkbox" id="moodCaregiverAssisted">
+        <label for="moodCaregiverAssisted" style="font-size:0.95rem; color:#475569; cursor:pointer;">
+          Caregiver-assisted observation (recorded by Sarah on Eleanor's behalf)
+        </label>
+      </div>
+
+      <div style="display:flex; justify-content:flex-end;">
+        <button class="cg-btn primary" onclick="app.closeMoodModal()">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL 6: CAREGIVER SETTINGS & PROFILE SWITCH (design.md Section 3.5 & 3.6)
+       PIN Protected (1234)
+       ========================================================================== -->
+  <div class="modal-overlay" id="caregiverSettingsModal" role="dialog" aria-modal="true" aria-labelledby="cgSettingsTitle">
+    <div class="modal-window settings-modal-window">
+      <div class="modal-header">
+        <h3 id="cgSettingsTitle">⚙️ Caregiver Settings & Space Switch</h3>
+        <button class="modal-close-btn" onclick="app.closeCaregiverSettings()" aria-label="Close Settings">✕</button>
+      </div>
+
+      <!-- PIN Lock Gate -->
+      <div id="settingsPinGate">
+        <p style="font-size:1.1rem; color:var(--on-surface-variant); margin-bottom:1rem;">
+          To prevent accidental changes, enter the caregiver PIN (Default demo PIN: <strong>1234</strong>):
+        </p>
+        <div class="pin-login-box">
+          <input type="password" id="settingsPinInput" class="pin-input-field" maxlength="4" placeholder="••••" value="1234">
+        </div>
+        <div style="display:flex; justify-content:flex-end; gap:0.75rem; margin-top:1.5rem;">
+          <button type="button" class="cg-btn" onclick="app.closeCaregiverSettings()">Cancel</button>
+          <button type="button" class="cg-btn primary" onclick="app.verifySettingsPin()">Unlock Settings</button>
+        </div>
+      </div>
+
+      <!-- Unlocked Settings Controls -->
+      <div id="settingsUnlockedBody" style="display:none;">
+        
+        <!-- High Contrast Mode Toggle (Section 2.2) -->
+        <div class="settings-option-row">
+          <div class="settings-option-label">
+            <strong data-i18n="high_contrast">High-contrast theme (Black & White)</strong>
+            <span>WCAG AAA stark black-on-white theme with decorative colors removed</span>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="toggleHighContrast" onchange="app.toggleHighContrast(this.checked)">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
+        <!-- Font Scaling Control (Section 2.1 & 7) -->
+        <div class="settings-option-row">
+          <div class="settings-option-label">
+            <strong data-i18n="font_size_label">Patient app text size</strong>
+            <span>Base size floor is 20pt; scales up to 28pt for low vision</span>
+          </div>
+          <select class="form-select" id="fontSizeSelector" onchange="app.setFontScale(this.value)" style="width:160px;">
+            <option value="normal">Normal (20pt)</option>
+            <option value="large">Large (24pt)</option>
+            <option value="xlarge">Extra Large (28pt)</option>
+          </select>
+        </div>
+
+        <!-- Voice Mode Toggle (Section 7) -->
+        <div class="settings-option-row">
+          <div class="settings-option-label">
+            <strong data-i18n="voice_mode_label">Voice narration & listening mode</strong>
+            <span>Spoken prompt reading and voice acknowledgment</span>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" checked id="toggleVoiceMode" onchange="app.toggleVoiceMode(this.checked)">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
+        <!-- Low-Power Mode Toggle (Section 2.5) -->
+        <div class="settings-option-row">
+          <div class="settings-option-label">
+            <strong data-i18n="low_power_label">Low-power mode (Reduced animation)</strong>
+            <span>Disables non-essential motion and saves battery on regional devices</span>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="toggleLowPowerSettings" onchange="app.togglePowerMode()">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
+        <!-- Language Selector -->
+        <div class="settings-option-row">
+          <div class="settings-option-label">
+            <strong>Language & Dialect (NE India)</strong>
+            <span>Regional scripts and audio voices</span>
+          </div>
+          <select class="form-select" id="settingsLangSelect" onchange="app.changeLanguage(this.value)" style="width:160px;">
+            <option value="en">English</option>
+            <option value="as">অসমীয়া (Assamese)</option>
+            <option value="bn">বাংলা (Bengali)</option>
+            <option value="kha">Khasi (Meghalaya)</option>
+            <option value="hi">हिन्दी (Hindi)</option>
+          </select>
+        </div>
+
+        <!-- Shared Device / Profile Switcher (design.md Section 3.6) -->
+        <div style="margin-top:1.5rem; background:#f8fafc; border:1.5px solid var(--outline-variant); border-radius:12px; padding:1.25rem;">
+          <h4 style="margin-bottom:0.5rem; font-size:1.15rem;">Shared Device Profile Switch (FR-9.11)</h4>
+          <p style="font-size:0.95rem; color:var(--on-surface-variant); margin-bottom:1rem;">
+            Switch between Eleanor's Bedside Tablet, Sarah's Caregiver Portal, or Dr. Thorne's Clinical Hub:
+          </p>
+          <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
+            <button class="cg-btn" onclick="app.switchSpaceFromSettings('patient')">👵 Patient Space</button>
+            <button class="cg-btn" onclick="app.switchSpaceFromSettings('caregiver')">👩 Caregiver Portal</button>
+            <button class="cg-btn" onclick="app.switchSpaceFromSettings('clinical')">🩺 Clinical Hub</button>
+            <button class="cg-btn" onclick="app.openConsentModal()">📋 Consent & Privacy</button>
+          </div>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; margin-top:1.25rem;">
+          <button class="cg-btn primary" onclick="app.closeCaregiverSettings()">Close Settings</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL 7: MULTI-STEP CONSENT & ONBOARDING (design.md Section 6.4, FR-7.2, FR-7.3)
+       ========================================================================== -->
+  <div class="modal-overlay" id="consentModal" role="dialog" aria-modal="true" aria-labelledby="consentTitle">
+    <div class="modal-window" style="max-width:680px;">
+      <div class="modal-header">
+        <h3 id="consentTitle">📋 Consent & Privacy Framework</h3>
+        <button class="modal-close-btn" onclick="app.closeConsentModal()" aria-label="Close Consent">✕</button>
+      </div>
+      
+      <div id="consentStep1" class="consent-step">
+        <h4 style="font-size:1.2rem; color:var(--primary); margin-bottom:0.5rem;">Step 1: Patient & Caregiver Identity</h4>
+        <p style="font-size:1rem; color:var(--on-surface-variant); margin-bottom:1rem;">
+          Confirmed relationship: <strong>Sarah Vance</strong> is authorized primary caregiver and power-of-attorney for <strong>Eleanor Vance</strong>.
+        </p>
+        <button class="cg-btn primary" onclick="app.setConsentStep(2)">Next: Data Collection</button>
+      </div>
+
+      <div id="consentStep2" class="consent-step" style="display:none;">
+        <h4 style="font-size:1.2rem; color:var(--primary); margin-bottom:0.5rem;">Step 2: What Data is Stored Locally</h4>
+        <p style="font-size:1rem; color:var(--on-surface-variant); margin-bottom:1rem;">
+          Routine timestamps, game interaction latency, and mood logs persist in local device storage first. No audio recordings leave the device.
+        </p>
+        <div style="display:flex; gap:0.5rem;">
+          <button class="cg-btn" onclick="app.setConsentStep(1)">Back</button>
+          <button class="cg-btn primary" onclick="app.setConsentStep(3)">Next: AI Monitoring Consent</button>
+        </div>
+      </div>
+
+      <!-- SEPARATE DISTINCT AI CONSENT STEP (design.md Section 6.4 & rules.md Section 8) -->
+      <div id="consentStep3" class="consent-step" style="display:none;">
+        <h4 style="font-size:1.2rem; color:#b45309; margin-bottom:0.5rem;">Step 3: Separate Consent for AI Pattern Monitoring</h4>
+        <div style="background:#fefce8; border:2px solid #fde047; padding:1rem; border-radius:8px; margin-bottom:1rem;">
+          <p style="font-size:0.95rem; color:#713f12;">
+            <strong>Important Notice:</strong> Consenting to rule-based trend monitoring is completely optional. <em>Declining this step does NOT disable Eleanor's reminders, games, or routine logging.</em>
+          </p>
+          <div style="margin-top:0.75rem;">
+            <label style="font-weight:700; cursor:pointer;">
+              <input type="checkbox" id="consentAiMonitoring" checked> Allow explainable rule-engine trend monitoring for Dr. Thorne
+            </label>
+          </div>
+        </div>
+        <div style="display:flex; gap:0.5rem;">
+          <button class="cg-btn" onclick="app.setConsentStep(2)">Back</button>
+          <button class="cg-btn primary" onclick="app.setConsentStep(4)">Next: Companion Explanation</button>
+        </div>
+      </div>
+
+      <div id="consentStep4" class="consent-step" style="display:none;">
+        <h4 style="font-size:1.2rem; color:var(--primary); margin-bottom:0.5rem;">Step 4: Plain-Language Companion Explanation for Eleanor</h4>
+        <p style="font-size:1.1rem; color:var(--on-surface); line-height:1.5; background:#f0fdf4; padding:1rem; border-radius:8px; margin-bottom:1rem;">
+          "This tablet is here to help you remember medicines, play sweet memory games with family pictures, and call Sarah anytime you need."
+        </p>
+        <button class="cg-btn primary" onclick="app.finishConsent()">Confirm & Save Consent Record</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL 8: ADD / EDIT REMINDER (Caregiver Authoring)
+       ========================================================================== -->
+  <div class="modal-overlay" id="reminderModal" role="dialog" aria-modal="true" aria-labelledby="reminderModalTitle">
+    <div class="modal-window">
+      <div class="modal-header">
+        <h3 id="reminderModalTitle">➕ Add Scheduled Routine Reminder</h3>
+        <button class="modal-close-btn" onclick="app.closeNewReminderModal()" aria-label="Close Modal">✕</button>
+      </div>
+
+      <form id="reminderForm" onsubmit="app.saveNewReminder(event)">
+        <div class="form-group">
+          <label for="remLabel">Routine / Medication Name</label>
+          <input type="text" id="remLabel" class="form-input" placeholder="e.g. Afternoon Hydration & Tea" required>
+        </div>
+
+        <div class="form-group">
+          <label for="remType">Category</label>
+          <select id="remType" class="form-select">
+            <option value="medication">💊 Medication</option>
+            <option value="hydration">🥤 Hydration</option>
+            <option value="meal">🍽️ Meal / Nutrition</option>
+            <option value="appointment">🚶 Activity / Walk</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="remTime">Scheduled Time</label>
+          <input type="time" id="remTime" class="form-input" value="14:00" required>
+        </div>
+
+        <div class="form-group">
+          <label for="remInstructions">Senior Instructions</label>
+          <input type="text" id="remInstructions" class="form-input" placeholder="e.g. Drink 1 full glass of warm berry tea">
+        </div>
+
+        <div class="form-group">
+          <label for="remPriority">Alert Priority</label>
+          <select id="remPriority" class="form-select">
+            <option value="normal">Normal (Routine Checkpoint)</option>
+            <option value="critical">Critical (5-minute escalation alert if missed)</option>
+          </select>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:0.75rem; margin-top:1rem;">
+          <button type="button" class="cg-btn" onclick="app.closeNewReminderModal()">Cancel</button>
+          <button type="submit" class="cg-btn primary">Save & Sync to Device</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast-notification" id="appToast" role="status" aria-live="polite">
+    <span id="toastIcon">🌿</span>
+    <span id="toastMsg">Action completed successfully.</span>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/db.js"></script>
+  <script src="js/ruleEngine.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    // Service worker registration for standalone offline app
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js').catch(err => {
+          console.log('Service Worker setup notice:', err);
+        });
+      });
+    }
+  </script>
+</body>
+</html>
