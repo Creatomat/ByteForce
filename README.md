@@ -81,6 +81,14 @@ Open `http://localhost:8000` in your web browser.
 
 ---
 
+## Documentation
+
+* **[Features & Architecture Document](docs/features.md)**: Exhaustive technical and functional breakdown of all platform features across Senior Space, Caregiver Portal, Clinical Hub, Rule Engine, and Localization.
+* **[User Manual & Operational Guide](docs/user_manual.md)**: Comprehensive, step-by-step user guide for seniors, family caregivers, and health workers.
+* **[Historical Design & Planning Archive](docs/temp/)**: Staging and historical reference documents (PRD, design specs, architecture blueprints, rules, and development walkthroughs).
+
+---
+
 ## AI Code of Ethics
 
 Generative AI is a companion and productivity tool, not an autonomous replacement for human care. In Recollect, all cognitive telemetry flags are explicitly framed as **observational decision-support markers**, never independent clinical diagnoses. All project source code is architected, tested, and maintained by real engineers with real ideas.
