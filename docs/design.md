@@ -95,6 +95,7 @@ Engineered for severe presbyopia and low vision:
   * Greeting computed by device hour (*"Good Morning, Eleanor!"*, *"সুপ্ৰভাত"*, *"সুপ্রভাত"*, *"Khublei step"*, *"शुभ प्रभात"*).
   * Regional calendar date formatted via `getFormattedDate()`.
   * Contextual weather status (Morning Sunshine 24°C, Afternoon Breeze 27°C, Twilight 22°C, Quiet Night 19°C).
+  * **Patient-Side Score Badge (`#patientHomeScorePill`)**: Displays accumulated Garden Stars and blooming level (e.g., `⭐ Garden Stars: 12 • 🌻 Sunflower Champion`).
   * **"🔊 Listen to your day"**: Spoken briefing with pentatonic chime fallback.
   * **"Aa Text Size"**: Quick-cycle font size button (Normal -> Large -> Extra Large).
   * **"🚨 Call Help"**: High-contrast emergency quick call.
@@ -103,7 +104,7 @@ Engineered for severe presbyopia and low vision:
   * Water requirement badge (*"1 Full Glass of cool water"*).
   * Prominent **"✓ I took my medicine"** action button.
 * **Action Tiles Grid:**
-  * **"🌿 Play a Game"**: Opens the Mind Games Hub.
+  * **"🌸 Play a Game"**: Opens the Mind Games Hub.
   * **"😊 How I am Feeling Today"**: Opens the 4-face visual mood check-in.
   * **"📞 Call Sarah"**: Launches the simulated family audio call.
 * **Visual Timeline Checklist:**
@@ -120,15 +121,25 @@ Engineered for severe presbyopia and low vision:
   2. **"⏰ Remind me in 10 minutes":** Snoozes the alert gently.
   3. **"🤝 Need help from Sarah":** Dispatches an instant caregiver notification.
 
-#### Mind Games Hub & In-Game Session (`#gamesHubModal`, `#gameModal`)
-* **Theme Pack Switcher:** Toggle between **Family Photos** (Sarah, seaside, roses) and **Northeast Cultural Heritage** (Majuli masks, Muga silk, root bridges).
-* **Four Game Categories:** Memory, Attention, Language, and Problem Solving.
-* **In-Game Peaceful Board:**
-  * Status banner: *"🌿 No Timers, Ever • Take all your time, Eleanor"*.
-  * Spoken audio rules: *"🔊 Read Instructions"*.
-  * Gentle Hint: *"💡 Give Me a Gentle Hint"* (temporarily reveals matching pairs without penalty).
-  * Garden Blooming Progress: Replaces numbers with floral icons (🌱 -> 🌻).
-  * Warm Score-Free Completion Card: *"Great job today, Eleanor! Your garden memories bloomed beautifully."*
+#### Full-Screen Cognitive Game Takeover (`#gameModal`)
+* **Full-Screen Canvas (`100vw` × `100vh`):** Replaces cramped dialog overlays with an edge-to-edge calming environment optimized for senior tablet ergonomics ($\ge 64\text{px}$ targets).
+* **Top Navigation & Live Score Header:**
+  * Category Icon Badge (`🌸`, `🔍`, `🗣️`, `🧩`) and localized Game Title.
+  * Peace banner: *"🌿 No Timers, Ever • Take all your time, Eleanor"*.
+  * **Live Patient Score Badge:** Shows persistent Garden Stars (⭐) and session points (e.g., `⭐ Garden Stars: 12 | Score: 95 pts • 🌻 Blooming`).
+  * Localized TTS Instruction button (*"🔊 Read Instructions"*).
+  * Prominent Senior Exit button (*"✕ Pause & Rest"*).
+* **Four Distinct Game Canvas Architectures:**
+  1. **Memory (Photo Match):** 2×4 responsive grid with card-flip physics and pair matching across Family Photos or Northeast Cultural Heritage packs.
+  2. **Attention (Garden Flower Focus):** Spotlight target banner (*"Spot and tap all 3 blooming Sunflowers 🌻"*) above a 10-flower garden bed grid. Target flowers lock with glowing green halos upon touch; non-targets receive gentle reassurance.
+  3. **Language (Word & Object Recall):** Object clue card with everyday prompts (e.g., *"What do we use to enjoy our warm morning tea?"*) and 4 large illustrated option cards across 3 progressive rounds.
+  4. **Problem Solving (Daily Routine Steps):** 4 numbered sequence slots (Steps 1 to 4) paired with 4 shuffled daily routine cards. Senior taps cards in chronological order to lock them into their routine slots.
+* **Bottom Controls & Blooming Progress:**
+  * Context-aware **"💡 Give Me a Gentle Hint"** button (reveals pairs, pulses target blooms, or highlights correct cards without penalties).
+  * Garden Progress Dots: Visual blooming progression (🌱 -> 🌻).
+  * **"⏸️ Pause & Rest Anytime"** exit button.
+* **Celebratory Completion Screen (`#gameCompleteModal`):**
+  * Displays warm celebratory feedback, awarded Garden Stars (e.g., `⭐ +5 Garden Stars Bloomed!`), session score, and gentle return to home.
 
 #### Mood Check-In Modal (`#moodModal`)
 * Four large visual mood faces: ☀️ *Joyful*, 🌸 *Peaceful*, 🛋️ *Tired*, 🤝 *Need Support*.

@@ -114,21 +114,40 @@ Designed specifically for bedside tablets (e.g., 10-inch landscape mounts), the 
   3. **"🤝 Need help from Sarah":** Dispatches an instant caregiver notification.
 * **Voice Mode Indicator:** Displays simulated voice listening cue (*"Listening for 'Done'..."*).
 
-### 3.5 Stress-Free Cognitive Mind Games
-* **Zero Timers, Ever:** All cognitive activities eliminate countdown timers, ticking clocks, speed bonuses, and penalty counters.
-* **Four Diverse Categories:**
-  1. **Memory:** Family Photo Match / Cultural Heritage Card Match
-  2. **Attention:** Garden Flower Focus & Observation
-  3. **Language:** Word & Everyday Object Recall
-  4. **Problem Solving:** Daily Routine Sequencing & Step Matching
-* **Swappable Card Packs:**
-  * **Family Photo Pack:** Personal photos featuring Sarah, garden roses, seaside trips, and tea sets.
-  * **Northeast Cultural Pack:** Regional imagery featuring Assam Golden Muga Silk, Majuli Island Masks, Meghalaya Living Root Bridges, and Kaziranga Rhinos.
-* **Garden Blooming Progress Indicator:** Replaces numerical scores with blooming floral icons (🌱 -> 🌻).
-* **Gentle Audio Instructions:** Seniors can tap *"Read Instructions"* anytime to hear spoken gameplay guidance.
-* **Calm Hint System:** The *"Give Me a Gentle Hint"* button briefly reveals matching card pairs without penalty.
-* **Warm Score-Free Completion:** Displays a warm celebratory card (*"Great job today, Eleanor! Your garden memories bloomed beautifully."*) without exposing raw statistics.
-* **Passive Telemetry Logging:** In the background, `RecollectDB` silently records completion time, decision hesitation latency (in milliseconds), and accuracy for clinical tracking.
+### 3.5 Stress-Free Cognitive Mind Games (4 Distinct Engines in Full-Screen)
+* **Full-Screen Immersion Takeover:** Games launch into a dedicated full-screen takeover view (`100vw` × `100vh`), replacing cramped dialog boxes to maximize tablet screen space, optimize touch target ergonomics ($\ge 64\text{px}$), and eliminate distractions with a prominent *"Pause & Rest"* exit button.
+* **Zero Timers, Ever:** All cognitive activities completely eliminate countdown timers, ticking clocks, speed bonuses, and penalty counters.
+* **Four Dedicated, Distinct Cognitive Engines:**
+  1. **Memory (Family & Cultural Photo Match):**
+     * **Mechanics:** 2×4 responsive grid with card-flip physics and pair recall.
+     * **Content Packs:** Family Album (Granddaughter Lily 👧, Buddy the Dog 🐕, Rose Garden 🌹, Sunday Tea 🫖) and Northeast Cultural Heritage (Assam Tea Garden 🍃, Bihu Dhol Drum 🥁, Brahmaputra Sunset 🌅, Kaziranga Rhino 🦏).
+     * **Reinforcement:** Matching pairs lock with a green glow and cheerful praise; mismatches flip back gently after 1.2s without penalty buzzers.
+  2. **Attention (Garden Flower Focus & Observation):**
+     * **Mechanics:** Calming visual search and target flower spotting in a blooming garden bed.
+     * **Gameplay:** Prompts the senior with a spotlight target flower (e.g., *"Spot and tap all 3 blooming Sunflowers 🌻"*). The garden bed displays 10 colorful bloom tiles (3 targets + 7 distractors).
+     * **Feedback:** Tapping the target flower triggers a golden sparkle and locks it with blooming green borders. Tapping non-target flowers gives warm reassurance (*"That is a lovely Terrace Daisy 🌼! Look closely for the Sunflower 🌻"*).
+  3. **Language (Word & Everyday Object Recall):**
+     * **Mechanics:** Everyday object naming and semantic association across 3 gentle rounds.
+     * **Gameplay:** Presents a large visual object prompt with a familiar functional clue (e.g., *"What do we use to enjoy our warm morning tea?"* with 🫖 Teapot).
+     * **Choices:** 4 large, high-contrast touchable option cards (Teapot 🫖, Story Book 📖, Reading Glasses 👓, Woolen Scarf 🧣).
+     * **Feedback:** Correct choice illuminates green with celebration and advances the round; gentle nudges are provided on mis-taps.
+  4. **Problem Solving (Daily Routine Steps Sequencing):**
+     * **Mechanics:** Chronological routine sequencing for morning and evening routines.
+     * **Gameplay:** Presents 4 sequential slots (Steps 1 to 4) and 4 shuffled daily routine cards (e.g., Morning: 🌅 Wake up -> 🥤 Drink cool water -> 💊 Take morning medicine -> 🥣 Enjoy warm breakfast).
+     * **Interaction:** Senior taps steps in chronological order. Correct taps lock into their numbered slots with green checkmarks.
+     * **Feedback:** Out-of-order taps provide gentle guidance (*"We usually wake up before breakfast! Let's find what comes first"*).
+* **Patient-Side Score Tracker:**
+  * **Uplifting Progression:** Features non-punitive, senior-friendly metrics displayed in the senior orientation bar, the full-screen game header, and completion screens:
+    * ⭐ **Garden Stars:** Earned on game completion (+3 to +5 stars per session) and stored persistently in `localStorage`.
+    * **Session Points:** Gentle score index (75–100 pts) based on gentle accuracy.
+    * **Garden Blooming Stages:** Sprout (🌱 0–5) -> Budding Green (🌿 6–12) -> Blooming Daisy (🌼 13–20) -> Sunflower Champion (🌻 21+).
+* **Dual-Track Clinical Telemetry:**
+  * While the senior experiences positive reinforcement, raw behavioral metrics (`hesitation_avg_ms`, `accuracy`, `mistake_count`, `duration_seconds`) are silently dispatched to `RecollectDB.insertGameSession` and `CaregiverActivityLog`, updating the Clinical Hub and Caregiver Trends polylines.
+* **Gentle Assistance & Localized Audio:**
+  * Context-aware *"Give Me a Gentle Hint"* button tailored to each engine (peeks card pairs in Memory, pulses target blooms in Attention, glows correct options in Language and Problem Solving).
+  * *"Read Instructions"* button plays synthesized text-to-speech instructions localized across all 5 regional languages.
+* **Triple Theme & Font Scale Compatibility:**
+  * Fully styled across Light Biophilic, Dark Mode (`body.dark-mode`), High Contrast Mode (`body.high-contrast-mode`), and 3 font scales (20pt, 24pt, 28pt).
 
 ### 3.6 One-Tap Mood & Wellbeing Check-In
 * **Friendly Visual Faces:** Four large, expressive mood selectors:

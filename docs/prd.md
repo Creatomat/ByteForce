@@ -63,20 +63,23 @@ Existing consumer solutions are either high-stress (buzzing smartwatches, comple
   3. **"🤝 Need help from Sarah":** Dispatches an instant caregiver assistance prompt.
 * **FR-1.6 Two-Way Cross-Role Synchronization:** Confirming a routine on Eleanor's tablet immediately synchronizes with the Caregiver Portal, updating adherence metrics and removing overdue warning banners.
 
-### FR-2: Stress-Free Cognitive Mind Games
-* **FR-2.1 Zero Timers, Ever:** Eliminates countdown clocks, speed bonuses, and penalty buzzers to avoid anxiety.
-* **FR-2.2 Four Cognitive Categories:**
-  1. **Memory:** Photo Card Matching.
-  2. **Attention:** Garden Flower Focus & Observation.
-  3. **Language:** Word & Everyday Object Association.
-  4. **Problem Solving:** Daily Routine Sequencing.
+### FR-2: Stress-Free Cognitive Mind Games (4 Distinct Engines in Full-Screen)
+* **FR-2.1 Full-Screen Immersion & Zero Timers:** Games launch into a dedicated full-screen takeover (`100vw` × `100vh`), replacing cramped dialog modals to maximize tablet screen space, optimize touch targets ($\ge 64\text{px}$), and eliminate countdown clocks, speed bonuses, and penalty buzzers. Includes prominent *"Pause & Rest"* exit controls.
+* **FR-2.2 Four Dedicated Cognitive Engines:**
+  1. **Memory (Photo Card Matching):** 2×4 card flip recall featuring personal Family Photos or Northeast Cultural Heritage packs.
+  2. **Attention (Garden Flower Focus):** Calming visual search and target flower spotting (finding 3 target blooms in a randomized 10-flower garden bed).
+  3. **Language (Word & Everyday Object Recall):** Functional everyday object naming and semantic association across 3 gentle rounds with 4 illustrated option cards.
+  4. **Problem Solving (Daily Routine Sequencing):** Chronological sequencing of 4 morning or evening daily routine steps with sequential slot locking.
 * **FR-2.3 Swappable Card Theme Packs:**
   * **Family Photo Pack:** Personal photos (Sarah, garden roses, seaside trips, afternoon tea).
   * **Northeast Cultural Heritage Pack:** Regional cultural imagery (Assam Golden Muga Silk, Majuli Masks, Living Root Bridges, Kaziranga Rhinos).
-* **FR-2.4 Garden Blooming Progress:** Replaces raw numerical scores with gentle blooming floral indicators (🌱 -> 🌻).
-* **FR-2.5 In-Game Gentle Assistance:** Seniors can tap *"Give Me a Gentle Hint"* to peek at card pairs without penalty, or tap *"Read Instructions"* for spoken rules.
-* **FR-2.6 Warm Score-Free Completion:** Celebrates game completion with comforting language (*"Great job today, Eleanor! Your garden memories bloomed beautifully."*) without exposing raw score numbers.
-* **FR-2.7 Silent Behavioral Telemetry:** Records decision hesitation latency (in milliseconds), accuracy, and completion duration silently in `GameSession` for clinical decision support.
+* **FR-2.4 Patient-Side Score & Star Tracker:** Features encouraging, senior-friendly metrics displayed in the senior orientation bar, the full-screen game header, and completion screens:
+  * Persistent **Garden Stars (⭐)** (+3 to +5 stars per session).
+  * Encouraging session points (75–100 pts) based on gentle accuracy.
+  * Garden Blooming Stages: Sprout (🌱 0–5) -> Budding Green (🌿 6–12) -> Blooming Daisy (🌼 13–20) -> Sunflower Champion (🌻 21+).
+* **FR-2.5 In-Game Gentle Assistance:** Seniors can tap *"Give Me a Gentle Hint"* to receive context-aware visual cues without penalty, or tap *"Read Instructions"* for localized spoken rules.
+* **FR-2.6 Celebratory Completion Screen:** Displays warm celebratory feedback alongside awarded Garden Stars, session score, and reassuring garden greetings.
+* **FR-2.7 Silent Behavioral Telemetry:** Records decision hesitation latency (in milliseconds), accuracy, and completion duration silently in `GameSession`, synchronizing directly with the Doctor's Clinical Hub and Caregiver Trends.
 
 ### FR-3: Mood & Wellbeing Check-In
 * **FR-3.1 Four Visual Mood Anchors:** Seniors self-report their wellbeing using four large, joyful face buttons: ☀️ *Joyful* (5), 🌸 *Peaceful* (4), 🛋️ *Tired* (3), and 🤝 *Need Support* (2).

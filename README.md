@@ -39,11 +39,16 @@ Recollect strictly isolates interfaces into three role-tailored spaces accessibl
 * **Two-Way Cross-Role Synchronization**: Confirming a pill on the tablet logs an entry in `ReminderLog`, dismisses the caregiver overdue banner, increments adherence metrics, and appends a timestamp to the caregiver activity stream.
 * **Interactive Visual Checklist**: Caregivers can dynamically author new routine tasks, mark items as Done or Undo, and delete custom tasks while preserving baseline schedule anchors.
 
-### 5. Stress-Free Cognitive Mind Games
-* **Zero Timers & Gentle Feedback**: Calming memory and focus activities designed to exercise recall without anxiety, score counters, or negative buzzers.
-* **Swappable Card Packs**: Choose between personal Family Photo albums and Northeast India Cultural heritage cards.
-* **Multi-Category Hub**: Photo memory match, word and object association, garden flower focus, and routine sequencing.
-* **Passive Telemetry**: Evaluates decision hesitation latency and accuracy trends in the background for clinical decision-support without exposing raw numbers to the senior.
+### 5. Stress-Free Cognitive Mind Games (4 Distinct Engines in Full-Screen)
+* **Full-Screen Immersion**: Games launch into a dedicated full-screen takeover view (`100vw` × `100vh`), maximizing tablet screen space for seniors with large touch targets, high contrast, and a prominent "Pause & Rest" button.
+* **4 Distinct Game Engines**:
+  1. **Memory**: Family Photo & Northeast Cultural Heritage Match (card flip pair recall).
+  2. **Attention**: Garden Flower Focus (calming visual search and target flower spotting among garden blooms).
+  3. **Language**: Word & Everyday Object Recall (identifying familiar everyday objects and connecting questions to illustrations).
+  4. **Problem Solving**: Daily Routine Steps (arranging morning and evening routine steps in chronological order).
+* **Patient-Side Score Tracker**: Encouraging, non-punitive tracking featuring Garden Stars (⭐), session scores, and blooming stages (🌱 Sprout -> 🌻 Sunflower Champion) on Eleanor's tablet, celebrating achievements without anxiety.
+* **Passive Clinical Telemetry**: Silently streams decision hesitation latency (ms), accuracy, and completion duration in `GameSession`, synchronizing directly with the Doctor's Clinical Hub and Caregiver Trends.
+* **Universal Localization & Audio**: Full translation across 5 regional languages with context-aware "Give Me a Gentle Hint" and spoken audio instructions.
 
 ### 6. Voice Narration, Melodic Audio & Calling
 * **Speech Synthesis Backend**: Localized text-to-speech using `SpeechSynthesisUtterance` configured with senior-friendly calm pacing (`rate = 0.85`, `pitch = 1.05`) and targeted BCP-47 voices (`en-IN`, `as-IN`, `bn-IN`, `kha-IN`, `hi-IN`).
@@ -86,6 +91,7 @@ Open `http://localhost:8000` in your web browser.
 
 ## Documentation
 
+* **[Feature Lifecycle & Maintenance Instructions](docs/instructions.md)**: Mandatory developer checklist covering markup, styles, state, database, 5-language localization, and documentation requirements whenever features are added, improved, changed, or removed.
 * **[Features & Architecture Document](docs/features.md)**: Exhaustive technical and functional breakdown of all platform features across Senior Space, Caregiver Portal, Clinical Hub, Rule Engine, and Localization.
 * **[User Manual & Operational Guide](docs/user_manual.md)**: Comprehensive, step-by-step user guide for seniors, family caregivers, and health workers.
 * **[Product Requirements Document (PRD)](docs/prd.md)**: Functional and non-functional requirements conforming to the active prototype and production roadmap.

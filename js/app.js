@@ -17,7 +17,12 @@ class RecollectApp {
     this.currentCategory = 'memory';
     this.activeMessageChannel = 'doctor'; // 'doctor' | 'asha'
 
-    // Game state
+    // Patient Score Tracker
+    this.patientStars = parseInt(localStorage.getItem('recollect_patient_stars') || '12', 10);
+    this.currentGameScore = 100;
+    this.activeGameEngine = 'memory'; // 'memory' | 'attention' | 'language' | 'problem'
+
+    // Game 1: Memory state
     this.gameStartTime = null;
     this.gameMistakes = 0;
     this.gameMatches = 0;
@@ -26,6 +31,24 @@ class RecollectApp {
     this.activeCards = [];
     this.selectedCards = [];
     this.isCheckingMatch = false;
+
+    // Game 2: Attention state
+    this.attentionTarget = null;
+    this.attentionTotalTargets = 3;
+    this.attentionFoundCount = 0;
+    this.attentionTiles = [];
+
+    // Game 3: Language state
+    this.languageRoundIndex = 0;
+    this.languageTotalRounds = 3;
+    this.languageItems = [];
+    this.currentLanguageItem = null;
+
+    // Game 4: Problem Solving state
+    this.problemRoutineType = 'morning';
+    this.problemNextStep = 1;
+    this.problemSteps = [];
+    this.problemPlacedSteps = [];
 
     // Active call state
     this.activeCallInterval = null;
@@ -90,6 +113,9 @@ class RecollectApp {
 
     // 6. Restore authenticated session
     this.restoreSession();
+
+    // 7. Initialize Patient Score Display
+    this.updatePatientScoreDisplay();
   }
 
   // --- Dynamic Time, Greeting, and Date Engine ---
@@ -428,173 +454,94 @@ class RecollectApp {
     }
   }
 
+  // ==========================================================================
+  // BRAIN & COGNITIVE GAMES: 4 DISTINCT ENGINES, FULL-SCREEN & SCORE TRACKER
+  // ==========================================================================
   startCategoryGame(category) {
     this.currentCategory = category;
+    this.activeGameEngine = category;
     this.closeGamesHub();
-    this.setupMemoryGameCards();
 
-    // Update modal title
-    const gameModalTitle = document.getElementById('gameModalTitle');
-    if (gameModalTitle) {
-      const titles = {
-        memory: '🌸 Family Photo Memory Game',
-        attention: '🔍 Garden Flower Focus Game',
-        language: '🗣️ Word & Object Recall Game',
-        problem: '🧩 Daily Routine Step Game'
-      };
-      gameModalTitle.textContent = titles[category] || '🌸 Memory & Brain Game';
-    }
-
-    document.getElementById('gameModal')?.classList.add('active-modal');
-  }
-
-  setupMemoryGameCards() {
-    let cardData = [];
-
-    if (this.currentCategory === 'memory') {
-      if (this.activePhotoPack === 'family') {
-        cardData = [
-          { id: 'c1', label: 'Granddaughter Lily', subtitle: 'Lily in Sunny Dress', art: '👧' },
-          { id: 'c2', label: 'Buddy the Dog', subtitle: 'Golden Family Dog', art: '🐕' },
-          { id: 'c3', label: 'Rose Garden', subtitle: 'Yellow Terrace Bloom', art: '🌹' },
-          { id: 'c4', label: 'Sunday Lunch Tea', subtitle: 'Family Tea Cup', art: '🫖' }
-        ];
-      } else {
-        cardData = [
-          { id: 'c1', label: 'Assam Tea Garden', subtitle: 'Green Hills & Mist', art: '🍃' },
-          { id: 'c2', label: 'Bihu Dhol Drum', subtitle: 'Harvest Festival Beat', art: '🥁' },
-          { id: 'c3', label: 'Brahmaputra Sunset', subtitle: 'Golden River Glow', art: '🌅' },
-          { id: 'c4', label: 'Rhino of Kaziranga', subtitle: 'Gentle Wildlife', art: '🦏' }
-        ];
-      }
-    } else if (this.currentCategory === 'attention') {
-      cardData = [
-        { id: 'a1', label: 'Yellow Sunflower', subtitle: 'Warm Bright Petals', art: '🌻' },
-        { id: 'a2', label: 'Terrace Daisy', subtitle: 'Pure White Bloom', art: '🌼' },
-        { id: 'a3', label: 'Sweet Lavender', subtitle: 'Fragrant Purple Scent', art: '🪻' },
-        { id: 'a4', label: 'Garden Marigold', subtitle: 'Golden Autumn Flower', art: '🏵️' }
-      ];
-    } else if (this.currentCategory === 'language') {
-      cardData = [
-        { id: 'l1', label: 'Fresh Apple', subtitle: 'Sweet & Crisp Fruit', art: '🍎' },
-        { id: 'l2', label: 'Morning Bread', subtitle: 'Warm Crust Slice', art: '🍞' },
-        { id: 'l3', label: 'Teacup & Honey', subtitle: 'Warm Comfort Drink', art: '☕' },
-        { id: 'l4', label: 'Favorite Book', subtitle: 'Stories & Memories', art: '📖' }
-      ];
-    } else {
-      cardData = [
-        { id: 'p1', label: 'Step 1: Wake Up', subtitle: 'Morning Stretch', art: '🌅' },
-        { id: 'p2', label: 'Step 2: Warm Water', subtitle: 'Hydrate Gently', art: '🥤' },
-        { id: 'p3', label: 'Step 3: Fresh Breakfast', subtitle: 'Nutrition & Fruit', art: '🥣' },
-        { id: 'p4', label: 'Step 4: Garden Walk', subtitle: 'Fresh Air Stroll', art: '🚶' }
-      ];
-    }
-
-    const deck = [];
-    cardData.forEach(item => {
-      deck.push({ ...item, uid: item.id + '_a', isMatched: false, isRevealed: false });
-      deck.push({ ...item, uid: item.id + '_b', isMatched: false, isRevealed: false });
-    });
-
-    this.activeCards = deck.sort(() => 0.5 - Math.random());
-    this.selectedCards = [];
-    this.gameMatches = 0;
+    // Reset session telemetry
     this.gameMistakes = 0;
+    this.gameMatches = 0;
     this.hesitationSamples = [];
     this.gameStartTime = Date.now();
     this.lastCardClickTime = Date.now();
+    this.currentGameScore = 100;
 
-    this.renderGameGrid();
-  }
+    // Update header icons and localized titles
+    const badge = document.getElementById('gameCategoryBadge');
+    const titleEl = document.getElementById('gameModalTitle');
+    const icons = {
+      memory: '🌸',
+      attention: '🔍',
+      language: '🗣️',
+      problem: '🧩'
+    };
+    const titles = {
+      memory: window.i18n ? window.i18n.t('game_modal_title_memory') : '🌸 Family Photo Memory Game',
+      attention: window.i18n ? window.i18n.t('game_modal_title_attention') : '🔍 Garden Flower Focus Game',
+      language: window.i18n ? window.i18n.t('game_modal_title_language') : '🗣️ Word & Everyday Object Recall Game',
+      problem: window.i18n ? window.i18n.t('game_modal_title_problem') : '🧩 Daily Routine Step Game'
+    };
 
-  renderGameGrid() {
-    const grid = document.getElementById('memoryGameGrid');
-    if (!grid) return;
+    if (badge) badge.textContent = icons[category] || '🌸';
+    if (titleEl) titleEl.textContent = titles[category] || '🌸 Memory & Brain Game';
 
-    grid.innerHTML = '';
-    this.activeCards.forEach((card, index) => {
-      const cardEl = document.createElement('div');
-      cardEl.className = `game-card ${card.isRevealed || card.isMatched ? 'flipped' : ''} ${card.isMatched ? 'matched' : ''}`;
-      cardEl.onclick = () => this.handleCardClick(index);
+    this.updateInGameScoreDisplay();
+    this.updateBloomProgress(0);
 
-      if (card.isRevealed || card.isMatched) {
-        cardEl.innerHTML = `
-          <div style="font-size:3.5rem; line-height:1;">${card.art}</div>
-          <strong style="font-size:1.15rem; margin-top:0.4rem; color:var(--on-surface);">${card.label}</strong>
-          <span style="font-size:0.9rem; color:var(--on-surface-variant);">${card.subtitle}</span>
-        `;
-      } else {
-        cardEl.innerHTML = `
-          <div style="font-size:2.8rem; color:var(--primary);">🌿</div>
-          <span style="font-size:1.05rem; font-weight:700; color:var(--on-surface-variant); margin-top:0.4rem;">Touch to Peek</span>
-        `;
-      }
-      grid.appendChild(cardEl);
-    });
-  }
+    // Launch appropriate engine
+    if (category === 'memory') {
+      this.setupMemoryGame();
+    } else if (category === 'attention') {
+      this.setupAttentionGame();
+    } else if (category === 'language') {
+      this.setupLanguageGame();
+    } else if (category === 'problem') {
+      this.setupProblemSolvingGame();
+    }
 
-  handleCardClick(index) {
-    if (this.isCheckingMatch) return;
-    const card = this.activeCards[index];
-    if (card.isRevealed || card.isMatched) return;
-
-    const now = Date.now();
-    const hesitation = now - this.lastCardClickTime;
-    this.hesitationSamples.push(hesitation);
-    this.lastCardClickTime = now;
-
-    card.isRevealed = true;
-    this.selectedCards.push({ card, index });
-    this.renderGameGrid();
-
-    if (this.selectedCards.length === 2) {
-      this.checkSelectedMatch();
+    const modal = document.getElementById('gameModal');
+    if (modal) {
+      modal.classList.add('active-modal', 'active-takeover');
     }
   }
 
-  checkSelectedMatch() {
-    this.isCheckingMatch = true;
-    const [first, second] = this.selectedCards;
-    const banner = document.getElementById('gameFeedbackBanner');
+  // --------------------------------------------------------------------------
+  // PATIENT-SIDE SCORE TRACKER
+  // --------------------------------------------------------------------------
+  updatePatientScoreDisplay() {
+    const homePillText = document.getElementById('patientHomeScoreText');
+    const stage = this.getBloomStageLabel(this.patientStars);
+    const label = window.i18n ? window.i18n.t('score_tracker_stars') : 'Garden Stars';
 
-    if (first.card.id === second.card.id) {
-      // Gentle positive feedback
-      first.card.isMatched = true;
-      second.card.isMatched = true;
-      this.gameMatches++;
-      this.updateBloomProgress(this.gameMatches);
-
-      if (banner) {
-        const encouragements = [
-          '🌸 Beautiful! A happy memory found.',
-          '🌻 Wonderful gentle recall, Eleanor!',
-          '🌿 Bloomed like a sweet garden flower!'
-        ];
-        banner.textContent = encouragements[Math.floor(Math.random() * encouragements.length)];
-      }
-
-      this.selectedCards = [];
-      this.isCheckingMatch = false;
-      this.renderGameGrid();
-
-      if (this.gameMatches === 4) {
-        setTimeout(() => this.handleGameCompletion(), 800);
-      }
-    } else {
-      // Gentle, non-punitive mismatch
-      this.gameMistakes++;
-      if (banner) {
-        banner.textContent = '💚 Good peek! Cards will gently turn back over.';
-      }
-
-      setTimeout(() => {
-        first.card.isRevealed = false;
-        second.card.isRevealed = false;
-        this.selectedCards = [];
-        this.isCheckingMatch = false;
-        this.renderGameGrid();
-      }, 1200);
+    if (homePillText) {
+      homePillText.textContent = `${label}: ${this.patientStars} • ${stage}`;
     }
+  }
+
+  updateInGameScoreDisplay() {
+    const starsText = document.getElementById('inGameStarsText');
+    const scoreText = document.getElementById('inGameScoreText');
+    const stage = this.getBloomStageLabel(this.patientStars);
+    const starsLabel = window.i18n ? window.i18n.t('score_tracker_stars') : 'Garden Stars';
+
+    if (starsText) {
+      starsText.textContent = `${starsLabel}: ${this.patientStars}`;
+    }
+    if (scoreText) {
+      const scoreStr = window.i18n ? window.i18n.t('score_tracker_pts', { score: this.currentGameScore }) : `Score: ${this.currentGameScore} pts`;
+      scoreText.textContent = `${scoreStr} • ${stage}`;
+    }
+  }
+
+  getBloomStageLabel(stars) {
+    if (stars >= 20) return '🌻 Sunflower Champion';
+    if (stars >= 12) return '🌼 Blooming Daisy';
+    if (stars >= 6) return '🌿 Budding Green';
+    return '🌱 Fresh Sprout';
   }
 
   updateBloomProgress(matchesCount) {
@@ -612,33 +559,653 @@ class RecollectApp {
     }
   }
 
-  giveGameHint() {
-    const unmatched = this.activeCards.filter(c => !c.isMatched && !c.isRevealed);
-    if (unmatched.length > 0) {
-      const targetId = unmatched[0].id;
-      const pair = this.activeCards.filter(c => c.id === targetId);
-      pair.forEach(c => c.isRevealed = true);
-      this.renderGameGrid();
+  // --------------------------------------------------------------------------
+  // ENGINE 1: MEMORY GAME (Family & Cultural Photo Matching)
+  // --------------------------------------------------------------------------
+  setupMemoryGame() {
+    let cardData = [];
+
+    if (this.activePhotoPack === 'family') {
+      cardData = [
+        { id: 'c1', label: 'Granddaughter Lily', subtitle: 'Lily in Sunny Dress', art: '👧' },
+        { id: 'c2', label: 'Buddy the Dog', subtitle: 'Golden Family Dog', art: '🐕' },
+        { id: 'c3', label: 'Rose Garden', subtitle: 'Yellow Terrace Bloom', art: '🌹' },
+        { id: 'c4', label: 'Sunday Lunch Tea', subtitle: 'Family Tea Cup', art: '🫖' }
+      ];
+    } else {
+      cardData = [
+        { id: 'c1', label: 'Assam Tea Garden', subtitle: 'Green Hills & Mist', art: '🍃' },
+        { id: 'c2', label: 'Bihu Dhol Drum', subtitle: 'Harvest Festival Beat', art: '🥁' },
+        { id: 'c3', label: 'Brahmaputra Sunset', subtitle: 'Golden River Glow', art: '🌅' },
+        { id: 'c4', label: 'Rhino of Kaziranga', subtitle: 'Gentle Wildlife', art: '🦏' }
+      ];
+    }
+
+    const deck = [];
+    cardData.forEach(item => {
+      deck.push({ ...item, uid: item.id + '_a', isMatched: false, isRevealed: false });
+      deck.push({ ...item, uid: item.id + '_b', isMatched: false, isRevealed: false });
+    });
+
+    this.activeCards = deck.sort(() => 0.5 - Math.random());
+    this.selectedCards = [];
+    this.isCheckingMatch = false;
+
+    const banner = document.getElementById('gameFeedbackBanner');
+    if (banner) {
+      banner.textContent = window.i18n ? window.i18n.t('game_feedback_welcome') : '💚 Welcome to your garden memories! Touch two cards to peek.';
+    }
+
+    this.renderMemoryGrid();
+  }
+
+  renderMemoryGrid() {
+    const area = document.getElementById('memoryGameGrid');
+    if (!area) return;
+
+    area.innerHTML = '';
+    area.className = 'game-grid';
+
+    this.activeCards.forEach((card, index) => {
+      const cardEl = document.createElement('div');
+      cardEl.className = `photo-card ${card.isRevealed || card.isMatched ? 'revealed' : ''} ${card.isMatched ? 'matched' : ''}`;
+      cardEl.onclick = () => this.handleMemoryCardClick(index);
+
+      if (card.isRevealed || card.isMatched) {
+        cardEl.innerHTML = `
+          <div class="card-art">${card.art}</div>
+          <strong class="card-label">${card.label}</strong>
+          <span class="card-subtitle">${card.subtitle}</span>
+        `;
+      } else {
+        cardEl.innerHTML = `
+          <div class="card-art" style="color:var(--primary);">🌿</div>
+          <span class="card-label" style="font-size:1.1rem; color:var(--on-surface-variant);">Touch to Peek</span>
+        `;
+      }
+      area.appendChild(cardEl);
+    });
+  }
+
+  handleMemoryCardClick(index) {
+    if (this.isCheckingMatch) return;
+    const card = this.activeCards[index];
+    if (card.isRevealed || card.isMatched) return;
+
+    const now = Date.now();
+    const hesitation = now - this.lastCardClickTime;
+    this.hesitationSamples.push(hesitation);
+    this.lastCardClickTime = now;
+
+    card.isRevealed = true;
+    this.selectedCards.push({ card, index });
+    this.renderMemoryGrid();
+
+    if (this.selectedCards.length === 2) {
+      this.checkMemorySelectedMatch();
+    }
+  }
+
+  checkMemorySelectedMatch() {
+    this.isCheckingMatch = true;
+    const [first, second] = this.selectedCards;
+    const banner = document.getElementById('gameFeedbackBanner');
+
+    if (first.card.id === second.card.id) {
+      first.card.isMatched = true;
+      second.card.isMatched = true;
+      this.gameMatches++;
+      this.updateBloomProgress(this.gameMatches);
+
+      if (banner) {
+        const encouragements = [
+          '🌸 Beautiful! A happy memory found.',
+          '🌻 Wonderful gentle recall, Eleanor!',
+          '🌿 Bloomed like a sweet garden flower!'
+        ];
+        banner.textContent = encouragements[Math.floor(Math.random() * encouragements.length)];
+      }
+
+      this.selectedCards = [];
+      this.isCheckingMatch = false;
+      this.renderMemoryGrid();
+
+      if (this.gameMatches === 4) {
+        setTimeout(() => this.handleGameCompletion(), 800);
+      }
+    } else {
+      this.gameMistakes++;
+      this.currentGameScore = Math.max(70, 100 - (this.gameMistakes * 5));
+      this.updateInGameScoreDisplay();
+
+      if (banner) {
+        banner.textContent = '💚 Good peek! Cards will gently turn back over.';
+      }
 
       setTimeout(() => {
-        pair.forEach(c => {
-          if (!c.isMatched) c.isRevealed = false;
-        });
-        this.renderGameGrid();
-      }, 1400);
+        first.card.isRevealed = false;
+        second.card.isRevealed = false;
+        this.selectedCards = [];
+        this.isCheckingMatch = false;
+        this.renderMemoryGrid();
+      }, 1200);
+    }
+  }
 
-      this.showToast('Gentle hint: Here is a lovely card pair blooming!', '💡');
+  // --------------------------------------------------------------------------
+  // ENGINE 2: ATTENTION GAME (Garden Flower Focus & Observation)
+  // --------------------------------------------------------------------------
+  setupAttentionGame() {
+    const flowerCatalog = [
+      { id: 'sunflower', nameKey: 'flower_sunflower', defaultName: 'Yellow Sunflower', icon: '🌻', desc: 'Warm Bright Petals' },
+      { id: 'rose', nameKey: 'flower_rose', defaultName: 'Terrace Rose', icon: '🌹', desc: 'Velvet Red Bloom' },
+      { id: 'daisy', nameKey: 'flower_daisy', defaultName: 'Terrace Daisy', icon: '🌼', desc: 'Pure White Petals' },
+      { id: 'marigold', nameKey: 'flower_marigold', defaultName: 'Garden Marigold', icon: '🏵️', desc: 'Golden Festive Bloom' },
+      { id: 'lavender', nameKey: 'flower_lavender', defaultName: 'Sweet Lavender', icon: '🪻', desc: 'Fragrant Purple Scent' }
+    ];
+
+    // Pick target flower randomly
+    const targetIdx = Math.floor(Math.random() * flowerCatalog.length);
+    this.attentionTarget = flowerCatalog[targetIdx];
+    this.attentionTotalTargets = 3;
+    this.attentionFoundCount = 0;
+
+    // Distractor flowers
+    const otherFlowers = flowerCatalog.filter(f => f.id !== this.attentionTarget.id);
+
+    // Build 10 garden tiles: exactly 3 target flowers + 7 distractors
+    const tiles = [];
+    for (let i = 0; i < this.attentionTotalTargets; i++) {
+      tiles.push({
+        id: this.attentionTarget.id,
+        nameKey: this.attentionTarget.nameKey,
+        name: this.attentionTarget.defaultName,
+        icon: this.attentionTarget.icon,
+        isTarget: true,
+        isFound: false
+      });
+    }
+
+    while (tiles.length < 10) {
+      const distractor = otherFlowers[Math.floor(Math.random() * otherFlowers.length)];
+      tiles.push({
+        id: distractor.id,
+        nameKey: distractor.nameKey,
+        name: distractor.defaultName,
+        icon: distractor.icon,
+        isTarget: false,
+        isFound: false
+      });
+    }
+
+    this.attentionTiles = tiles.sort(() => 0.5 - Math.random());
+
+    const targetLabel = window.i18n ? window.i18n.t(this.attentionTarget.nameKey) : this.attentionTarget.defaultName;
+    const banner = document.getElementById('gameFeedbackBanner');
+    if (banner) {
+      banner.textContent = window.i18n ? 
+        window.i18n.t('attention_target_prompt', { total: this.attentionTotalTargets, target: targetLabel }) :
+        `Spot and tap all ${this.attentionTotalTargets} blooming ${targetLabel} in your garden!`;
+    }
+
+    this.renderAttentionGrid();
+  }
+
+  renderAttentionGrid() {
+    const area = document.getElementById('memoryGameGrid');
+    if (!area) return;
+
+    const targetLabel = window.i18n ? window.i18n.t(this.attentionTarget.nameKey) : this.attentionTarget.defaultName;
+    area.className = 'game-attention-canvas';
+    area.innerHTML = `
+      <div class="attention-target-banner">
+        <span style="font-size:2.2rem;">${this.attentionTarget.icon}</span>
+        <span>${window.i18n ? window.i18n.t('attention_target_prompt', { total: this.attentionTotalTargets, target: targetLabel }) : `Spot and tap all ${this.attentionTotalTargets} blooming ${targetLabel}!`}</span>
+        <span style="background:var(--surface-container-high); padding:0.2rem 0.8rem; border-radius:var(--radius-full); font-size:1.1rem;">
+          ${this.attentionFoundCount} / ${this.attentionTotalTargets}
+        </span>
+      </div>
+      <div class="flower-bed-grid" id="flowerBedContainer"></div>
+    `;
+
+    const container = document.getElementById('flowerBedContainer');
+    if (!container) return;
+
+    this.attentionTiles.forEach((tile, index) => {
+      const tileEl = document.createElement('div');
+      tileEl.className = `flower-tile ${tile.isFound ? 'bloomed-target' : ''}`;
+      tileEl.onclick = () => this.handleAttentionFlowerClick(index);
+
+      const tileLabel = window.i18n ? window.i18n.t(tile.nameKey) : tile.name;
+      tileEl.innerHTML = `
+        <div class="flower-tile-icon">${tile.icon}</div>
+        <div class="flower-tile-label">${tile.isFound ? `✓ ${tileLabel}` : tileLabel}</div>
+      `;
+      container.appendChild(tileEl);
+    });
+  }
+
+  handleAttentionFlowerClick(index) {
+    const tile = this.attentionTiles[index];
+    const banner = document.getElementById('gameFeedbackBanner');
+
+    const now = Date.now();
+    const hesitation = now - this.lastCardClickTime;
+    this.hesitationSamples.push(hesitation);
+    this.lastCardClickTime = now;
+
+    if (tile.isFound) {
+      if (banner) banner.textContent = window.i18n ? window.i18n.t('attention_already_found') : 'This lovely flower is already blooming!';
+      return;
+    }
+
+    if (tile.isTarget) {
+      tile.isFound = true;
+      this.attentionFoundCount++;
+      this.gameMatches++;
+      this.updateBloomProgress(this.attentionFoundCount);
+
+      const targetLabel = window.i18n ? window.i18n.t(this.attentionTarget.nameKey) : this.attentionTarget.defaultName;
+      if (banner) {
+        banner.textContent = window.i18n ? 
+          window.i18n.t('attention_found_praise', { target: targetLabel }) : 
+          `Wonderful focus! You found a blooming ${targetLabel}!`;
+      }
+
+      this.renderAttentionGrid();
+
+      if (this.attentionFoundCount >= this.attentionTotalTargets) {
+        if (banner) {
+          banner.textContent = window.i18n ? window.i18n.t('attention_complete_praise') : 'All target flowers are blooming in your garden!';
+        }
+        setTimeout(() => this.handleGameCompletion(), 900);
+      }
+    } else {
+      this.gameMistakes++;
+      this.currentGameScore = Math.max(70, 100 - (this.gameMistakes * 5));
+      this.updateInGameScoreDisplay();
+
+      const targetLabel = window.i18n ? window.i18n.t(this.attentionTarget.nameKey) : this.attentionTarget.defaultName;
+      if (banner) {
+        banner.textContent = window.i18n ? 
+          window.i18n.t('attention_other_flower', { target: targetLabel }) : 
+          `That is a lovely flower! Look closely for the ${targetLabel}.`;
+      }
+    }
+  }
+
+  // --------------------------------------------------------------------------
+  // ENGINE 3: LANGUAGE GAME (Word & Everyday Object Recall)
+  // --------------------------------------------------------------------------
+  setupLanguageGame() {
+    const itemsCatalog = [
+      { id: 'teapot', promptKey: 'lang_prompt_teapot', nameKey: 'lang_item_teapot', defaultPrompt: 'What do we use to enjoy our warm morning tea?', defaultName: 'Teacup & Teapot', icon: '🫖' },
+      { id: 'book', promptKey: 'lang_prompt_book', nameKey: 'lang_item_book', defaultPrompt: 'What do we open to read peaceful stories and memories?', defaultName: 'Story Book', icon: '📖' },
+      { id: 'glasses', promptKey: 'lang_prompt_glasses', nameKey: 'lang_item_glasses', defaultPrompt: 'What do we wear on our eyes to see and read clearly?', defaultName: 'Reading Glasses', icon: '👓' },
+      { id: 'apple', promptKey: 'lang_prompt_apple', nameKey: 'lang_item_apple', defaultPrompt: 'Which sweet fruit is crisp, red, and healthy to eat?', defaultName: 'Fresh Apple', icon: '🍎' },
+      { id: 'scarf', promptKey: 'lang_prompt_scarf', nameKey: 'lang_item_scarf', defaultPrompt: 'What soft woolen item keeps our neck warm in cool weather?', defaultName: 'Woolen Scarf', icon: '🧣' },
+      { id: 'water', promptKey: 'lang_prompt_water', nameKey: 'lang_item_water', defaultPrompt: 'What clear and cool drink keeps us refreshed throughout the day?', defaultName: 'Cool Water', icon: '🥤' }
+    ];
+
+    this.languageItemsCatalog = itemsCatalog;
+    this.languageRounds = itemsCatalog.sort(() => 0.5 - Math.random()).slice(0, 3);
+    this.languageTotalRounds = 3;
+    this.languageRoundIndex = 0;
+
+    const banner = document.getElementById('gameFeedbackBanner');
+    if (banner) {
+      banner.textContent = '🗣️ Touch the everyday item that matches the question!';
+    }
+
+    this.loadCurrentLanguageRound();
+  }
+
+  loadCurrentLanguageRound() {
+    this.currentLanguageItem = this.languageRounds[this.languageRoundIndex];
+    const otherItems = this.languageItemsCatalog.filter(i => i.id !== this.currentLanguageItem.id);
+    const distractors = otherItems.sort(() => 0.5 - Math.random()).slice(0, 3);
+    this.languageOptions = [this.currentLanguageItem, ...distractors].sort(() => 0.5 - Math.random());
+
+    this.renderLanguageBoard();
+  }
+
+  renderLanguageBoard() {
+    const area = document.getElementById('memoryGameGrid');
+    if (!area) return;
+
+    area.className = 'game-language-canvas';
+    const promptText = window.i18n ? window.i18n.t(this.currentLanguageItem.promptKey) : this.currentLanguageItem.defaultPrompt;
+
+    area.innerHTML = `
+      <div class="language-board">
+        <div class="language-prompt-card">
+          <div style="font-size:1.1rem; font-weight:800; color:var(--primary); background:var(--surface-container-high); padding:0.25rem 1rem; border-radius:var(--radius-full); margin-bottom:0.5rem;">
+            Round ${this.languageRoundIndex + 1} of ${this.languageTotalRounds}
+          </div>
+          <h3 class="language-prompt-question">${promptText}</h3>
+        </div>
+        <div class="language-options-grid" id="languageOptionsGrid"></div>
+      </div>
+    `;
+
+    const grid = document.getElementById('languageOptionsGrid');
+    if (!grid) return;
+
+    this.languageOptions.forEach(opt => {
+      const optEl = document.createElement('div');
+      optEl.className = 'language-option-card';
+      optEl.id = `langOpt_${opt.id}`;
+      optEl.onclick = () => this.handleLanguageChoiceClick(opt.id);
+
+      const label = window.i18n ? window.i18n.t(opt.nameKey) : opt.defaultName;
+      optEl.innerHTML = `
+        <div class="option-icon">${opt.icon}</div>
+        <strong class="option-label">${label}</strong>
+      `;
+      grid.appendChild(optEl);
+    });
+  }
+
+  handleLanguageChoiceClick(choiceId) {
+    const banner = document.getElementById('gameFeedbackBanner');
+    const now = Date.now();
+    const hesitation = now - this.lastCardClickTime;
+    this.hesitationSamples.push(hesitation);
+    this.lastCardClickTime = now;
+
+    const optEl = document.getElementById(`langOpt_${choiceId}`);
+
+    if (choiceId === this.currentLanguageItem.id) {
+      if (optEl) optEl.classList.add('correct');
+      this.gameMatches++;
+      this.updateBloomProgress(this.languageRoundIndex + 1);
+
+      const itemLabel = window.i18n ? window.i18n.t(this.currentLanguageItem.nameKey) : this.currentLanguageItem.defaultName;
+      if (banner) {
+        banner.textContent = window.i18n ? 
+          window.i18n.t('lang_correct_praise', { item: itemLabel }) : 
+          `Wonderful recall, Eleanor! That is the ${itemLabel}.`;
+      }
+
+      setTimeout(() => {
+        this.languageRoundIndex++;
+        if (this.languageRoundIndex < this.languageTotalRounds) {
+          this.loadCurrentLanguageRound();
+        } else {
+          if (banner) {
+            banner.textContent = '🎉 Outstanding word and memory recall, Eleanor!';
+          }
+          this.handleGameCompletion();
+        }
+      }, 1100);
+    } else {
+      this.gameMistakes++;
+      this.currentGameScore = Math.max(70, 100 - (this.gameMistakes * 5));
+      this.updateInGameScoreDisplay();
+
+      if (banner) {
+        banner.textContent = window.i18n ? 
+          window.i18n.t('lang_encourage_try') : 
+          'Good peek! Think about which item we use. Try tapping again!';
+      }
+    }
+  }
+
+  // --------------------------------------------------------------------------
+  // ENGINE 4: PROBLEM SOLVING GAME (Daily Routine Steps Sequencing)
+  // --------------------------------------------------------------------------
+  setupProblemSolvingGame() {
+    const isMorning = new Date().getHours() < 16;
+    this.problemRoutineType = isMorning ? 'morning' : 'evening';
+
+    if (this.problemRoutineType === 'morning') {
+      this.problemSteps = [
+        { step: 1, key: 'routine_step_morning_1', text: 'Wake up & stretch gently', icon: '🌅' },
+        { step: 2, key: 'routine_step_morning_2', text: 'Drink a full glass of cool water', icon: '🥤' },
+        { step: 3, key: 'routine_step_morning_3', text: 'Take morning medicine with water', icon: '💊' },
+        { step: 4, key: 'routine_step_morning_4', text: 'Enjoy warm fresh breakfast', icon: '🥣' }
+      ];
+    } else {
+      this.problemSteps = [
+        { step: 1, key: 'routine_step_evening_1', text: 'Enjoy warm light dinner', icon: '🍲' },
+        { step: 2, key: 'routine_step_evening_2', text: 'Take a peaceful garden stroll', icon: '🚶' },
+        { step: 3, key: 'routine_step_evening_3', text: 'Brush teeth and wash face', icon: '🪥' },
+        { step: 4, key: 'routine_step_evening_4', text: 'Settle into cozy restful bed', icon: '🛏️' }
+      ];
+    }
+
+    this.problemNextStep = 1;
+    this.problemShuffledChoices = [...this.problemSteps].sort(() => 0.5 - Math.random());
+
+    const banner = document.getElementById('gameFeedbackBanner');
+    const routineTitle = window.i18n ? 
+      window.i18n.t(this.problemRoutineType === 'morning' ? 'routine_morning_title' : 'routine_evening_title') : 
+      (this.problemRoutineType === 'morning' ? 'Morning Sunshine Routine' : 'Peaceful Evening Routine');
+
+    if (banner) {
+      banner.textContent = window.i18n ? 
+        window.i18n.t('routine_prompt_next', { step: 1, routine: routineTitle }) : 
+        `Step 1: What is the first thing Eleanor does in the ${routineTitle}?`;
+    }
+
+    this.renderProblemSolvingBoard();
+  }
+
+  renderProblemSolvingBoard() {
+    const area = document.getElementById('memoryGameGrid');
+    if (!area) return;
+
+    area.className = 'game-routine-canvas';
+    const routineTitle = window.i18n ? 
+      window.i18n.t(this.problemRoutineType === 'morning' ? 'routine_morning_title' : 'routine_evening_title') : 
+      (this.problemRoutineType === 'morning' ? 'Morning Sunshine Routine' : 'Peaceful Evening Routine');
+
+    area.innerHTML = `
+      <div class="routine-board">
+        <div style="text-align:center; font-size:1.35rem; font-weight:800; color:var(--primary); margin-bottom:0.25rem;">
+          🗓️ ${routineTitle}
+        </div>
+        
+        <!-- 4 Sequential Routine Slots -->
+        <div class="routine-slots-container" id="routineSlotsContainer"></div>
+
+        <div style="font-size:1.15rem; font-weight:700; color:var(--on-surface-variant); text-align:center; margin-top:0.5rem;">
+          Tap the steps below in order (1 -> 2 -> 3 -> 4):
+        </div>
+
+        <!-- 4 Shuffled Step Choices -->
+        <div class="routine-choices-container" id="routineChoicesContainer"></div>
+      </div>
+    `;
+
+    const slotsContainer = document.getElementById('routineSlotsContainer');
+    const choicesContainer = document.getElementById('routineChoicesContainer');
+
+    // Render Slots
+    this.problemSteps.forEach(s => {
+      const isFilled = s.step < this.problemNextStep;
+      const slotEl = document.createElement('div');
+      slotEl.className = `routine-slot ${isFilled ? 'filled' : ''}`;
+
+      const stepText = window.i18n ? window.i18n.t(s.key) : s.text;
+      if (isFilled) {
+        slotEl.innerHTML = `
+          <span class="routine-slot-num">✓ Step ${s.step}</span>
+          <div style="font-size:2.5rem; line-height:1;">${s.icon}</div>
+          <strong class="routine-slot-txt">${stepText}</strong>
+        `;
+      } else {
+        slotEl.innerHTML = `
+          <span class="routine-slot-num">Step ${s.step}</span>
+          <div style="font-size:2.2rem; opacity:0.4;">⏳</div>
+          <span style="font-size:1rem; color:var(--on-surface-variant);">Touch below to place</span>
+        `;
+      }
+      slotsContainer.appendChild(slotEl);
+    });
+
+    // Render Choices
+    this.problemShuffledChoices.forEach(choice => {
+      const isLocked = choice.step < this.problemNextStep;
+      const choiceEl = document.createElement('div');
+      choiceEl.className = `routine-choice-card ${isLocked ? 'locked' : ''}`;
+      choiceEl.id = `routineChoice_${choice.step}`;
+      choiceEl.onclick = () => this.handleRoutineStepClick(choice.step);
+
+      const stepText = window.i18n ? window.i18n.t(choice.key) : choice.text;
+      choiceEl.innerHTML = `
+        <div class="choice-icon">${choice.icon}</div>
+        <strong class="choice-label">${stepText}</strong>
+      `;
+      choicesContainer.appendChild(choiceEl);
+    });
+  }
+
+  handleRoutineStepClick(stepNumber) {
+    const banner = document.getElementById('gameFeedbackBanner');
+    const now = Date.now();
+    const hesitation = now - this.lastCardClickTime;
+    this.hesitationSamples.push(hesitation);
+    this.lastCardClickTime = now;
+
+    if (stepNumber === this.problemNextStep) {
+      this.problemNextStep++;
+      this.gameMatches++;
+      this.updateBloomProgress(this.gameMatches);
+
+      if (banner) {
+        banner.textContent = window.i18n ? 
+          window.i18n.t('routine_correct_step', { step: stepNumber }) : 
+          `Wonderful! Step ${stepNumber} is nicely in place.`;
+      }
+
+      this.renderProblemSolvingBoard();
+
+      if (this.problemNextStep > 4) {
+        if (banner) {
+          banner.textContent = window.i18n ? 
+            window.i18n.t('routine_complete_praise') : 
+            'Your entire routine is in wonderful harmony!';
+        }
+        setTimeout(() => this.handleGameCompletion(), 900);
+      }
+    } else {
+      this.gameMistakes++;
+      this.currentGameScore = Math.max(70, 100 - (this.gameMistakes * 5));
+      this.updateInGameScoreDisplay();
+
+      if (banner) {
+        banner.textContent = window.i18n ? 
+          window.i18n.t('routine_order_guidance') : 
+          'We usually do that at another time! Let\'s find what comes next.';
+      }
+    }
+  }
+
+  // --------------------------------------------------------------------------
+  // GAME CONTROLS, HINTS, AUDIO & COMPLETION
+  // --------------------------------------------------------------------------
+  giveGameHint() {
+    if (this.activeGameEngine === 'memory') {
+      const unmatched = this.activeCards.filter(c => !c.isMatched && !c.isRevealed);
+      if (unmatched.length > 0) {
+        const targetId = unmatched[0].id;
+        const pair = this.activeCards.filter(c => c.id === targetId);
+        pair.forEach(c => c.isRevealed = true);
+        this.renderMemoryGrid();
+
+        setTimeout(() => {
+          pair.forEach(c => {
+            if (!c.isMatched) c.isRevealed = false;
+          });
+          this.renderMemoryGrid();
+        }, 1400);
+
+        this.showToast('Gentle hint: Here is a lovely card pair blooming!', '💡');
+      }
+    } else if (this.activeGameEngine === 'attention') {
+      const unfoundTarget = this.attentionTiles.find(t => t.isTarget && !t.isFound);
+      if (unfoundTarget) {
+        const targetLabel = window.i18n ? window.i18n.t(unfoundTarget.nameKey) : unfoundTarget.name;
+        this.showToast(`Gentle hint: Look closely for a ${targetLabel} ${unfoundTarget.icon}`, '💡');
+        const targetEls = document.querySelectorAll('.flower-tile');
+        targetEls.forEach(el => {
+          if (el.textContent.includes(targetLabel) && !el.classList.contains('bloomed-target')) {
+            el.classList.add('hint-pulse');
+            setTimeout(() => el.classList.remove('hint-pulse'), 1800);
+          }
+        });
+      }
+    } else if (this.activeGameEngine === 'language') {
+      const correctEl = document.getElementById(`langOpt_${this.currentLanguageItem.id}`);
+      if (correctEl) {
+        correctEl.classList.add('hint-highlight');
+        setTimeout(() => correctEl.classList.remove('hint-highlight'), 1800);
+        this.showToast('Gentle hint: Notice the glowing choice card!', '💡');
+      }
+    } else if (this.activeGameEngine === 'problem') {
+      const nextChoiceEl = document.getElementById(`routineChoice_${this.problemNextStep}`);
+      if (nextChoiceEl) {
+        nextChoiceEl.classList.add('hint-highlight');
+        setTimeout(() => nextChoiceEl.classList.remove('hint-highlight'), 1800);
+        this.showToast(`Gentle hint: Look for Step ${this.problemNextStep}`, '💡');
+      }
+    }
+  }
+
+  playGameAudioInstruction() {
+    let key = 'tts_instruction_memory';
+    if (this.activeGameEngine === 'attention') key = 'tts_instruction_attention';
+    else if (this.activeGameEngine === 'language') key = 'tts_instruction_language';
+    else if (this.activeGameEngine === 'problem') key = 'tts_instruction_problem';
+
+    const text = window.i18n ? window.i18n.t(key) : 'Take all your time and enjoy your gentle game.';
+    if (window.i18n) {
+      window.i18n.speakText(text);
     }
   }
 
   handleGameCompletion() {
     const duration = Math.round((Date.now() - this.gameStartTime) / 1000);
     const avgHesitation = Math.round(this.hesitationSamples.reduce((a, b) => a + b, 0) / (this.hesitationSamples.length || 1));
-    const score = Math.max(70, 100 - (this.gameMistakes * 5));
+    const score = Math.max(75, 100 - (this.gameMistakes * 5));
 
+    // Award Garden Stars
+    let starsAwarded = 3;
+    if (this.gameMistakes === 0) starsAwarded = 5;
+    else if (this.gameMistakes <= 2) starsAwarded = 4;
+
+    this.patientStars += starsAwarded;
+    localStorage.setItem('recollect_patient_stars', this.patientStars.toString());
+
+    // Update patient score displays
+    this.updatePatientScoreDisplay();
+
+    // Configure completion modal
+    const starsEl = document.getElementById('completionStarsAwarded');
+    const summaryEl = document.getElementById('completionScoreSummary');
+    const msgEl = document.getElementById('completeMsg');
+
+    if (starsEl) {
+      starsEl.textContent = window.i18n ? 
+        window.i18n.t('score_awarded_stars', { stars: starsAwarded }) : 
+        `⭐ +${starsAwarded} Garden Stars Bloomed!`;
+    }
+    if (summaryEl) {
+      summaryEl.textContent = window.i18n ? 
+        window.i18n.t('score_summary_text', { stars: this.patientStars, score }) : 
+        `Total Stars: ${this.patientStars} • Session Score: ${score}/100`;
+    }
+    if (msgEl) {
+      msgEl.textContent = window.i18n ? 
+        window.i18n.t('game_completion_msg') : 
+        'Your garden memories bloomed beautifully. Have a peaceful rest of your day.';
+    }
+
+    // Telemetry dispatch to DB
     window.recollectDB.insertGameSession({
       patient_id: this.patientId,
-      game_type: `${this.currentCategory}_match`,
+      game_type: `${this.activeGameEngine}_session`,
       score,
       duration_seconds: duration,
       mistake_count: this.gameMistakes,
@@ -653,7 +1220,7 @@ class RecollectApp {
       author: 'Eleanor Vance (Bedside Tablet)',
       role: 'Senior Patient Space',
       action: 'Game Completed',
-      content: `Eleanor completed ${this.currentCategory.toUpperCase()} game. Engagement score: ${score}/100 with ${this.gameMistakes} mistake(s).`,
+      content: `Eleanor completed ${this.activeGameEngine.toUpperCase()} game. Score: ${score}/100 with ${this.gameMistakes} mistake(s). +${starsAwarded} Garden Stars earned!`,
       timestamp: new Date().toISOString()
     });
 
@@ -669,7 +1236,10 @@ class RecollectApp {
   }
 
   closeMemoryGameModal() {
-    document.getElementById('gameModal')?.classList.remove('active-modal');
+    const modal = document.getElementById('gameModal');
+    if (modal) {
+      modal.classList.remove('active-modal', 'active-takeover');
+    }
   }
 
   closeGameCompletionModal() {

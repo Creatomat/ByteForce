@@ -136,20 +136,32 @@ For critical routines, a full-screen card appears over the screen:
   2. **"⏰ Remind me in 10 minutes"**: Snoozes the reminder gently.
   3. **"🤝 Need help from Sarah"**: Sends a notification to Sarah asking her to come assist.
 
-### 3.5 Playing Stress-Free Cognitive Mind Games
-Tap **"🌿 Play a Game"** to open the Mind Games Hub:
-* **No Timers, Ever:** Take as long as you like. There are no ticking clocks or countdowns.
-* **Card Theme Packs:** Tap **"Family Photos"** to play with pictures of family, garden flowers, and seaside trips, or **"Northeast Cultural Pack"** to explore cultural heritage art.
-* **Four Game Categories:**
-  1. **Memory:** Match matching pairs of friendly photos.
-  2. **Attention:** Garden Flower Focus & Observation.
-  3. **Language:** Word and familiar object recall.
-  4. **Problem Solving:** Daily routine sequencing.
-* **In-Game Assistance:**
-  * Tap **"💡 Give Me a Gentle Hint"** to peek at a pair without penalty.
-  * Tap **"🔊 Read Instructions"** to hear spoken rules.
-  * Tap **"⏸️ Pause & Rest Anytime"** whenever you wish to stop.
-* **Celebration:** When you finish, a cheerful garden blooming card appears (*"Great job today, Eleanor! Your garden memories bloomed beautifully."*).
+### 3.5 Playing Stress-Free Cognitive Mind Games (Full-Screen Experience)
+Tap **"🌸 Play a Game"** to open the Mind Games Hub, then choose any of the 4 cognitive activities. Games launch immediately into **Full-Screen Immersion** (`100vw` × `100vh`), providing large touch targets and zero distractions:
+
+* **Zero Timers, Ever:** Take all the time you need. There are no countdown clocks, pressure, or penalties.
+* **Patient-Side Garden Score Tracker:**
+  * View your daily **Garden Stars (⭐)** in Eleanor's top orientation bar and inside the in-game header bar.
+  * Your garden advances from **Sprout (🌱)** to **Budding Green (🌿)**, **Blooming Daisy (🌼)**, and **Sunflower Champion (🌻)** as you complete gentle games.
+* **Playing the 4 Distinct Games:**
+  1. **🌸 Memory Game (Photo Match):**
+     * Switch between **Family Photos** (Lily, Buddy, Garden Rose, Tea) and **Northeast Cultural Pack** (Assam Tea, Bihu Drum, Brahmaputra Sunset, Rhino).
+     * Touch two cards to peek. Find all matching pairs.
+  2. **🔍 Attention Game (Garden Flower Focus):**
+     * Look at the target flower spotlight at the top (e.g., *"Spot and tap all 3 blooming Sunflowers 🌻"*).
+     * Spot and tap the matching flowers in your garden bed. Target flowers light up with blooming gold halos!
+  3. **🗣️ Language Game (Word & Object Recall):**
+     * Read or listen to the question (e.g., *"What do we use to drink our warm morning tea?"*).
+     * Tap the matching everyday object card (e.g., 🫖 Teacup & Teapot) across 3 gentle rounds.
+  4. **🧩 Problem Solving Game (Daily Routine Steps):**
+     * Look at the 4 routine slots at the top (Steps 1 to 4).
+     * Tap the shuffled routine cards below in the order you do them (e.g., 🌅 Wake up -> 🥤 Drink water -> 💊 Take medicine -> 🥣 Breakfast).
+* **In-Game Assistance & Controls:**
+  * **"💡 Give Me a Gentle Hint":** Provides a gentle hint tailored to the active game without penalty.
+  * **"🔊 Read Instructions":** Reads spoken rules aloud in your chosen regional language.
+  * **"✕ Pause & Rest":** Touch anytime in the top corner or bottom bar to pause and return safely to your home screen.
+* **Warm Celebration Screen:**
+  * Celebrates your achievement with awarded Garden Stars (e.g., `⭐ +5 Garden Stars Bloomed!`) and session points, followed by a warm greeting before returning to your garden home.
 
 ### 3.6 Checking In Your Daily Mood
 Tap **"😊 How I am Feeling Today"**:

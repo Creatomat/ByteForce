@@ -38,9 +38,11 @@ Recollect operates directly alongside seniors experiencing Phase-1 cognitive imp
     > *"Supportive engagement tool, not a clinical treatment or diagnostic device."*
   * **Clinical & ASHA Hub:** Must display:  
     > *"Mandatory Clinical Advisory: This platform is an assistive cognitive engagement and routine monitoring decision-support tool. It does not independently diagnose dementia, stage disease severity, or provide clinical treatments."*
-* **[HARD] Positive-Reinforcement Only in Cognitive Feedback:**
+* **[HARD] Positive-Reinforcement Only in Cognitive Feedback & Score Tracking:**
+  * Mind games must run in an edge-to-edge full-screen environment (`100vw` × `100vh`) with dedicated "Pause & Rest" exit buttons.
   * Mind games must never display negative feedback, red "WRONG" alerts, failure buzzers, or countdown clocks.
-  * Replaced by gentle floral progress indicators (🌱 -> 🌻) and warm completion messages (*"Great job today, Eleanor! Your garden memories bloomed beautifully."*).
+  * The patient-facing score tracker must present strictly encouraging metrics: cumulative **Garden Stars (⭐)**, positive session points (75–100 pts), and blooming stages (🌱 -> 🌻). Raw error stats and latency numbers must never be exposed directly to the senior.
+  * Silent clinical telemetry (`hesitation_avg_ms`, error counts, duration) is strictly isolated to backend stores (`GameSession`, `CaregiverActivityLog`, `RuleEngine`) for caregiver and clinician visibility only.
 
 ---
 

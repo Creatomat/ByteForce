@@ -168,6 +168,9 @@
           <div class="orientation-meta">
             <span id="patientWeatherPill" data-i18n="weather_morning">Morning Sunshine • 72° Mild</span>
             <span data-i18n="patient_tablet_label">🌿 Eleanor's Tablet</span>
+            <span class="patient-score-pill" id="patientHomeScorePill" title="Your Garden Bloom Stars">
+              <span>⭐</span> <strong id="patientHomeScoreText">Garden Stars: 12</strong>
+            </span>
           </div>
           <h1 class="orientation-greeting" data-i18n="greeting_morning">Good Morning, Eleanor!</h1>
           <p class="orientation-date" data-i18n="date_display">Thursday, October 24</p>
@@ -1054,22 +1057,37 @@
   </div>
 
   <!-- ==========================================================================
-       MODAL 3: IN-GAME SESSION (No Timers, Gentle Positive Feedback)
+       MODAL 3: IN-GAME SESSION (Full-Screen Immersion, No Timers, Gentle Positive Feedback)
        ========================================================================== -->
-  <div class="modal-overlay" id="gameModal" role="dialog" aria-modal="true" aria-labelledby="gameModalTitle">
-    <div class="modal-window" style="max-width:720px;">
-      <div class="modal-header">
-        <h3 id="gameModalTitle" data-i18n="game_modal_title">🌸 Family Photo Memory Game</h3>
-        <button class="modal-close-btn" onclick="app.closeMemoryGameModal()" aria-label="Close Game">✕</button>
-      </div>
+  <div class="modal-overlay game-fullscreen-takeover" id="gameModal" role="dialog" aria-modal="true" aria-labelledby="gameModalTitle">
+    <div class="game-fullscreen-container">
+      <div class="game-fullscreen-header">
+        <div class="game-header-titles">
+          <span class="game-category-icon-badge" id="gameCategoryBadge">🌸</span>
+          <div class="game-title-group">
+            <h2 id="gameModalTitle" data-i18n="game_modal_title">🌸 Family Photo Memory Game</h2>
+            <span class="game-peace-tag">
+              <span>🌿</span> <span data-i18n="game_peace_tag">No Timers, Ever • Take all your time, Eleanor</span>
+            </span>
+          </div>
+        </div>
 
-      <div class="game-header-bar">
-        <span class="game-peace-tag">
-          <span>🌿</span> <span data-i18n="game_peace_tag">No Timers, Ever • Take all your time, Eleanor</span>
-        </span>
-        <button class="cg-btn" style="height:40px; font-size:0.9rem;" onclick="app.playGameAudioInstruction()">
-          <span>🔊</span> <span data-i18n="btn_read_instructions">Read Instructions</span>
-        </button>
+        <!-- In-game Patient Score Tracker & Actions -->
+        <div class="game-header-actions">
+          <div class="patient-game-score-badge" id="gameScoreTrackerBadge">
+            <span class="score-star">⭐</span>
+            <div class="score-text-group">
+              <strong id="inGameStarsText">Garden Stars: 12</strong>
+              <span id="inGameScoreText">Score: 100 pts • 🌻 Blooming</span>
+            </div>
+          </div>
+          <button class="cg-btn game-tts-btn" onclick="app.playGameAudioInstruction()">
+            <span>🔊</span> <span data-i18n="btn_read_instructions">Read Instructions</span>
+          </button>
+          <button class="game-exit-btn" onclick="app.closeMemoryGameModal()" aria-label="Pause and Return to Home">
+            <span>✕</span> <span data-i18n="btn_pause_return">Pause & Rest</span>
+          </button>
+        </div>
       </div>
 
       <!-- Encouraging Feedback Banner (Zero red/harsh buzzer per design.md Section 2.2) -->
@@ -1077,9 +1095,11 @@
         💚 Welcome to your garden memories! Touch two cards to peek.
       </div>
 
-      <!-- 4-Card Matching Grid -->
-      <div class="game-grid" id="memoryGameGrid">
-        <!-- Rendered dynamically in app.js -->
+      <!-- Dynamic Game Play Area (Memory, Attention, Language, Problem Solving) -->
+      <div class="game-dynamic-area" id="gameDynamicArea">
+        <div class="game-grid" id="memoryGameGrid">
+          <!-- Rendered dynamically by active game engine in app.js -->
+        </div>
       </div>
 
       <!-- Game Controls & Garden Blooming Progress -->
@@ -1108,20 +1128,24 @@
   </div>
 
   <!-- ==========================================================================
-       MODAL 4: WARM SCORE-FREE GAME COMPLETION (design.md Section 3.3)
-       Never exposes raw numeric scores to the patient
+       MODAL 4: WARM SCORE-AWARE GAME COMPLETION
+       Celebratory Garden Stars, Score Summary & Reassurance
        ========================================================================== -->
   <div class="modal-overlay" id="gameCompleteModal" role="dialog" aria-modal="true" aria-labelledby="completeTitle">
-    <div class="modal-window" style="max-width:540px; text-align:center;">
+    <div class="modal-window" style="max-width:560px; text-align:center;">
       <div style="font-size:4rem; margin-bottom:0.5rem;">🌻</div>
       <h3 id="completeTitle" style="font-size:2rem; color:var(--primary); font-family:var(--font-heading);" data-i18n="game_completion_title">
         Great job today, Eleanor!
       </h3>
-      <p style="font-size:1.35rem; color:var(--on-surface-variant); margin:1rem 0;" data-i18n="game_completion_msg">
-        Your garden memories bloomed beautifully. Have a peaceful rest of your morning.
+      <div class="completion-score-card">
+        <div class="completion-stars-badge" id="completionStarsAwarded">⭐ +5 Garden Stars Bloomed!</div>
+        <div class="completion-score-sub" id="completionScoreSummary">Total Stars: 17 • Game Score: 95/100</div>
+      </div>
+      <p style="font-size:1.35rem; color:var(--on-surface-variant); margin:1rem 0;" id="completeMsg" data-i18n="game_completion_msg">
+        Your garden memories bloomed beautifully. Have a peaceful rest of your day.
       </p>
-      <button class="attention-action-btn btn-done" onclick="app.closeGameCompletionModal()">
-        <span>🌸</span> <span data-i18n="btn_return_home">Return to Home Screen</span>
+      <button class="take-med-big-btn" onclick="app.closeGameCompletionModal()">
+        <span>🌸</span> <span data-i18n="btn_return_garden">Return to Garden Home</span>
       </button>
     </div>
   </div>

@@ -1230,6 +1230,499 @@ body {
 }
 
 /* ==========================================================================
+   PATIENT-SIDE SCORE TRACKER & FULL-SCREEN GAME TAKEOVER
+   ========================================================================== */
+.patient-score-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: rgba(234, 179, 8, 0.16);
+  border: 1.5px solid #ca8a04;
+  border-radius: var(--radius-full);
+  padding: 0.25rem 0.85rem;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #854d0e;
+  transition: var(--transition-smooth);
+}
+
+.game-fullscreen-takeover {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 2100 !important;
+  background: var(--surface) !important;
+  backdrop-filter: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  display: none;
+  overflow: hidden !important;
+  border-radius: 0 !important;
+}
+
+.game-fullscreen-takeover.active-modal,
+.game-fullscreen-takeover.active-takeover {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.game-fullscreen-container {
+  width: 100%;
+  height: 100%;
+  max-width: 1150px;
+  margin: 0 auto;
+  padding: 1.5rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  overflow-y: auto;
+  box-sizing: border-box;
+  justify-content: space-between;
+}
+
+.game-fullscreen-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1.5px solid var(--outline-variant);
+}
+
+.game-header-titles {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.game-category-icon-badge {
+  font-size: 2.8rem;
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface-container-high);
+  border: 2px solid var(--outline-variant);
+  border-radius: var(--radius-full);
+}
+
+.game-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.game-title-group h2 {
+  font-family: var(--font-heading);
+  font-size: 1.85rem;
+  margin: 0;
+  color: var(--on-surface);
+}
+
+.game-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.patient-game-score-badge {
+  background: #fefce8;
+  border: 2px solid #eab308;
+  border-radius: var(--radius-full);
+  padding: 0.4rem 1.15rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.patient-game-score-badge .score-star {
+  font-size: 1.8rem;
+  line-height: 1;
+}
+
+.patient-game-score-badge .score-text-group {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.patient-game-score-badge .score-text-group strong {
+  font-size: 1.05rem;
+  color: #854d0e;
+  font-weight: 800;
+}
+
+.patient-game-score-badge .score-text-group span {
+  font-size: 0.85rem;
+  color: #a16207;
+  font-weight: 700;
+}
+
+.game-exit-btn {
+  height: 48px;
+  background: var(--surface-container-high);
+  border: 2px solid var(--outline-variant);
+  border-radius: var(--radius-full);
+  padding: 0 1.25rem;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--on-surface);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: var(--transition-smooth);
+}
+
+.game-exit-btn:hover {
+  background: #fee2e2;
+  border-color: #ef4444;
+  color: #991b1b;
+}
+
+.game-dynamic-area {
+  flex: 1;
+  min-height: 380px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+}
+
+/* --------------------------------------------------------------------------
+   ENGINE 2: ATTENTION GAME (Garden Flower Focus)
+   -------------------------------------------------------------------------- */
+.attention-target-banner {
+  background: #fef9c3;
+  border: 2.5px solid #eab308;
+  border-radius: var(--radius-lg);
+  padding: 1rem 1.5rem;
+  text-align: center;
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #713f12;
+  margin-bottom: 1.25rem;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.flower-bed-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
+  gap: 1.15rem;
+  width: 100%;
+  max-width: 950px;
+  margin: 0 auto;
+}
+
+.flower-tile {
+  background: var(--surface-container-low);
+  border: 2.5px solid var(--outline-variant);
+  border-radius: var(--radius-xl);
+  padding: 1.25rem 0.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  min-height: 140px;
+  user-select: none;
+}
+
+.flower-tile:hover {
+  transform: translateY(-4px) scale(1.03);
+  border-color: var(--primary);
+  box-shadow: var(--shadow-level-1);
+}
+
+.flower-tile.bloomed-target {
+  background: #f0fdf4 !important;
+  border-color: #22c55e !important;
+  box-shadow: 0 0 16px rgba(34, 197, 94, 0.4) !important;
+  pointer-events: none;
+  animation: bloomPop 0.4s ease forwards;
+}
+
+.flower-tile.hint-pulse {
+  animation: gentlePulse 0.9s ease-in-out infinite alternate;
+  border-color: #eab308 !important;
+}
+
+@keyframes bloomPop {
+  0% { transform: scale(0.9); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1.0); }
+}
+
+@keyframes gentlePulse {
+  0% { transform: scale(1); box-shadow: 0 0 0 rgba(234, 179, 8, 0); }
+  100% { transform: scale(1.06); box-shadow: 0 0 14px rgba(234, 179, 8, 0.6); }
+}
+
+.flower-tile-icon {
+  font-size: 3.6rem;
+  line-height: 1;
+}
+
+.flower-tile-label {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--on-surface);
+  text-align: center;
+}
+
+/* --------------------------------------------------------------------------
+   ENGINE 3: LANGUAGE GAME (Word & Everyday Object Recall)
+   -------------------------------------------------------------------------- */
+.language-board {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.language-prompt-card {
+  background: var(--surface-container-lowest);
+  border: 3px solid var(--primary);
+  border-radius: var(--radius-xl);
+  padding: 1.75rem 2rem;
+  width: 100%;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.language-prompt-icon {
+  font-size: 4.5rem;
+  line-height: 1;
+  margin-bottom: 0.25rem;
+}
+
+.language-prompt-question {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--primary);
+  margin: 0;
+  line-height: 1.3;
+}
+
+.language-prompt-clue {
+  font-size: 1.15rem;
+  color: var(--on-surface-variant);
+  font-weight: 600;
+}
+
+.language-options-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.25rem;
+  width: 100%;
+}
+
+.language-option-card {
+  background: var(--surface-container-low);
+  border: 2.5px solid var(--outline-variant);
+  border-radius: var(--radius-xl);
+  padding: 1.25rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 140px;
+  text-align: center;
+  user-select: none;
+}
+
+.language-option-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--primary);
+  box-shadow: var(--shadow-level-1);
+}
+
+.language-option-card.correct {
+  background: #f0fdf4 !important;
+  border-color: #16a34a !important;
+  box-shadow: 0 0 16px rgba(22, 163, 74, 0.4) !important;
+  pointer-events: none;
+  animation: bloomPop 0.4s ease forwards;
+}
+
+.language-option-card.hint-highlight {
+  border-color: #eab308 !important;
+  animation: gentlePulse 0.9s ease-in-out infinite alternate;
+}
+
+.language-option-card .option-icon {
+  font-size: 3.2rem;
+  line-height: 1;
+}
+
+.language-option-card .option-label {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--on-surface);
+}
+
+/* --------------------------------------------------------------------------
+   ENGINE 4: PROBLEM SOLVING GAME (Daily Routine Steps)
+   -------------------------------------------------------------------------- */
+.routine-board {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 950px;
+  margin: 0 auto;
+}
+
+.routine-slots-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  width: 100%;
+}
+
+.routine-slot {
+  border: 2.5px dashed var(--outline-variant);
+  border-radius: var(--radius-xl);
+  padding: 1rem;
+  min-height: 130px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: var(--surface-container-lowest);
+  text-align: center;
+  transition: all 0.25s ease;
+}
+
+.routine-slot.filled {
+  border-style: solid;
+  border-color: #16a34a;
+  background: #f0fdf4;
+  box-shadow: var(--shadow-sm);
+  animation: bloomPop 0.4s ease forwards;
+}
+
+.routine-slot-num {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--on-surface-variant);
+  background: var(--surface-container-high);
+  padding: 0.2rem 0.6rem;
+  border-radius: var(--radius-full);
+}
+
+.routine-slot.filled .routine-slot-num {
+  background: #bbf7d0;
+  color: #166534;
+}
+
+.routine-slot-txt {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--on-surface);
+}
+
+.routine-choices-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  width: 100%;
+}
+
+.routine-choice-card {
+  background: var(--surface-container-low);
+  border: 2.5px solid var(--outline-variant);
+  border-radius: var(--radius-xl);
+  padding: 1.25rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 130px;
+  text-align: center;
+  user-select: none;
+}
+
+.routine-choice-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--primary);
+  box-shadow: var(--shadow-level-1);
+}
+
+.routine-choice-card.locked {
+  opacity: 0.35;
+  pointer-events: none;
+  transform: scale(0.95);
+  border-color: #86efac;
+}
+
+.routine-choice-card.hint-highlight {
+  border-color: #eab308 !important;
+  animation: gentlePulse 0.9s ease-in-out infinite alternate;
+}
+
+.routine-choice-card .choice-icon {
+  font-size: 3rem;
+  line-height: 1;
+}
+
+.routine-choice-card .choice-label {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--on-surface);
+}
+
+/* --------------------------------------------------------------------------
+   COMPLETION SCORE CARD
+   -------------------------------------------------------------------------- */
+.completion-score-card {
+  background: var(--surface-container-high);
+  border: 2px solid var(--outline-variant);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  margin: 1.25rem 0;
+  box-shadow: var(--shadow-sm);
+}
+
+.completion-stars-badge {
+  font-size: 1.85rem;
+  font-weight: 800;
+  color: #ca8a04;
+}
+
+.completion-score-sub {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--on-surface);
+  margin-top: 0.4rem;
+}
+
+/* ==========================================================================
    5.4 CAREGIVER DASHBOARD & VISUAL TIMELINE
    ========================================================================== */
 .caregiver-container {
@@ -1994,11 +2487,17 @@ body.font-scale-large .attention-card button,
 body.font-scale-large #gamesHubModal h3,
 body.font-scale-large #gamesHubModal h4,
 body.font-scale-large #gamesHubModal p,
-body.font-scale-large #gamesHubModal button,
+body.font-scale-large #gameModal h2,
 body.font-scale-large #gameModal h3,
 body.font-scale-large #gameModal p,
 body.font-scale-large #gameModal span,
 body.font-scale-large #gameModal button,
+body.font-scale-large #gameModal strong,
+body.font-scale-large .flower-tile-label,
+body.font-scale-large .language-prompt-question,
+body.font-scale-large .language-option-card .option-label,
+body.font-scale-large .routine-choice-card .choice-label,
+body.font-scale-large .routine-slot-txt,
 body.font-scale-large #moodModal h3,
 body.font-scale-large #moodModal p,
 body.font-scale-large #moodModal button {
@@ -2024,10 +2523,17 @@ body.font-scale-xlarge #gamesHubModal h3,
 body.font-scale-xlarge #gamesHubModal h4,
 body.font-scale-xlarge #gamesHubModal p,
 body.font-scale-xlarge #gamesHubModal button,
+body.font-scale-xlarge #gameModal h2,
 body.font-scale-xlarge #gameModal h3,
 body.font-scale-xlarge #gameModal p,
 body.font-scale-xlarge #gameModal span,
 body.font-scale-xlarge #gameModal button,
+body.font-scale-xlarge #gameModal strong,
+body.font-scale-xlarge .flower-tile-label,
+body.font-scale-xlarge .language-prompt-question,
+body.font-scale-xlarge .language-option-card .option-label,
+body.font-scale-xlarge .routine-choice-card .choice-label,
+body.font-scale-xlarge .routine-slot-txt,
 body.font-scale-xlarge #moodModal h3,
 body.font-scale-xlarge #moodModal p,
 body.font-scale-xlarge #moodModal button {
@@ -2111,6 +2617,33 @@ body.high-contrast-mode .secondary-patient-btn {
 body.high-contrast-mode :focus {
   outline: 4px solid #000000 !important;
   outline-offset: 3px !important;
+}
+
+body.high-contrast-mode .game-fullscreen-takeover {
+  background: #ffffff !important;
+}
+
+body.high-contrast-mode .patient-score-pill,
+body.high-contrast-mode .patient-game-score-badge,
+body.high-contrast-mode .attention-target-banner,
+body.high-contrast-mode .flower-tile,
+body.high-contrast-mode .language-prompt-card,
+body.high-contrast-mode .language-option-card,
+body.high-contrast-mode .routine-slot,
+body.high-contrast-mode .routine-choice-card,
+body.high-contrast-mode .completion-score-card,
+body.high-contrast-mode .game-exit-btn {
+  border: 3px solid #000000 !important;
+  background: #ffffff !important;
+  color: #000000 !important;
+}
+
+body.high-contrast-mode .flower-tile.bloomed-target,
+body.high-contrast-mode .language-option-card.correct,
+body.high-contrast-mode .routine-slot.filled {
+  border: 4px solid #000000 !important;
+  background: #ffff00 !important;
+  color: #000000 !important;
 }
 
 /* ==========================================================================
@@ -2257,6 +2790,78 @@ body.dark-mode .photo-card.matched {
 
 body.dark-mode .photo-card .card-label {
   color: #f1f5f9 !important;
+}
+
+body.dark-mode .game-fullscreen-takeover {
+  background: #0b1329 !important;
+}
+
+body.dark-mode .patient-score-pill,
+body.dark-mode .patient-game-score-badge {
+  background: #1e1e38 !important;
+  border-color: #ca8a04 !important;
+  color: #fef08a !important;
+}
+
+body.dark-mode .patient-game-score-badge .score-text-group strong {
+  color: #fef08a !important;
+}
+
+body.dark-mode .patient-game-score-badge .score-text-group span {
+  color: #cbd5e1 !important;
+}
+
+body.dark-mode .attention-target-banner {
+  background: #1e1e38 !important;
+  border-color: #eab308 !important;
+  color: #fef08a !important;
+}
+
+body.dark-mode .flower-tile,
+body.dark-mode .language-option-card,
+body.dark-mode .routine-choice-card,
+body.dark-mode .routine-slot {
+  background: #16254c !important;
+  border-color: #283f7d !important;
+  color: #f1f5f9 !important;
+}
+
+body.dark-mode .flower-tile-label,
+body.dark-mode .language-option-card .option-label,
+body.dark-mode .routine-choice-card .choice-label,
+body.dark-mode .routine-slot-txt {
+  color: #f1f5f9 !important;
+}
+
+body.dark-mode .flower-tile.bloomed-target,
+body.dark-mode .language-option-card.correct,
+body.dark-mode .routine-slot.filled {
+  background: #064e3b !important;
+  border-color: #22c55e !important;
+}
+
+body.dark-mode .language-prompt-card {
+  background: #111e3e !important;
+  border-color: #10b981 !important;
+}
+
+body.dark-mode .completion-score-card {
+  background: #111e3e !important;
+  border-color: #283f7d !important;
+}
+
+body.dark-mode .completion-stars-badge {
+  color: #fef08a !important;
+}
+
+body.dark-mode .completion-score-sub {
+  color: #cbd5e1 !important;
+}
+
+body.dark-mode .game-exit-btn {
+  background: #1e293b !important;
+  border-color: #475569 !important;
+  color: #f8fafc !important;
 }
 
 body.dark-mode .mood-btn {

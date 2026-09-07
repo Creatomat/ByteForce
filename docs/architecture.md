@@ -72,13 +72,24 @@ Unlike conventional cloud-tethered medical software, Recollect enforces a strict
   3. Re-renders localized regional calendar strings.
 * **Interactive Event Handlers:** Coordinates full-screen pill takeovers, mind game boards, audio call overlays, emergency escalations, custom task authoring, and multi-channel messaging threads.
 
-### 2.3 Local-First Database Layer (`js/db.js`)
+### 2.3 Cognitive Gaming Architecture (4 Dedicated Engines & Full-Screen Canvas)
+* **Full-Screen Immersion Canvas (`.game-fullscreen-takeover`):** Fixed viewport canvas (`100vw` × `100vh`, `z-index: 2100`) providing a high-focus environment with large touch targets ($\ge 64\text{px}$) and clear exit pathways (*"Pause & Rest"*).
+* **Four Dedicated Modular Game Engines:**
+  1. **Memory Engine (`setupMemoryGame`):** 2×4 card flip grid with active/revealed/matched states and swappable Family Photo or Northeast Cultural Heritage packs.
+  2. **Attention Engine (`setupAttentionGame`):** Visual search engine generating a target spotlight flower and a 10-flower randomized garden bed. Taps on target blooms lock with glowing green borders, while non-targets trigger calming non-punitive feedback.
+  3. **Language Engine (`setupLanguageGame`):** Semantic object recall engine presenting functional clues alongside 4 illustrated choices across 3 progressive rounds.
+  4. **Problem Solving Engine (`setupProblemSolvingGame`):** Routine sequencing engine displaying 4 numbered sequence slots (Steps 1 to 4) and 4 shuffled routine cards. Evaluates chronological tapping order and sequentially locks steps.
+* **Dual-Track Scoring & Telemetry Architecture:**
+  * **Track 1: Patient-Side Uplifting Feedback:** Reassuring Garden Stars (⭐), session points (75–100 pts), and blooming stages (🌱 Sprout -> 🌻 Sunflower Champion) rendered on Eleanor's tablet without stress or countdown clocks.
+  * **Track 2: Silent Clinical Telemetry:** Records decision hesitation latency (`hesitation_avg_ms`), error count, and duration in `GameSession`, immediately synchronizing with `CaregiverActivityLog`, the Doctor's Clinical Hub, and `RuleEngine`.
+
+### 2.4 Local-First Database Layer (`js/db.js`)
 * **`RecollectDB` Architecture:** Encapsulates browser `localStorage` under `STORAGE_PREFIX = 'recollect_db_'`.
 * **Append-Only Immutability:** Core behavioral logs (`ReminderLog`, `GameSession`, `MoodLog`, `CaregiverActivityLog`) enforce append-only writes.
 * **Seeded Baseline Data:** Automatically seeds clinical baseline reminders, care circle members, and historical messages on initial load.
 * **Sync Queue (`syncQueue`):** Queues local mutations for background synchronization upon network reconnection.
 
-### 2.4 Explainable Clinical Rule Engine (`js/ruleEngine.js`)
+### 2.5 Explainable Clinical Rule Engine (`js/ruleEngine.js`)
 * **Deterministic Rules:** Evaluates patient telemetry against configurable constants (`RULE_CONFIG`):
   * **Rule A (`checkMissedRemindersStreak`):** Consecutive unacknowledged reminders ($\ge 3$ Watch, $\ge 5$ Alert).
   * **Rule B (`checkInactivityGap`):** Inactive hours without interaction ($\ge 48$h Watch, $\ge 96$h Alert).
@@ -88,7 +99,7 @@ Unlike conventional cloud-tethered medical software, Recollect enforces a strict
 * **Composite Scoring Formula:**
   $$\text{Score} = (0.40 \times \text{Adherence \%}) + (0.40 \times \text{Game Accuracy}) + (0.20 \times \text{Engagement Frequency})$$
 
-### 2.5 Regional Localization & Audio Synthesis (`js/i18n.js`)
+### 2.6 Regional Localization & Audio Synthesis (`js/i18n.js`)
 * **Universal Dictionary (`RECOLLECT_I18N`):** Translates 437+ keys across 5 regional languages: English (`en`), Assamese (`as`), Bengali (`bn`), Khasi (`kha`), and Hindi (`hi`).
 * **Dynamic DOM Binding:** Automatically updates elements via `data-i18n`, `data-i18n-placeholder`, `data-i18n-title`, and `data-i18n-aria`.
 * **Dual-Tier Audio Synthesis:**
