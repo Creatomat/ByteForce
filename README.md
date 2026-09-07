@@ -88,7 +88,11 @@ Open `http://localhost:8000` in your web browser.
 
 * **[Features & Architecture Document](docs/features.md)**: Exhaustive technical and functional breakdown of all platform features across Senior Space, Caregiver Portal, Clinical Hub, Rule Engine, and Localization.
 * **[User Manual & Operational Guide](docs/user_manual.md)**: Comprehensive, step-by-step user guide for seniors, family caregivers, and health workers.
-* **[Historical Design & Planning Archive](docs/temp/)**: Staging and historical reference documents (PRD, design specs, architecture blueprints, rules, and development walkthroughs).
+* **[Product Requirements Document (PRD)](docs/prd.md)**: Functional and non-functional requirements conforming to the active prototype and production roadmap.
+* **[Architecture Document](docs/architecture.md)**: Technical architecture, component specifications, data schemas, and runtime state loops.
+* **[UI/UX Design Specification](docs/design.md)**: Screen-by-screen layouts, color systems, typography standards, and touch ergonomics.
+* **[Engineering & Safety Rules](docs/rules.md)**: Binding clinical safety, non-diagnostic verbiage, local-first storage, and verification rules.
+* **[Historical Design & Planning Archive](docs/temp/)**: Staging archive containing early reference documents and legacy planning notes.
 
 ---
 
