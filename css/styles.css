@@ -2113,6 +2113,260 @@ body.high-contrast-mode :focus {
   outline-offset: 3px !important;
 }
 
+/* ==========================================================================
+   DARK MODE THEME (Calm Night / Reduced Glare Palette)
+   ========================================================================== */
+body.dark-mode {
+  --surface: #0b1329 !important;
+  --surface-dim: #070c1a !important;
+  --surface-bright: #16203d !important;
+  --surface-container-lowest: #0d1730 !important;
+  --surface-container-low: #111e3e !important;
+  --surface-container: #16254c !important;
+  --surface-container-high: #1e3164 !important;
+  --surface-container-highest: #283f7d !important;
+  --on-surface: #f1f5f9 !important;
+  --on-surface-variant: #94a3b8 !important;
+  --inverse-surface: #f8fafc !important;
+  --inverse-on-surface: #0b1329 !important;
+  --outline: #475569 !important;
+  --outline-variant: #1e293b !important;
+  --surface-tint: #34d399 !important;
+
+  --primary: #10b981 !important;
+  --on-primary: #064e3b !important;
+  --primary-container: #065f46 !important;
+  --on-primary-container: #a7f3d0 !important;
+
+  --secondary: #60a5fa !important;
+  --on-secondary: #1e3a8a !important;
+  --secondary-container: #1e40af !important;
+  --on-secondary-container: #dbeafe !important;
+
+  --tertiary: #fb923c !important;
+  --on-tertiary: #7c2d12 !important;
+  --tertiary-container: #9a3412 !important;
+  --on-tertiary-container: #ffedd5 !important;
+
+  --mint-badge: #064e3b !important;
+  --mint-badge-text: #6ee7b7 !important;
+  --amber-badge: #78350f !important;
+  --amber-badge-text: #fde68a !important;
+  --blue-badge: #1e3a8a !important;
+  --blue-badge-text: #93c5fd !important;
+
+  background-color: #0b1329 !important;
+  color: #f1f5f9 !important;
+}
+
+body.dark-mode .global-header {
+  background: #080f21 !important;
+  border-bottom: 1.5px solid #1e293b !important;
+  color: #f1f5f9 !important;
+}
+
+body.dark-mode .patient-container,
+body.dark-mode .caregiver-container,
+body.dark-mode .clinical-container,
+body.dark-mode .login-container {
+  color: #f1f5f9 !important;
+}
+
+body.dark-mode .role-login-card,
+body.dark-mode .cg-panel-card,
+body.dark-mode .modal-window,
+body.dark-mode .attention-card,
+body.dark-mode .single-routine-prominent-card,
+body.dark-mode .secondary-patient-card,
+body.dark-mode .game-category-tile,
+body.dark-mode .patient-action-tile,
+body.dark-mode .doctor-report-paper,
+body.dark-mode .asha-action-card,
+body.dark-mode .score-metric-card,
+body.dark-mode .pack-switch-bar,
+body.dark-mode .game-category-tile.active-category {
+  background: #111e3e !important;
+  color: #f1f5f9 !important;
+  border-color: #1e3164 !important;
+}
+
+body.dark-mode .form-input,
+body.dark-mode .form-select,
+body.dark-mode .notes-textarea,
+body.dark-mode .pin-input-field {
+  background: #0d1730 !important;
+  color: #f1f5f9 !important;
+  border-color: #334155 !important;
+}
+
+body.dark-mode .form-input:focus,
+body.dark-mode .form-select:focus,
+body.dark-mode .notes-textarea:focus,
+body.dark-mode .pin-input-field:focus {
+  border-color: #10b981 !important;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2) !important;
+}
+
+body.dark-mode .cg-btn {
+  background: #16254c !important;
+  color: #f1f5f9 !important;
+  border-color: #283f7d !important;
+}
+
+body.dark-mode .cg-btn:hover {
+  background: #1e3164 !important;
+}
+
+body.dark-mode .cg-btn.primary,
+body.dark-mode .take-med-big-btn,
+body.dark-mode .attention-action-btn.btn-done,
+body.dark-mode .profile-action-btn.primary-btn {
+  background: #059669 !important;
+  color: #ffffff !important;
+  border-color: #059669 !important;
+}
+
+body.dark-mode .cg-tab-btn,
+body.dark-mode .clin-tab-btn,
+body.dark-mode .timeframe-pill,
+body.dark-mode .channel-tab-pill {
+  background: #111e3e !important;
+  color: #94a3b8 !important;
+  border-color: #1e3164 !important;
+}
+
+body.dark-mode .cg-tab-btn.active,
+body.dark-mode .clin-tab-btn.active,
+body.dark-mode .timeframe-pill.active,
+body.dark-mode .channel-tab-pill.active {
+  background: #059669 !important;
+  color: #ffffff !important;
+  border-color: #059669 !important;
+}
+
+body.dark-mode .photo-card {
+  background: #16254c !important;
+  border-color: #283f7d !important;
+}
+
+body.dark-mode .photo-card.revealed,
+body.dark-mode .photo-card.matched {
+  background: #111e3e !important;
+  border-color: #10b981 !important;
+}
+
+body.dark-mode .photo-card .card-label {
+  color: #f1f5f9 !important;
+}
+
+body.dark-mode .mood-btn {
+  background: #16254c !important;
+  border-color: #283f7d !important;
+  color: #f1f5f9 !important;
+}
+
+body.dark-mode .mood-btn:hover,
+body.dark-mode .mood-btn.selected {
+  border-color: #10b981 !important;
+  background: #064e3b !important;
+}
+
+body.dark-mode .notes-item-card,
+body.dark-mode .timeline-node,
+body.dark-mode .flag-accordion-summary,
+body.dark-mode .flag-expanded-content,
+body.dark-mode .care-team-card,
+body.dark-mode .asha-priority-item,
+body.dark-mode .doctor-messages-stream,
+body.dark-mode .doctor-msg-banner,
+body.dark-mode .note-item-card {
+  background: #0d1730 !important;
+  color: #f1f5f9 !important;
+  border-color: #1e3164 !important;
+}
+
+body.dark-mode .trends-chart-container svg {
+  background: #080f21 !important;
+  border-color: #1e3164 !important;
+}
+
+body.dark-mode .trends-chart-container svg line {
+  stroke: #1e293b !important;
+}
+
+body.dark-mode .trends-chart-container svg text {
+  fill: #94a3b8 !important;
+}
+
+body.dark-mode .persistent-disclaimer-card,
+body.dark-mode .clinical-disclaimer-box,
+body.dark-mode .report-top-disclaimer {
+  background: #0c1c38 !important;
+  color: #93c5fd !important;
+  border-color: #1d4ed8 !important;
+}
+
+body.dark-mode .schedule-config-box {
+  background: #0d1730 !important;
+  border-color: #1e3164 !important;
+  color: #f1f5f9 !important;
+}
+
+body.dark-mode .overdue-alert-banner {
+  background: #3b1d06 !important;
+  border-color: #b45309 !important;
+  color: #fed7aa !important;
+}
+
+body.dark-mode .overdue-alert-banner p {
+  color: #fed7aa !important;
+}
+
+/* Schedule Configuration Box in Settings */
+.schedule-config-box {
+  background: #f8fafc;
+  border: 1.5px solid var(--outline-variant);
+  border-radius: 10px;
+  padding: 0.85rem 1.15rem;
+  margin-bottom: 1.25rem;
+  transition: var(--transition-smooth);
+}
+
+.schedule-times-row {
+  display: flex;
+  margin-top: 0.85rem;
+  gap: 1.25rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.schedule-status-badge {
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 0.25rem 0.65rem;
+  border-radius: var(--radius-full);
+}
+
+.schedule-status-badge.active {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.schedule-status-badge.inactive {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+body.dark-mode .schedule-status-badge.active {
+  background: #064e3b;
+  color: #6ee7b7;
+}
+
+body.dark-mode .schedule-status-badge.inactive {
+  background: #1e293b;
+  color: #94a3b8;
+}
+
 /* 3.1 Patient Home Screen Single Prominent Reminder & Secondary Row */
 .single-routine-prominent-card {
   background: var(--surface-container-lowest);

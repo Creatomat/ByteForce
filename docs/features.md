@@ -304,11 +304,23 @@ Implemented in `js/ruleEngine.js`, the deterministic rule engine evaluates patie
 * **Extra Large (28pt / +40%):** Maximum contrast and size for low vision.
 * **Quick Cycle Button:** Seniors can cycle through font sizes directly from the tablet orientation bar without entering settings.
 
-### 6.3 WCAG AAA High-Contrast Stark Theme
-* **Pure Black-on-White:** Replaces all warm pastels and decorative gradients with sharp, high-contrast monochrome borders and typography.
-* **Zero Decorative Noise:** Removes shadows, transparent overlays, and non-essential icons.
+### 6.3 Dark Mode (Calm Night Theme)
+* **Low-Glare Deep Slate Palette:** Replaces bright sandstone backgrounds with deep slate tones (`#0b1329` / `#111e3e`) to minimize eye fatigue and light glare for seniors during nighttime hours.
+* **Calm Aesthetic Preservation:** Maintains high text contrast (`#f1f5f9`) and warm accents (`#10b981` emerald, `#60a5fa` soothing blue) across cards, visual schedules, memory games, and checklists without harsh neon glare.
 
-### 6.4 Four-Step Consent & Privacy Framework
+### 6.4 WCAG AAA High-Contrast Stark Theme
+* **Pure Black-on-White:** Replaces all warm pastels and decorative gradients with sharp, high-contrast monochrome borders and typography.
+* **Zero Decorative Noise:** Removes shadows, transparent overlays, and non-essential icons for maximum visual acuity.
+
+### 6.5 Password-Gated Management & Automated Mode Scheduling
+* **Caregiver PIN Gate:** All appearance themes and schedules are locked behind the Caregiver PIN (`1234`), ensuring that seniors cannot accidentally alter visual contrast or theme settings from the bedside tablet.
+* **Independent Automated Schedulers:**
+  * **Dark Mode Scheduler:** Allows caregivers to configure custom start (default `20:00`) and end (default `07:00`) times. Automatically activates Dark Mode at dusk and restores day mode at dawn.
+  * **High-Contrast Scheduler:** Allows setting dedicated daily high-contrast windows (default `18:00` to `21:00`) for medication administration or evening routines.
+* **Reactive Clock Engine:** The system evaluates active time windows every 30 seconds, automatically transitioning themes with zero page reload required.
+* **Persistent State:** Manual overrides, schedule toggles, and time inputs persist in `localStorage` across offline reboots.
+
+### 6.6 Four-Step Consent & Privacy Framework
 Accessible via Caregiver Settings, the interactive onboarding modal walks families through a transparent 4-step framework:
 1. **Step 1: Patient & Caregiver Identity:** Confirms Sarah Vance's power-of-attorney authority.
 2. **Step 2: Local Data Storage Disclosure:** Explains what data is stored locally on the tablet.
@@ -337,7 +349,9 @@ Accessible via Caregiver Settings, the interactive onboarding modal walks famili
 | **Printable Weekly PDF Report** | No | No | 7-Section PDF Export |
 | **Telemedicine ABHA Handoff** | No | No | Full Referral Dispatch |
 | **Font Scaling (20pt–28pt)** | Yes | Follows Base CSS | Standard Web |
-| **WCAG AAA High Contrast** | Yes | Yes | Yes |
+| **Dark Mode (Calm Night)** | Follows Settings/Schedule | Configured via PIN 1234 | Follows Settings/Schedule |
+| **WCAG AAA High Contrast** | Follows Settings/Schedule | Configured via PIN 1234 | Follows Settings/Schedule |
+| **Automated Theme Scheduling** | Yes (Passive) | Configured via PIN 1234 | Yes (Passive) |
 | **5-Language Regional i18n** | Full UI | Full UI | Full UI |
 
 ---

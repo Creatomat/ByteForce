@@ -1196,6 +1196,43 @@
       <!-- Unlocked Settings Controls -->
       <div id="settingsUnlockedBody" style="display:none;">
         
+        <!-- Dark Mode Toggle -->
+        <div class="settings-option-row">
+          <div class="settings-option-label">
+            <strong data-i18n="dark_mode_label">Dark Mode (Calm Night Theme)</strong>
+            <span data-i18n="dark_mode_desc">Deep slate theme designed for reduced glare and senior eye comfort in low light</span>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="toggleDarkMode" onchange="app.toggleDarkMode(this.checked)">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
+        <!-- Dark Mode Scheduling Box -->
+        <div class="schedule-config-box" id="darkScheduleBox">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <strong style="font-size:0.95rem;" data-i18n="dark_schedule_label">Schedule Dark Mode Automatically</strong>
+              <div style="font-size:0.85rem; color:var(--on-surface-variant);" data-i18n="dark_schedule_desc">Automatically switches to Dark Mode during evening/night hours</div>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="toggleDarkSchedule" onchange="app.toggleDarkSchedule(this.checked)">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="schedule-times-row" id="darkScheduleTimesRow" style="display:none;">
+            <div style="display:flex; align-items:center; gap:0.5rem;">
+              <span style="font-size:0.85rem; font-weight:700;" data-i18n="schedule_start_time">Start Time:</span>
+              <input type="time" id="darkScheduleStart" class="form-input" style="width:110px; padding:0.35rem 0.5rem; font-size:0.85rem;" value="20:00" onchange="app.updateDarkScheduleTimes()">
+            </div>
+            <div style="display:flex; align-items:center; gap:0.5rem;">
+              <span style="font-size:0.85rem; font-weight:700;" data-i18n="schedule_end_time">End Time:</span>
+              <input type="time" id="darkScheduleEnd" class="form-input" style="width:110px; padding:0.35rem 0.5rem; font-size:0.85rem;" value="07:00" onchange="app.updateDarkScheduleTimes()">
+            </div>
+            <span class="schedule-status-badge inactive" id="darkScheduleBadge">Scheduled</span>
+          </div>
+        </div>
+
         <!-- High Contrast Mode Toggle (Section 2.2) -->
         <div class="settings-option-row">
           <div class="settings-option-label">
@@ -1206,6 +1243,31 @@
             <input type="checkbox" id="toggleHighContrast" onchange="app.toggleHighContrast(this.checked)">
             <span class="toggle-slider"></span>
           </label>
+        </div>
+
+        <!-- High Contrast Scheduling Box -->
+        <div class="schedule-config-box" id="hcScheduleBox">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <strong style="font-size:0.95rem;" data-i18n="hc_schedule_label">Schedule High-Contrast Mode Automatically</strong>
+              <div style="font-size:0.85rem; color:var(--on-surface-variant);" data-i18n="hc_schedule_desc">Automatically enables maximum contrast during specific daily hours</div>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="toggleHcSchedule" onchange="app.toggleHcSchedule(this.checked)">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="schedule-times-row" id="hcScheduleTimesRow" style="display:none;">
+            <div style="display:flex; align-items:center; gap:0.5rem;">
+              <span style="font-size:0.85rem; font-weight:700;" data-i18n="schedule_start_time">Start Time:</span>
+              <input type="time" id="hcScheduleStart" class="form-input" style="width:110px; padding:0.35rem 0.5rem; font-size:0.85rem;" value="18:00" onchange="app.updateHcScheduleTimes()">
+            </div>
+            <div style="display:flex; align-items:center; gap:0.5rem;">
+              <span style="font-size:0.85rem; font-weight:700;" data-i18n="schedule_end_time">End Time:</span>
+              <input type="time" id="hcScheduleEnd" class="form-input" style="width:110px; padding:0.35rem 0.5rem; font-size:0.85rem;" value="21:00" onchange="app.updateHcScheduleTimes()">
+            </div>
+            <span class="schedule-status-badge inactive" id="hcScheduleBadge">Scheduled</span>
+          </div>
         </div>
 
         <!-- Font Scaling Control (Section 2.1 & 7) -->

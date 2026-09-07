@@ -43,9 +43,11 @@
 6. [Universal Settings & Accessibility Guide](#6-universal-settings--accessibility-guide)
    * 6.1 Switching Languages & Dialects (5 Regional Locales)
    * 6.2 Font Scaling (Normal 20pt, Large 24pt, Extra Large 28pt)
-   * 6.3 High-Contrast Stark Theme (WCAG AAA)
-   * 6.4 Low-Power & Reduced Animation Mode
-   * 6.5 Reviewing the 4-Step Consent & Privacy Framework
+   * 6.3 Dark Mode (Calm Night Theme)
+   * 6.4 High-Contrast Stark Theme (WCAG AAA)
+   * 6.5 Automated Theme & Contrast Scheduling
+   * 6.6 Low-Power & Reduced Animation Mode
+   * 6.7 Reviewing the 4-Step Consent & Privacy Framework
 7. [Offline Operation & Troubleshooting](#7-offline-operation--troubleshooting)
    * 7.1 Running Without an Internet Connection
    * 7.2 Audio & Speech Playback Issues
@@ -344,16 +346,34 @@ Recollect is fully translated into five regional languages with a focus on North
   * **Extra Large (28pt / +40%):** High-magnification mode for low vision.
 * Applies instantly across all senior cards, instructions, buttons, and reminder modals.
 
-### 6.3 High-Contrast Stark Theme (WCAG AAA)
-* Toggle **"High-contrast theme (Black & White)"** in Settings.
-* Transforms the interface into pure black text on pure white backgrounds, with solid borders and no decorative colors or shadows.
-* Exceeds WCAG 2.1 Level AAA requirements.
+### 6.3 Dark Mode (Calm Night Theme)
+* Toggle **"Dark Mode (Calm Night Theme)"** in Caregiver Settings (PIN `1234`).
+* Applies a soothing deep slate background (`#0b1329` / `#111e3e`) with high-contrast soft text (`#f1f5f9`), engineered to eliminate glare and eye fatigue for seniors in dim or evening lighting.
+* When enabled, Dark Mode automatically deactivates High-Contrast mode to ensure clean visual styling.
 
-### 6.4 Low-Power & Reduced Animation Mode
+### 6.4 High-Contrast Stark Theme (WCAG AAA)
+* Toggle **"High-contrast theme (Black & White)"** in Caregiver Settings (PIN `1234`).
+* Transforms the entire interface into stark black text on pure white backgrounds, with solid 3px borders and no decorative colors, gradients, or shadows.
+* Specifically engineered for seniors with low vision or advanced presbyopia, exceeding WCAG 2.1 Level AAA requirements.
+
+### 6.5 Automated Theme & Contrast Scheduling
+Caregivers can automate visual modes based on time of day:
+1. **Schedule Dark Mode Automatically:**
+   * In Caregiver Settings, enable the **"Schedule Dark Mode Automatically"** toggle.
+   * Set the **Start Time** (default `20:00` / 8:00 PM) and **End Time** (default `07:00` / 7:00 AM).
+   * Recollect evaluates the local clock every 30 seconds. During the configured night window, the tablet automatically shifts into Dark Mode. At dawn, it seamlessly restores day mode.
+2. **Schedule High-Contrast Mode Automatically:**
+   * Enable the **"Schedule High-Contrast Mode Automatically"** toggle.
+   * Set the active daily time window (default `18:00` to `21:00`).
+   * During this window, maximum contrast is automatically activated to assist seniors during evening routine checkpoints.
+3. **Password Protection:**
+   * Because theme and scheduling controls are secured behind the Caregiver PIN (`1234`), seniors living with memory loss cannot accidentally disrupt their visual environment from the bedside tablet.
+
+### 6.6 Low-Power & Reduced Animation Mode
 * Toggle **"Low-power mode (Reduced animation)"** in Settings or click the power pill in the header.
 * Disables decorative transitions, stops continuous background animation timers, and optimizes battery life for rural tablet usage.
 
-### 6.5 Reviewing the 4-Step Consent & Privacy Framework
+### 6.7 Reviewing the 4-Step Consent & Privacy Framework
 Click **"📋 Consent & Privacy"** in Caregiver Settings:
 * **Step 1:** Verifies Sarah Vance's power-of-attorney authority.
 * **Step 2:** Discloses that all patient data remains stored locally on the tablet.

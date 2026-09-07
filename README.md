@@ -23,12 +23,15 @@ Recollect strictly isolates interfaces into three role-tailored spaces accessibl
 * **Dynamic Time & Orientation**: Automatically computes localized greetings (*"Good Morning"*, *"সুপ্ৰভাত"*, *"সুপ্রভাত"*, *"Khublei step"*, *"शुभ प्रभात"*), time-of-day weather descriptions, and regional date formatting (`getFormattedDate()`).
 * **Synchronized Selectors**: Header and settings language selectors remain synchronized across role transitions.
 
-### 3. Senior-Centric Accessibility & Font Scaling
+### 3. Senior-Centric Accessibility, Themes & Automated Scheduling
+* **Dark Mode (Calm Night Theme)**: Deep slate palette reducing glare and ocular fatigue for seniors during evening and night hours.
+* **High-Contrast Theme**: WCAG AAA stark black-on-white mode eliminating decorative distractions for seniors with visual impairments.
+* **Password/PIN-Guarded Management**: Both Dark Mode and High-Contrast settings are securely locked inside the Caregiver Settings panel (PIN `1234`), preventing seniors from accidentally misconfiguring themes from the bedside tablet.
+* **Automated Mode Scheduling**: Caregivers can set dedicated time windows for both Dark Mode (e.g., 20:00 to 07:00) and High-Contrast Mode. The platform automatically evaluates local device time every 30 seconds and seamlessly activates the scheduled theme.
 * **3-Level Text Scaling**:
   * **Normal**: 20pt floor (exceeds standard web accessibility baselines)
   * **Large**: 24pt (+20% scale)
   * **Extra Large**: 28pt (+40% scale for low vision)
-* **High-Contrast Theme**: WCAG AAA stark black-on-white mode eliminating decorative distractions.
 * **Low-Power & Reduced Animation Mode**: Disables motion and minimizes background polling to maximize device battery life on low-spec hardware.
 
 ### 4. Smart Reminders & Routine Scheduling

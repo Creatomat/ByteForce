@@ -41,13 +41,20 @@ class RecollectApp {
   }
 
   init() {
-    // 1. Restore persistent accessibility preferences
+    // 1. Restore persistent accessibility & appearance preferences
+    this.isDarkMode = localStorage.getItem('recollect_dark_mode') === 'true';
     this.isHighContrast = localStorage.getItem('recollect_high_contrast') === 'true';
-    if (this.isHighContrast) {
-      document.body.classList.add('high-contrast-mode');
-      const toggle = document.getElementById('toggleHighContrast');
-      if (toggle) toggle.checked = true;
-    }
+
+    this.darkScheduleEnabled = localStorage.getItem('recollect_dark_schedule_enabled') === 'true';
+    this.darkScheduleStart = localStorage.getItem('recollect_dark_schedule_start') || '20:00';
+    this.darkScheduleEnd = localStorage.getItem('recollect_dark_schedule_end') || '07:00';
+
+    this.hcScheduleEnabled = localStorage.getItem('recollect_hc_schedule_enabled') === 'true';
+    this.hcScheduleStart = localStorage.getItem('recollect_hc_schedule_start') || '18:00';
+    this.hcScheduleEnd = localStorage.getItem('recollect_hc_schedule_end') || '21:00';
+
+    this.syncThemeControls();
+    this.evaluateThemeSchedules();
 
     this.fontScale = localStorage.getItem('recollect_font_scale') || 'normal';
     document.body.classList.remove('font-scale-normal', 'font-scale-large', 'font-scale-xlarge');
@@ -68,7 +75,10 @@ class RecollectApp {
     // 3. Dynamic Time & Orientation Engine
     this.updateOrientationTime();
     if (this.clockInterval) clearInterval(this.clockInterval);
-    this.clockInterval = setInterval(() => this.updateOrientationTime(), 30000);
+    this.clockInterval = setInterval(() => {
+      this.updateOrientationTime();
+      this.evaluateThemeSchedules();
+    }, 30000);
 
     // 4. Restore Alert Escalation Settings
     this.restoreAlertSettings();
@@ -817,16 +827,175 @@ class RecollectApp {
     if (pin === '1234') {
       document.getElementById('settingsPinGate').style.display = 'none';
       document.getElementById('settingsUnlockedBody').style.display = 'block';
+      this.syncThemeControls();
+      this.evaluateThemeSchedules();
     } else {
       this.showToast('Incorrect Caregiver PIN. Demo default is 1234.', '⚠️');
     }
   }
 
+  syncThemeControls() {
+    const dmToggle = document.getElementById('toggleDarkMode');
+    if (dmToggle) dmToggle.checked = this.isDarkMode;
+
+    const hcToggle = document.getElementById('toggleHighContrast');
+    if (hcToggle) hcToggle.checked = this.isHighContrast;
+
+    const dsToggle = document.getElementById('toggleDarkSchedule');
+    if (dsToggle) dsToggle.checked = this.darkScheduleEnabled;
+
+    const dsTimesRow = document.getElementById('darkScheduleTimesRow');
+    if (dsTimesRow) dsTimesRow.style.display = this.darkScheduleEnabled ? 'flex' : 'none';
+
+    const dsStart = document.getElementById('darkScheduleStart');
+    if (dsStart) dsStart.value = this.darkScheduleStart;
+
+    const dsEnd = document.getElementById('darkScheduleEnd');
+    if (dsEnd) dsEnd.value = this.darkScheduleEnd;
+
+    const hsToggle = document.getElementById('toggleHcSchedule');
+    if (hsToggle) hsToggle.checked = this.hcScheduleEnabled;
+
+    const hsTimesRow = document.getElementById('hcScheduleTimesRow');
+    if (hsTimesRow) hsTimesRow.style.display = this.hcScheduleEnabled ? 'flex' : 'none';
+
+    const hsStart = document.getElementById('hcScheduleStart');
+    if (hsStart) hsStart.value = this.hcScheduleStart;
+
+    const hsEnd = document.getElementById('hcScheduleEnd');
+    if (hsEnd) hsEnd.value = this.hcScheduleEnd;
+  }
+
+  isTimeWithinWindow(startStr, endStr) {
+    if (!startStr || !endStr) return false;
+    const now = new Date();
+    const current = now.getHours() * 60 + now.getMinutes();
+    const [sH, sM] = startStr.split(':').map(Number);
+    const [eH, eM] = endStr.split(':').map(Number);
+    const start = sH * 60 + (sM || 0);
+    const end = eH * 60 + (eM || 0);
+    if (start <= end) {
+      return current >= start && current < end;
+    } else {
+      // Spans midnight e.g. 20:00 to 07:00
+      return current >= start || current < end;
+    }
+  }
+
+  evaluateThemeSchedules() {
+    let darkActive = false;
+    let hcActive = false;
+
+    const isHcScheduledNow = this.hcScheduleEnabled && this.isTimeWithinWindow(this.hcScheduleStart, this.hcScheduleEnd);
+    const isDarkScheduledNow = this.darkScheduleEnabled && this.isTimeWithinWindow(this.darkScheduleStart, this.darkScheduleEnd);
+
+    const darkBadge = document.getElementById('darkScheduleBadge');
+    if (darkBadge) {
+      if (this.darkScheduleEnabled) {
+        darkBadge.className = `schedule-status-badge ${isDarkScheduledNow ? 'active' : 'inactive'}`;
+        darkBadge.textContent = isDarkScheduledNow 
+          ? (window.i18n ? window.i18n.getText('schedule_active_badge') : 'Active Now (Scheduled)')
+          : (window.i18n ? window.i18n.getText('schedule_inactive_badge') : 'Scheduled');
+      } else {
+        darkBadge.className = 'schedule-status-badge inactive';
+        darkBadge.textContent = window.i18n ? window.i18n.getText('schedule_inactive_badge') : 'Scheduled';
+      }
+    }
+
+    const hcBadge = document.getElementById('hcScheduleBadge');
+    if (hcBadge) {
+      if (this.hcScheduleEnabled) {
+        hcBadge.className = `schedule-status-badge ${isHcScheduledNow ? 'active' : 'inactive'}`;
+        hcBadge.textContent = isHcScheduledNow
+          ? (window.i18n ? window.i18n.getText('schedule_active_badge') : 'Active Now (Scheduled)')
+          : (window.i18n ? window.i18n.getText('schedule_inactive_badge') : 'Scheduled');
+      } else {
+        hcBadge.className = 'schedule-status-badge inactive';
+        hcBadge.textContent = window.i18n ? window.i18n.getText('schedule_inactive_badge') : 'Scheduled';
+      }
+    }
+
+    if (isHcScheduledNow) {
+      hcActive = true;
+    } else if (isDarkScheduledNow) {
+      darkActive = true;
+    } else {
+      // Manual preferences
+      if (this.isHighContrast) {
+        hcActive = true;
+      } else if (this.isDarkMode) {
+        darkActive = true;
+      }
+    }
+
+    document.body.classList.toggle('high-contrast-mode', hcActive);
+    document.body.classList.toggle('dark-mode', darkActive && !hcActive);
+  }
+
+  toggleDarkMode(enabled) {
+    this.isDarkMode = enabled;
+    localStorage.setItem('recollect_dark_mode', enabled);
+    if (enabled) {
+      this.isHighContrast = false;
+      localStorage.setItem('recollect_high_contrast', 'false');
+      const hcToggle = document.getElementById('toggleHighContrast');
+      if (hcToggle) hcToggle.checked = false;
+    }
+    this.evaluateThemeSchedules();
+    this.showToast(enabled ? 'Dark Mode (Calm Night) active.' : 'Standard theme restored.', '🌙');
+  }
+
   toggleHighContrast(enabled) {
     this.isHighContrast = enabled;
     localStorage.setItem('recollect_high_contrast', enabled);
-    document.body.classList.toggle('high-contrast-mode', enabled);
+    if (enabled) {
+      this.isDarkMode = false;
+      localStorage.setItem('recollect_dark_mode', 'false');
+      const dmToggle = document.getElementById('toggleDarkMode');
+      if (dmToggle) dmToggle.checked = false;
+    }
+    this.evaluateThemeSchedules();
     this.showToast(enabled ? 'High-contrast black & white theme active.' : 'Standard theme restored.', '🎨');
+  }
+
+  toggleDarkSchedule(enabled) {
+    this.darkScheduleEnabled = enabled;
+    localStorage.setItem('recollect_dark_schedule_enabled', enabled);
+    const timesRow = document.getElementById('darkScheduleTimesRow');
+    if (timesRow) timesRow.style.display = enabled ? 'flex' : 'none';
+    this.evaluateThemeSchedules();
+    this.showToast(enabled ? 'Dark Mode schedule enabled.' : 'Dark Mode schedule disabled.', '⏰');
+  }
+
+  updateDarkScheduleTimes() {
+    const start = document.getElementById('darkScheduleStart')?.value || '20:00';
+    const end = document.getElementById('darkScheduleEnd')?.value || '07:00';
+    this.darkScheduleStart = start;
+    this.darkScheduleEnd = end;
+    localStorage.setItem('recollect_dark_schedule_start', start);
+    localStorage.setItem('recollect_dark_schedule_end', end);
+    this.evaluateThemeSchedules();
+    this.showToast(`Dark Mode schedule updated: ${start} to ${end}`, '⏰');
+  }
+
+  toggleHcSchedule(enabled) {
+    this.hcScheduleEnabled = enabled;
+    localStorage.setItem('recollect_hc_schedule_enabled', enabled);
+    const timesRow = document.getElementById('hcScheduleTimesRow');
+    if (timesRow) timesRow.style.display = enabled ? 'flex' : 'none';
+    this.evaluateThemeSchedules();
+    this.showToast(enabled ? 'High-Contrast schedule enabled.' : 'High-Contrast schedule disabled.', '⏰');
+  }
+
+  updateHcScheduleTimes() {
+    const start = document.getElementById('hcScheduleStart')?.value || '18:00';
+    const end = document.getElementById('hcScheduleEnd')?.value || '21:00';
+    this.hcScheduleStart = start;
+    this.hcScheduleEnd = end;
+    localStorage.setItem('recollect_hc_schedule_start', start);
+    localStorage.setItem('recollect_hc_schedule_end', end);
+    this.evaluateThemeSchedules();
+    this.showToast(`High-Contrast schedule updated: ${start} to ${end}`, '⏰');
   }
 
   setFontScale(scale) {
@@ -1698,8 +1867,9 @@ class RecollectApp {
       pwrText.textContent = window.i18n.getText(pwrKey);
     }
 
-    // 3. Update dynamic orientation, date, greeting
+    // 3. Update dynamic orientation, date, greeting, and theme schedule badges
     this.updateOrientationTime();
+    this.evaluateThemeSchedules();
 
     // 4. Update role-specific dynamic streams
     if (session && session.role === 'caregiver') {
