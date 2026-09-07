@@ -150,7 +150,7 @@ class RecollectApp {
     // 4. Update Caregiver Header Live Sync time
     const syncText = document.getElementById('cgSyncText');
     if (syncText) {
-      syncText.textContent = `Live Hub Sync: ${now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+      syncText.textContent = window.i18n ? window.i18n.t('live_hub_sync', { time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }) : `Live Hub Sync: ${now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
     }
 
     // 5. Update next or current scheduled routine on patient dashboard
@@ -176,7 +176,7 @@ class RecollectApp {
         takeMedBtn.innerHTML = `<span>✓</span> <span>${window.i18n ? window.i18n.getText('med_taken_confirm', { time: '9:02 AM' }) : 'Completed • Wonderful job, Eleanor!'}</span>`;
       }
       if (routineTimeTag) {
-        routineTimeTag.textContent = 'Completed for today';
+        routineTimeTag.textContent = window.i18n ? window.i18n.t('routine_completed_today') : 'Completed for today';
         routineTimeTag.style.color = '#059669';
       }
     } else {
@@ -186,7 +186,7 @@ class RecollectApp {
         takeMedBtn.innerHTML = `<span>✓</span> <span data-i18n="take_med_btn">${window.i18n ? window.i18n.getText('take_med_btn') : 'I took my medicine'}</span>`;
       }
       if (routineTimeTag) {
-        routineTimeTag.textContent = 'Scheduled for 9:00 AM';
+        routineTimeTag.textContent = window.i18n ? window.i18n.t('routine_scheduled_for', { time: '9:00 AM' }) : 'Scheduled for 9:00 AM';
         routineTimeTag.style.color = 'var(--on-surface-variant)';
       }
     }
@@ -195,7 +195,7 @@ class RecollectApp {
   // --- Brand Home Navigation ---
   handleBrandClick() {
     this.showLoginScreen();
-    this.showToast('Navigated to profile and space selection.', '🌿');
+    this.showToast(window.i18n ? window.i18n.t('toast_nav_profile') : 'Navigated to profile and space selection.', '🌿');
   }
 
   // --- Session & Authentication Engine (PRD FR-7.1, FR-9.11) ---
@@ -234,13 +234,14 @@ class RecollectApp {
 
     const authResult = window.recollectDB.authenticateUser(role, pin);
     if (!authResult.success) {
-      this.showToast(authResult.error, '⚠️');
+      this.showToast(window.i18n ? window.i18n.t('toast_pin_incorrect') : authResult.error, '⚠️');
       return;
     }
 
     window.recollectDB.setActiveSession(authResult.session);
     this.applySession(authResult.session);
-    this.showToast(`Logged in to ${authResult.session.title}`, '🌿');
+    const roleTitle = window.i18n ? (authResult.session.role === 'patient' ? window.i18n.t('role_senior_space') : (authResult.session.role === 'caregiver' ? window.i18n.t('role_caregiver_title') : window.i18n.t('role_clinical_title'))) : authResult.session.title;
+    this.showToast(window.i18n ? window.i18n.t('toast_login_success', { title: roleTitle }) : `Logged in to ${authResult.session.title}`, '🌿');
   }
 
   applySession(session) {
@@ -302,7 +303,7 @@ class RecollectApp {
   logoutUser() {
     window.recollectDB.clearActiveSession();
     this.showLoginScreen();
-    this.showToast('Logged out securely.', '🔒');
+    this.showToast(window.i18n ? window.i18n.t('toast_logout_success') : 'Logged out securely.', '🔒');
   }
 
   refreshPatientHomeState() {
@@ -319,7 +320,7 @@ class RecollectApp {
         listeningText.textContent = window.i18n.getText('voice_listening');
       }
       if (this.voiceModeEnabled && window.i18n) {
-        const promptText = "Eleanor, it is time for your morning medicine. Take 1 yellow tablet with a full glass of cool water.";
+        const promptText = window.i18n ? window.i18n.t("tts_med_morning_prompt") : "Eleanor, it is time for your morning medicine. Take 1 yellow tablet with a full glass of cool water.";
         window.i18n.speakText(promptText);
       }
     }
@@ -368,7 +369,7 @@ class RecollectApp {
     this.showToast(confirmMsg, '🌸');
 
     if (window.i18n) {
-      window.i18n.speakText("Wonderful job Eleanor, you took your morning medicine!");
+      window.i18n.speakText(window.i18n.t("tts_med_morning_congrat"));
     }
   }
 
@@ -383,7 +384,7 @@ class RecollectApp {
       timestamp: now
     });
     this.renderActivityLogs();
-    this.showToast('Reminder snoozed for 10 minutes. Sarah has been notified.', '⏰');
+    this.showToast(window.i18n ? window.i18n.t('toast_rem_snooze') : 'Reminder snoozed for 10 minutes. Sarah has been notified.', '⏰');
   }
 
   requestReminderHelp() {
@@ -397,7 +398,7 @@ class RecollectApp {
       timestamp: now
     });
     this.renderActivityLogs();
-    this.showToast('Sarah has been notified that you need help. She will call you shortly!', '🤝');
+    this.showToast(window.i18n ? window.i18n.t('toast_rem_help') : 'Sarah has been notified that you need help. She will call you shortly!', '🤝');
   }
 
   // --- Auditory Narration & Speech (PRD FR-9.8) ---
@@ -421,10 +422,7 @@ class RecollectApp {
     });
   }
 
-  playGameAudioInstruction() {
-    const instruction = "Touch two cards gently to find happy memories. There are no timers, take all your time.";
-    window.i18n.speakText(instruction);
-  }
+
 
   // --- Brain & Memory Games Hub ---
   openGamesHub() {
@@ -444,13 +442,13 @@ class RecollectApp {
     if (packType === 'family') {
       btnFamily?.classList.add('primary');
       btnCultural?.classList.remove('primary');
-      if (subtitle) subtitle.textContent = 'Family Photo Match';
-      this.showToast('Switched to Family Photos Pack (Granddaughter Lily, Buddy)', '📷');
+      if (subtitle) subtitle.textContent = window.i18n ? window.i18n.t('pack_family_name') : 'Family Photo Match';
+      this.showToast(window.i18n ? window.i18n.t('toast_pack_family') : 'Switched to Family Photos Pack (Granddaughter Lily, Buddy)', '📷');
     } else {
       btnCultural?.classList.add('primary');
       btnFamily?.classList.remove('primary');
-      if (subtitle) subtitle.textContent = 'Northeast Cultural Pack';
-      this.showToast('Switched to Northeast India Cultural Memories (Bihu, Tea, River)', '🌿');
+      if (subtitle) subtitle.textContent = window.i18n ? window.i18n.t('pack_cultural_name') : 'Northeast Cultural Pack';
+      this.showToast(window.i18n ? window.i18n.t('toast_pack_cultural') : 'Switched to Northeast India Cultural Memories (Bihu, Tea, River)', '🌿');
     }
   }
 
@@ -538,10 +536,10 @@ class RecollectApp {
   }
 
   getBloomStageLabel(stars) {
-    if (stars >= 20) return '🌻 Sunflower Champion';
-    if (stars >= 12) return '🌼 Blooming Daisy';
-    if (stars >= 6) return '🌿 Budding Green';
-    return '🌱 Fresh Sprout';
+    if (stars >= 20) return window.i18n ? window.i18n.t('bloom_stage_sunflower') : '🌻 Sunflower Champion';
+    if (stars >= 12) return window.i18n ? window.i18n.t('bloom_stage_daisy') : '🌼 Blooming Daisy';
+    if (stars >= 6) return window.i18n ? window.i18n.t('bloom_stage_budding') : '🌿 Budding Green';
+    return window.i18n ? window.i18n.t('bloom_stage_sprout') : '🌱 Fresh Sprout';
   }
 
   updateBloomProgress(matchesCount) {
@@ -620,7 +618,7 @@ class RecollectApp {
       } else {
         cardEl.innerHTML = `
           <div class="card-art" style="color:var(--primary);">🌿</div>
-          <span class="card-label" style="font-size:1.1rem; color:var(--on-surface-variant);">Touch to Peek</span>
+          <span class="card-label" style="font-size:1.1rem; color:var(--on-surface-variant);">${window.i18n ? window.i18n.t('card_touch_peek') : 'Touch to Peek'}</span>
         `;
       }
       area.appendChild(cardEl);
@@ -659,9 +657,9 @@ class RecollectApp {
 
       if (banner) {
         const encouragements = [
-          '🌸 Beautiful! A happy memory found.',
-          '🌻 Wonderful gentle recall, Eleanor!',
-          '🌿 Bloomed like a sweet garden flower!'
+          window.i18n ? window.i18n.t('memory_praise_1') : '🌸 Beautiful! A happy memory found.',
+          window.i18n ? window.i18n.t('memory_praise_2') : '🌻 Wonderful gentle recall, Eleanor!',
+          window.i18n ? window.i18n.t('memory_praise_3') : '🌿 Bloomed like a sweet garden flower!'
         ];
         banner.textContent = encouragements[Math.floor(Math.random() * encouragements.length)];
       }
@@ -679,7 +677,7 @@ class RecollectApp {
       this.updateInGameScoreDisplay();
 
       if (banner) {
-        banner.textContent = '💚 Good peek! Cards will gently turn back over.';
+        banner.textContent = window.i18n ? window.i18n.t('memory_peek_encourage') : '💚 Good peek! Cards will gently turn back over.';
       }
 
       setTimeout(() => {
@@ -854,7 +852,7 @@ class RecollectApp {
 
     const banner = document.getElementById('gameFeedbackBanner');
     if (banner) {
-      banner.textContent = '🗣️ Touch the everyday item that matches the question!';
+      banner.textContent = window.i18n ? window.i18n.t('lang_feedback_welcome') : '🗣️ Touch the everyday item that matches the question!';
     }
 
     this.loadCurrentLanguageRound();
@@ -880,7 +878,7 @@ class RecollectApp {
       <div class="language-board">
         <div class="language-prompt-card">
           <div style="font-size:1.1rem; font-weight:800; color:var(--primary); background:var(--surface-container-high); padding:0.25rem 1rem; border-radius:var(--radius-full); margin-bottom:0.5rem;">
-            Round ${this.languageRoundIndex + 1} of ${this.languageTotalRounds}
+            ${window.i18n ? window.i18n.t('lang_round_indicator', { current: this.languageRoundIndex + 1, total: this.languageTotalRounds }) : `Round ${this.languageRoundIndex + 1} of ${this.languageTotalRounds}`}
           </div>
           <h3 class="language-prompt-question">${promptText}</h3>
         </div>
@@ -933,7 +931,7 @@ class RecollectApp {
           this.loadCurrentLanguageRound();
         } else {
           if (banner) {
-            banner.textContent = '🎉 Outstanding word and memory recall, Eleanor!';
+            banner.textContent = window.i18n ? window.i18n.t('lang_complete_praise') : '🎉 Outstanding word and memory recall, Eleanor!';
           }
           this.handleGameCompletion();
         }
@@ -1010,7 +1008,7 @@ class RecollectApp {
         <div class="routine-slots-container" id="routineSlotsContainer"></div>
 
         <div style="font-size:1.15rem; font-weight:700; color:var(--on-surface-variant); text-align:center; margin-top:0.5rem;">
-          Tap the steps below in order (1 -> 2 -> 3 -> 4):
+          ${window.i18n ? window.i18n.t('routine_order_instruction') : 'Tap the steps below in order (1 -> 2 -> 3 -> 4):'}
         </div>
 
         <!-- 4 Shuffled Step Choices -->
@@ -1030,15 +1028,15 @@ class RecollectApp {
       const stepText = window.i18n ? window.i18n.t(s.key) : s.text;
       if (isFilled) {
         slotEl.innerHTML = `
-          <span class="routine-slot-num">✓ Step ${s.step}</span>
+          <span class="routine-slot-num">${window.i18n ? window.i18n.t('routine_step_done', { step: s.step }) : `✓ Step ${s.step}`}</span>
           <div style="font-size:2.5rem; line-height:1;">${s.icon}</div>
           <strong class="routine-slot-txt">${stepText}</strong>
         `;
       } else {
         slotEl.innerHTML = `
-          <span class="routine-slot-num">Step ${s.step}</span>
+          <span class="routine-slot-num">${window.i18n ? window.i18n.t('routine_step_num', { step: s.step }) : `Step ${s.step}`}</span>
           <div style="font-size:2.2rem; opacity:0.4;">⏳</div>
-          <span style="font-size:1rem; color:var(--on-surface-variant);">Touch below to place</span>
+          <span style="font-size:1rem; color:var(--on-surface-variant);">${window.i18n ? window.i18n.t('routine_slot_placeholder') : 'Touch below to place'}</span>
         `;
       }
       slotsContainer.appendChild(slotEl);
@@ -1121,13 +1119,13 @@ class RecollectApp {
           this.renderMemoryGrid();
         }, 1400);
 
-        this.showToast('Gentle hint: Here is a lovely card pair blooming!', '💡');
+        this.showToast(window.i18n ? window.i18n.t('hint_memory_pair') : 'Gentle hint: Here is a lovely card pair blooming!', '💡');
       }
     } else if (this.activeGameEngine === 'attention') {
       const unfoundTarget = this.attentionTiles.find(t => t.isTarget && !t.isFound);
       if (unfoundTarget) {
         const targetLabel = window.i18n ? window.i18n.t(unfoundTarget.nameKey) : unfoundTarget.name;
-        this.showToast(`Gentle hint: Look closely for a ${targetLabel} ${unfoundTarget.icon}`, '💡');
+        this.showToast(window.i18n ? window.i18n.t('hint_attention_target', { target: `${targetLabel} ${unfoundTarget.icon}` }) : `Gentle hint: Look closely for a ${targetLabel} ${unfoundTarget.icon}`, '💡');
         const targetEls = document.querySelectorAll('.flower-tile');
         targetEls.forEach(el => {
           if (el.textContent.includes(targetLabel) && !el.classList.contains('bloomed-target')) {
@@ -1141,14 +1139,14 @@ class RecollectApp {
       if (correctEl) {
         correctEl.classList.add('hint-highlight');
         setTimeout(() => correctEl.classList.remove('hint-highlight'), 1800);
-        this.showToast('Gentle hint: Notice the glowing choice card!', '💡');
+        this.showToast(window.i18n ? window.i18n.t('hint_language_choice') : 'Gentle hint: Notice the glowing choice card!', '💡');
       }
     } else if (this.activeGameEngine === 'problem') {
       const nextChoiceEl = document.getElementById(`routineChoice_${this.problemNextStep}`);
       if (nextChoiceEl) {
         nextChoiceEl.classList.add('hint-highlight');
         setTimeout(() => nextChoiceEl.classList.remove('hint-highlight'), 1800);
-        this.showToast(`Gentle hint: Look for Step ${this.problemNextStep}`, '💡');
+        this.showToast(window.i18n ? window.i18n.t('hint_problem_step', { step: this.problemNextStep }) : `Gentle hint: Look for Step ${this.problemNextStep}`, '💡');
       }
     }
   }
@@ -1279,7 +1277,7 @@ class RecollectApp {
     });
 
     this.renderActivityLogs();
-    this.showToast(`Mood check-in recorded: ${label}`, '🌸');
+    this.showToast(window.i18n ? window.i18n.t('toast_mood_recorded', { label }) : `Mood check-in recorded: ${label}`, '🌸');
   }
 
   // --- Interactive Audio Calls & Emergency System ---
@@ -1330,7 +1328,7 @@ class RecollectApp {
       // Simulate connection after 2 seconds
       setTimeout(() => {
         if (modal.classList.contains('active-modal')) {
-          statusEl.textContent = '🟢 Connected • Audio Call Active';
+          statusEl.textContent = window.i18n ? window.i18n.t('call_connected_active') : '🟢 Connected • Audio Call Active';
           this.activeCallInterval = setInterval(() => {
             this.callDurationSec++;
             const mins = String(Math.floor(this.callDurationSec / 60)).padStart(2, '0');
@@ -1345,7 +1343,7 @@ class RecollectApp {
   endAudioCall() {
     if (this.activeCallInterval) clearInterval(this.activeCallInterval);
     document.getElementById('audioCallModal')?.classList.remove('active-modal');
-    this.showToast('Call ended.', '📞');
+    this.showToast(window.i18n ? window.i18n.t('toast_call_ended') : 'Call ended.', '📞');
   }
 
   triggerEmergencyHelp() {
@@ -1373,7 +1371,7 @@ class RecollectApp {
 
   acknowledgeEmergency() {
     this.closeEmergencyModal();
-    this.showToast('Emergency response confirmed. Team is on the way.', '🚨');
+    this.showToast(window.i18n ? window.i18n.t('toast_emerg_confirmed') : 'Emergency response confirmed. Team is on the way.', '🚨');
   }
 
   // --- Caregiver Settings & Accessibility Controls ---
@@ -1400,7 +1398,7 @@ class RecollectApp {
       this.syncThemeControls();
       this.evaluateThemeSchedules();
     } else {
-      this.showToast('Incorrect Caregiver PIN. Demo default is 1234.', '⚠️');
+      this.showToast(window.i18n ? window.i18n.t('toast_pin_incorrect') : 'Incorrect Caregiver PIN. Demo default is 1234.', '⚠️');
     }
   }
 
@@ -1512,7 +1510,7 @@ class RecollectApp {
       if (hcToggle) hcToggle.checked = false;
     }
     this.evaluateThemeSchedules();
-    this.showToast(enabled ? 'Dark Mode (Calm Night) active.' : 'Standard theme restored.', '🌙');
+    this.showToast(window.i18n ? (enabled ? window.i18n.t('toast_dark_active') : window.i18n.t('toast_standard_restored')) : (enabled ? 'Dark Mode (Calm Night) active.' : 'Standard theme restored.'), '🌙');
   }
 
   toggleHighContrast(enabled) {
@@ -1525,7 +1523,7 @@ class RecollectApp {
       if (dmToggle) dmToggle.checked = false;
     }
     this.evaluateThemeSchedules();
-    this.showToast(enabled ? 'High-contrast black & white theme active.' : 'Standard theme restored.', '🎨');
+    this.showToast(window.i18n ? (enabled ? window.i18n.t('toast_hc_active') : window.i18n.t('toast_standard_restored')) : (enabled ? 'High-contrast black & white theme active.' : 'Standard theme restored.'), '🎨');
   }
 
   toggleDarkSchedule(enabled) {
@@ -1534,7 +1532,7 @@ class RecollectApp {
     const timesRow = document.getElementById('darkScheduleTimesRow');
     if (timesRow) timesRow.style.display = enabled ? 'flex' : 'none';
     this.evaluateThemeSchedules();
-    this.showToast(enabled ? 'Dark Mode schedule enabled.' : 'Dark Mode schedule disabled.', '⏰');
+    this.showToast(window.i18n ? (enabled ? window.i18n.t('toast_dark_sched_enabled') : window.i18n.t('toast_dark_sched_disabled')) : (enabled ? 'Dark Mode schedule enabled.' : 'Dark Mode schedule disabled.'), '⏰');
   }
 
   updateDarkScheduleTimes() {
@@ -1545,7 +1543,7 @@ class RecollectApp {
     localStorage.setItem('recollect_dark_schedule_start', start);
     localStorage.setItem('recollect_dark_schedule_end', end);
     this.evaluateThemeSchedules();
-    this.showToast(`Dark Mode schedule updated: ${start} to ${end}`, '⏰');
+    this.showToast(window.i18n ? window.i18n.t('toast_dark_sched_updated', { start, end }) : `Dark Mode schedule updated: ${start} to ${end}`, '⏰');
   }
 
   toggleHcSchedule(enabled) {
@@ -1554,7 +1552,7 @@ class RecollectApp {
     const timesRow = document.getElementById('hcScheduleTimesRow');
     if (timesRow) timesRow.style.display = enabled ? 'flex' : 'none';
     this.evaluateThemeSchedules();
-    this.showToast(enabled ? 'High-Contrast schedule enabled.' : 'High-Contrast schedule disabled.', '⏰');
+    this.showToast(window.i18n ? (enabled ? window.i18n.t('toast_hc_sched_enabled') : window.i18n.t('toast_hc_sched_disabled')) : (enabled ? 'High-Contrast schedule enabled.' : 'High-Contrast schedule disabled.'), '⏰');
   }
 
   updateHcScheduleTimes() {
@@ -1565,7 +1563,7 @@ class RecollectApp {
     localStorage.setItem('recollect_hc_schedule_start', start);
     localStorage.setItem('recollect_hc_schedule_end', end);
     this.evaluateThemeSchedules();
-    this.showToast(`High-Contrast schedule updated: ${start} to ${end}`, '⏰');
+    this.showToast(window.i18n ? window.i18n.t('toast_hc_sched_updated', { start, end }) : `High-Contrast schedule updated: ${start} to ${end}`, '⏰');
   }
 
   setFontScale(scale) {
@@ -1577,12 +1575,12 @@ class RecollectApp {
     const selector = document.getElementById('fontSizeSelector');
     if (selector) selector.value = scale;
     
-    this.showToast(`Patient app text size set to ${scale.toUpperCase()}`, '🔤');
+    this.showToast(window.i18n ? window.i18n.t('toast_text_size_set', { scale: scale.toUpperCase() }) : `Patient app text size set to ${scale.toUpperCase()}`, '🔤');
   }
 
   toggleVoiceMode(enabled) {
     this.voiceModeEnabled = enabled;
-    this.showToast(enabled ? 'Voice narration enabled.' : 'Voice narration silenced.', '🔊');
+    this.showToast(window.i18n ? (enabled ? window.i18n.t('toast_voice_enabled') : window.i18n.t('toast_voice_silenced')) : (enabled ? 'Voice narration enabled.' : 'Voice narration silenced.'), '🔊');
   }
 
   switchSpaceFromSettings(role) {
@@ -1591,7 +1589,8 @@ class RecollectApp {
     if (authResult.success) {
       window.recollectDB.setActiveSession(authResult.session);
       this.applySession(authResult.session);
-      this.showToast(`Switched space to ${authResult.session.title}`, '🌿');
+      const switchRoleTitle = window.i18n ? (authResult.session.role === 'patient' ? window.i18n.t('role_senior_space') : (authResult.session.role === 'caregiver' ? window.i18n.t('role_caregiver_title') : window.i18n.t('role_clinical_title'))) : authResult.session.title;
+      this.showToast(window.i18n ? window.i18n.t('toast_space_switched', { title: switchRoleTitle }) : `Switched space to ${authResult.session.title}`, '🌿');
     }
   }
 
@@ -1614,7 +1613,7 @@ class RecollectApp {
 
   finishConsent() {
     this.closeConsentModal();
-    this.showToast('Patient & Caregiver consent confirmed and signed locally.', '✓');
+    this.showToast(window.i18n ? window.i18n.t('toast_consent_confirmed') : 'Patient & Caregiver consent confirmed and signed locally.', '✓');
   }
 
   // --- Caregiver Platform Tabs ---
@@ -1711,7 +1710,7 @@ class RecollectApp {
     // Render SVG
     const svgContent = `
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
-        <strong>Routine Adherence & Composite Score Timeline (${tf.toUpperCase()})</strong>
+        <strong>${window.i18n ? window.i18n.t('chart_title_timeline', { tf: tf.toUpperCase() }) : `Routine Adherence & Composite Score Timeline (${tf.toUpperCase()})`}</strong>
         <span style="font-size:0.9rem; color:#059669; font-weight:700;">${d.summary}</span>
       </div>
       
@@ -1736,13 +1735,13 @@ class RecollectApp {
         }).join('')}
       </svg>
       <div style="display:flex; gap:1.5rem; justify-content:center; margin-top:0.5rem; font-size:0.85rem;">
-        <span>🟢 <strong>Adherence Rate</strong> (${d.avgAdh})</span>
-        <span>🔵 <strong>Composite Score</strong> (${d.avgScore})</span>
+        <span>🟢 <strong>${window.i18n ? window.i18n.t('chart_adherence_label') : 'Adherence Rate'}</strong> (${d.avgAdh})</span>
+        <span>🔵 <strong>${window.i18n ? window.i18n.t('chart_composite_label') : 'Composite Score'}</strong> (${d.avgScore})</span>
       </div>
     `;
 
     chartContainer.innerHTML = svgContent;
-    this.showToast(`Timeline timeframe switched to: ${tf.toUpperCase()}`, '📈');
+    this.showToast(window.i18n ? window.i18n.t('toast_timeframe_switched', { tf: tf.toUpperCase() }) : `Timeline timeframe switched to: ${tf.toUpperCase()}`, '📈');
   }
 
   toggleFlagAccordion(el) {
@@ -1803,8 +1802,8 @@ class RecollectApp {
         time: r.scheduled_time || '14:00',
         title: r.label,
         status: done ? 'completed' : 'upcoming',
-        badge: done ? (window.i18n ? window.i18n.getText('badge_completed') : 'Completed') : (r.priority === 'critical' ? 'Critical Pending' : (window.i18n ? window.i18n.getText('badge_upcoming') : 'Upcoming')),
-        sensor: r.instructions || 'Scheduled caregiver reminder',
+        badge: done ? (window.i18n ? window.i18n.getText('badge_completed') : 'Completed') : (r.priority === 'critical' ? (window.i18n ? window.i18n.t('badge_critical_pending') : 'Critical Pending') : (window.i18n ? window.i18n.getText('badge_upcoming') : 'Upcoming')),
+        sensor: r.instructions || (window.i18n ? window.i18n.t('rem_sensor_fallback') : 'Scheduled caregiver reminder'),
         isDefault: false
       };
     });
@@ -1835,7 +1834,7 @@ class RecollectApp {
 
   toggleReminderDone(reminderId, isCurrentlyDone) {
     if (reminderId === 'base_001' || reminderId === 'base_002') {
-      this.showToast('Baseline schedule checkpoints are auto-logged.', 'ℹ️');
+      this.showToast(window.i18n ? window.i18n.t('toast_baseline_logged') : 'Baseline schedule checkpoints are auto-logged.', 'ℹ️');
       return;
     }
 
@@ -1844,7 +1843,7 @@ class RecollectApp {
         // Undo
         const logs = window.recollectDB.getItem('ReminderLog').filter(l => l.reminder_id !== 'rem_001');
         window.recollectDB.setItem('ReminderLog', logs);
-        this.showToast('Marked morning pill as pending.', '↺');
+        this.showToast(window.i18n ? window.i18n.t('toast_pill_pending') : 'Marked morning pill as pending.', '↺');
       } else {
         this.caregiverMarkTaken();
       }
@@ -1853,7 +1852,7 @@ class RecollectApp {
       if (isCurrentlyDone) {
         const filtered = logs.filter(l => l.reminder_id !== reminderId);
         window.recollectDB.setItem('ReminderLog', filtered);
-        this.showToast('Reminder marked as pending.', '↺');
+        this.showToast(window.i18n ? window.i18n.t('toast_rem_pending') : 'Reminder marked as pending.', '↺');
       } else {
         window.recollectDB.insertReminderLog({
           reminder_id: reminderId,
@@ -1863,7 +1862,7 @@ class RecollectApp {
           responded_at: new Date().toISOString(),
           response_latency_seconds: 60
         });
-        this.showToast('Reminder marked as completed.', '✓');
+        this.showToast(window.i18n ? window.i18n.t('toast_rem_completed') : 'Reminder marked as completed.', '✓');
       }
     }
 
@@ -1874,14 +1873,14 @@ class RecollectApp {
   deleteCustomReminder(reminderId) {
     window.recollectDB.deleteReminder(reminderId);
     this.renderCaregiverTimeline();
-    this.showToast('Task removed from schedule.', '🗑️');
+    this.showToast(window.i18n ? window.i18n.t('toast_task_removed') : 'Task removed from schedule.', '🗑️');
   }
 
   refreshCaregiverTimeline() {
     this.renderCaregiverTimeline();
     const syncText = document.getElementById('cgSyncText');
     if (syncText) syncText.textContent = `Live Hub Sync: ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
-    this.showToast('Caregiver schedule synchronized with Eleanor\'s tablet.', '🔄');
+    this.showToast(window.i18n ? window.i18n.t('toast_schedule_synced') : 'Caregiver schedule synchronized with Eleanor\'s tablet.', '🔄');
   }
 
   caregiverMarkTaken() {
@@ -1908,11 +1907,11 @@ class RecollectApp {
     this.renderCaregiverTimeline();
     this.renderActivityLogs();
     this.updatePatientRoutineCard();
-    this.showToast('Marked as taken by Caregiver (Sarah).', '✓');
+    this.showToast(window.i18n ? window.i18n.t('toast_taken_cg') : 'Marked as taken by Caregiver (Sarah).', '✓');
   }
 
   simulateSmsEscalation() {
-    this.showToast('📱 SMS Alert sent to Sarah (+91 98765 43210): "Recollect Alert: Eleanor\'s 9:00 AM Blood Pressure Pill unconfirmed."', '📱');
+    this.showToast(window.i18n ? window.i18n.t('toast_sms_sent') : '📱 SMS Alert sent to Sarah (+91 98765 43210): "Recollect Alert: Eleanor\'s 9:00 AM Blood Pressure Pill unconfirmed."', '📱');
   }
 
   // --- Caregiver Notes ---
@@ -1922,7 +1921,7 @@ class RecollectApp {
     const text = input?.value?.trim();
 
     if (!text) {
-      this.showToast('Please enter an observation note before saving.', '⚠️');
+      this.showToast(window.i18n ? window.i18n.t('toast_note_empty') : 'Please enter an observation note before saving.', '⚠️');
       return;
     }
 
@@ -1944,7 +1943,7 @@ class RecollectApp {
     if (input) input.value = '';
     this.renderCaregiverNotes();
     this.renderActivityLogs();
-    this.showToast('Caregiver observation saved to patient clinical record.', '📝');
+    this.showToast(window.i18n ? window.i18n.t('toast_note_saved') : 'Caregiver observation saved to patient clinical record.', '📝');
   }
 
   renderCaregiverNotes() {
@@ -2002,7 +2001,7 @@ class RecollectApp {
     this.closeNewReminderModal();
     this.renderCaregiverTimeline();
     this.renderActivityLogs();
-    this.showToast(`New reminder "${label}" scheduled for ${time}.`, '➕');
+    this.showToast(window.i18n ? window.i18n.t('toast_rem_scheduled', { label, time }) : `New reminder "${label}" scheduled for ${time}.`, '➕');
   }
 
   // --- Multi-Disciplinary Care Circle & Messaging ---
@@ -2028,14 +2027,19 @@ class RecollectApp {
   }
 
   contactCareTeamMember(name, contact) {
-    this.startAudioCallSimulation(name, `Connecting to ${contact}...`);
+    this.startAudioCallSimulation(name, window.i18n ? window.i18n.t('call_connecting_to', { contact }) : `Connecting to ${contact}...`);
   }
 
   promptAddCareTeamMember() {
-    const name = prompt('Enter new care circle member name:');
+    const namePrompt = window.i18n ? window.i18n.t('prompt_care_member_name') : 'Enter new care circle member name:';
+    const rolePrompt = window.i18n ? window.i18n.t('prompt_care_member_role') : 'Enter role/relation (e.g. Physiotherapist, Neighbor):';
+    const phonePrompt = window.i18n ? window.i18n.t('prompt_care_member_phone') : 'Enter phone or email:';
+    const defaultRole = window.i18n ? window.i18n.t('default_care_partner_role') : 'Care Partner';
+
+    const name = prompt(namePrompt);
     if (!name) return;
-    const role = prompt('Enter role/relation (e.g. Physiotherapist, Neighbor):') || 'Care Partner';
-    const phone = prompt('Enter phone or email:') || '+91 98000 00000';
+    const role = prompt(rolePrompt) || defaultRole;
+    const phone = prompt(phonePrompt) || '+91 98000 00000';
 
     window.recollectDB.addCareTeamMember({
       name,
@@ -2046,7 +2050,7 @@ class RecollectApp {
     });
 
     this.renderCareTeamGrid();
-    this.showToast(`Added ${name} to Care Circle.`, '👥');
+    this.showToast(window.i18n ? window.i18n.t('toast_circle_added', { name }) : `Added ${name} to Care Circle.`, '👥');
   }
 
   switchMessageChannel(channel) {
@@ -2102,7 +2106,7 @@ class RecollectApp {
 
     if (input) input.value = '';
     this.renderCareTeamMessages();
-    this.showToast('Message delivered.', '💬');
+    this.showToast(window.i18n ? window.i18n.t('toast_msg_delivered') : 'Message delivered.', '💬');
 
     // Simulate realistic auto-reply after 1.8 seconds
     const activeChan = this.activeMessageChannel;
@@ -2157,7 +2161,7 @@ class RecollectApp {
     const text = input?.value?.trim();
 
     if (!text) {
-      this.showToast('Please type a hand-off note first.', '⚠️');
+      this.showToast(window.i18n ? window.i18n.t('toast_handoff_empty') : 'Please type a hand-off note first.', '⚠️');
       return;
     }
 
@@ -2172,7 +2176,7 @@ class RecollectApp {
 
     if (input) input.value = '';
     this.renderActivityLogs();
-    this.showToast('Hand-off observation logged for the care team.', '📋');
+    this.showToast(window.i18n ? window.i18n.t('toast_handoff_saved') : 'Hand-off observation logged for the care team.', '📋');
   }
 
   // --- Alert Escalation Settings ---
@@ -2206,7 +2210,7 @@ class RecollectApp {
       smsFallback: smsEl?.checked ?? true,
       batchDigest: digestEl?.checked ?? true
     });
-    this.showToast('Alert escalation preferences saved.', '🔔');
+    this.showToast(window.i18n ? window.i18n.t('toast_alerts_saved') : 'Alert escalation preferences saved.', '🔔');
   }
 
   // --- Clinical Hub & Behavior Flags (design.md Section 5) ---
@@ -2245,7 +2249,7 @@ class RecollectApp {
     if (window.ruleEngine) {
       window.ruleEngine.evaluateAllRules(this.patientId);
       this.renderBehaviorFlags();
-      this.showToast('Deterministic Phase-1 rule engine evaluated.', '⚙️');
+      this.showToast(window.i18n ? window.i18n.t('toast_rules_evaluated') : 'Deterministic Phase-1 rule engine evaluated.', '⚙️');
     }
   }
 
@@ -2303,7 +2307,7 @@ class RecollectApp {
       acknowledged_at: new Date().toISOString(),
       user_action: action
     });
-    this.showToast(`Flag updated: Marked as ${action}.`, '✓');
+    this.showToast(window.i18n ? window.i18n.t('toast_flag_updated', { action }) : `Flag updated: Marked as ${action}.`, '✓');
     this.renderBehaviorFlags();
   }
 
@@ -2311,7 +2315,7 @@ class RecollectApp {
     const input = document.getElementById('doctorReportReplyInput');
     const text = input?.value?.trim();
     if (!text) {
-      this.showToast('Please enter a clinical reply before sending.', '⚠️');
+      this.showToast(window.i18n ? window.i18n.t('toast_reply_empty') : 'Please enter a clinical reply before sending.', '⚠️');
       return;
     }
 
@@ -2323,7 +2327,7 @@ class RecollectApp {
     });
 
     if (input) input.value = '';
-    this.showToast('Physician report reply transmitted to Sarah Vance.', '🩺');
+    this.showToast(window.i18n ? window.i18n.t('toast_reply_sent') : 'Physician report reply transmitted to Sarah Vance.', '🩺');
   }
 
   logAshaHomeVisit() {
@@ -2336,7 +2340,7 @@ class RecollectApp {
       timestamp: now.toISOString()
     });
     this.renderActivityLogs();
-    this.showToast('ASHA Home Visit Checkpoint logged successfully to state register.', '🌾');
+    this.showToast(window.i18n ? window.i18n.t('toast_asha_logged') : 'ASHA Home Visit Checkpoint logged successfully to state register.', '🌾');
   }
 
   initiateTelemedicineReferral() {
@@ -2348,8 +2352,14 @@ class RecollectApp {
       attendingDoctor: 'Dr. Robert Thorne',
       generatedAt: new Date().toISOString()
     };
-    alert(`📡 Ayushman Bharat Telemedicine Referral Generated:\n\nPatient: ${packet.name} (ABHA ID: ${packet.abhaId})\nCenter: ${packet.referralHospital}\nProvider: ${packet.attendingDoctor}\nStatus: Packet queued for district consultation.`);
-    this.showToast('Telemedicine referral packet generated under Ayushman Bharat Digital Health integration.', '🏥');
+    const telemedMsg = window.i18n ? window.i18n.t('telemed_alert_text', {
+      name: packet.name,
+      abhaId: packet.abhaId,
+      hospital: packet.referralHospital,
+      doctor: packet.attendingDoctor
+    }) : `📡 Ayushman Bharat Telemedicine Referral Generated:\n\nPatient: ${packet.name} (ABHA ID: ${packet.abhaId})\nCenter: ${packet.referralHospital}\nProvider: ${packet.attendingDoctor}\nStatus: Packet queued for district consultation.`;
+    alert(telemedMsg);
+    this.showToast(window.i18n ? window.i18n.t('toast_telemed_packet') : 'Telemedicine referral packet generated under Ayushman Bharat Digital Health integration.', '🏥');
   }
 
   exportComplianceData() {
@@ -2360,7 +2370,7 @@ class RecollectApp {
     a.href = url;
     a.download = `recollect_patient_${this.patientId}_export.json`;
     a.click();
-    this.showToast('Exported DPDP Act & GDPR compliant JSON bundle.', '📦');
+    this.showToast(window.i18n ? window.i18n.t('toast_compliance_exported') : 'Exported DPDP Act & GDPR compliant JSON bundle.', '📦');
   }
 
   // --- Network & Power Modes ---
@@ -2381,7 +2391,7 @@ class RecollectApp {
         text.textContent = window.i18n ? window.i18n.getText(netKey) : 'Online';
       }
       window.recollectDB.processSyncQueue();
-      this.showToast('Connected to network. Background sync queue processed.', '🟢');
+      this.showToast(window.i18n ? window.i18n.t('toast_net_connected') : 'Connected to network. Background sync queue processed.', '🟢');
     } else {
       if (btn) btn.className = 'status-pill offline';
       if (dot) dot.textContent = '🟠';
@@ -2390,7 +2400,7 @@ class RecollectApp {
         text.setAttribute('data-i18n', netKey);
         text.textContent = window.i18n ? window.i18n.getText(netKey) : 'Offline (Local-Only)';
       }
-      this.showToast('Zero-connectivity offline mode active. All patient writes persist locally.', '🟠');
+      this.showToast(window.i18n ? window.i18n.t('toast_net_offline') : 'Zero-connectivity offline mode active. All patient writes persist locally.', '🟠');
     }
   }
 
@@ -2408,7 +2418,7 @@ class RecollectApp {
     const settingsToggle = document.getElementById('toggleLowPowerSettings');
     if (settingsToggle) settingsToggle.checked = this.isLowPower;
 
-    this.showToast(this.isLowPower ? 'Low-power mode enabled (reduced animation and background polling).' : 'Normal power mode restored.', '⚡');
+    this.showToast(window.i18n ? (this.isLowPower ? window.i18n.t('toast_power_low') : window.i18n.t('toast_power_normal')) : (this.isLowPower ? 'Low-power mode enabled (reduced animation and background polling).' : 'Normal power mode restored.'), '⚡');
   }
 
   applyLanguageToAllViews() {
@@ -2469,7 +2479,7 @@ class RecollectApp {
         'kha': 'Khasi (Meghalaya)',
         'hi': 'हिन्दी (Hindi)'
       };
-      this.showToast(`Language switched to ${langNameMap[lang] || lang.toUpperCase()}`, '🌐');
+      this.showToast(window.i18n ? window.i18n.t('toast_lang_switched', { lang: langNameMap[lang] || lang.toUpperCase() }) : `Language switched to ${langNameMap[lang] || lang.toUpperCase()}`, '🌐');
     }
   }
 
@@ -2479,7 +2489,11 @@ class RecollectApp {
     const toastIcon = document.getElementById('toastIcon');
 
     if (toast && toastMsg && toastIcon) {
-      toastMsg.textContent = message;
+      let resolved = message;
+      if (window.i18n && typeof message === 'string' && message.startsWith('toast_')) {
+        resolved = window.i18n.t(message);
+      }
+      toastMsg.textContent = resolved;
       toastIcon.textContent = icon;
       toast.style.display = 'flex';
 

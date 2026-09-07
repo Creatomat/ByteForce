@@ -91,6 +91,7 @@ Open `http://localhost:8000` in your web browser.
 
 ## Documentation
 
+* **[Context Handoff & Session Continuity](docs/context_handoff.md)**: Snapshot of current codebase state, active branch, feature inventory, remaining backlog, and instructions for continuing in a fresh session.
 * **[Feature Lifecycle & Maintenance Instructions](docs/instructions.md)**: Mandatory developer checklist covering markup, styles, state, database, 5-language localization, and documentation requirements whenever features are added, improved, changed, or removed.
 * **[Features & Architecture Document](docs/features.md)**: Exhaustive technical and functional breakdown of all platform features across Senior Space, Caregiver Portal, Clinical Hub, Rule Engine, and Localization.
 * **[User Manual & Operational Guide](docs/user_manual.md)**: Comprehensive, step-by-step user guide for seniors, family caregivers, and health workers.
