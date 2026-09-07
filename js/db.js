@@ -24,47 +24,31 @@ class RecollectDB {
     if (!initialized) {
       this.seedInitialData();
       localStorage.setItem(STORAGE_PREFIX + 'initialized', 'true');
+    } else {
+      // Ensure new tables are seeded if upgrading
+      this.ensureExtendedTables();
     }
   }
 
-  // --- Seed Initial Data ---
-  seedInitialData() {
+  ensureExtendedTables() {
+    if (!this.getItem('CareTeamMember').length) {
+      this.seedCareTeam();
+    }
+    if (!this.getItem('CareTeamMessage').length) {
+      this.seedCareTeamMessages();
+    }
+    if (!this.getItem('CaregiverActivityLog').length) {
+      this.seedActivityLogs();
+    }
+    if (!this.getItem('Reminder').length) {
+      this.seedDefaultReminders();
+    }
+  }
+
+  seedDefaultReminders() {
     const now = new Date().toISOString();
     const patientId = 'p_eleanor_vance_001';
     const caregiverId = 'cg_sarah_vance_001';
-
-    const patient = {
-      patient_id: patientId,
-      full_name: 'Eleanor Vance',
-      date_of_birth: '1948-03-14',
-      device_id: 'tab_bedside_081',
-      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Kolkata',
-      care_notes: 'Mild cognitive impairment. Prefers morning visual routines. Daily Lisinopril 10mg.',
-      created_at: now
-    };
-
-    const caregiver = {
-      caregiver_id: caregiverId,
-      full_name: 'Sarah Vance',
-      email: 'sarah.vance@recollectcare.org',
-      phone: '+91 98765 43210',
-      role: 'primary',
-      auth_provider_id: 'auth_usr_sarah_01',
-      created_at: now
-    };
-
-    const link = {
-      link_id: 'link_001',
-      patient_id: patientId,
-      caregiver_id: caregiverId,
-      consent_confirmed_at: '2026-08-01T09:00:00Z',
-      notification_prefs: {
-        missed_medication: 'instant_sms_and_push',
-        inactivity_gap: 'push_only',
-        weekly_report: 'email_digest'
-      }
-    };
-
     const initialReminders = [
       {
         reminder_id: 'rem_001',
@@ -109,6 +93,152 @@ class RecollectDB {
         updated_at: now
       }
     ];
+    this.setItem('Reminder', initialReminders);
+  }
+
+  seedCareTeam() {
+    const members = [
+      {
+        id: 'ct_sarah',
+        name: 'Sarah Vance',
+        roleTitle: 'Primary Family Caregiver',
+        relationship: 'Daughter (Power of Attorney)',
+        avatar: '👩',
+        contact: '+91 98765 43210',
+        status: 'Active on Tablet Sync',
+        isPrimary: true
+      },
+      {
+        id: 'ct_priya',
+        name: 'Priya Vance',
+        roleTitle: 'Secondary Co-Caregiver',
+        relationship: 'Daughter (Evening check-in)',
+        avatar: '👧',
+        contact: '+91 98765 43211',
+        status: 'Active',
+        isPrimary: false
+      },
+      {
+        id: 'ct_thorne',
+        name: 'Dr. Robert Thorne',
+        roleTitle: 'Attending Neurologist',
+        relationship: 'District Civil Hospital',
+        avatar: '🩺',
+        contact: 'dr.thorne@health.gov.in',
+        status: 'Weekly report review',
+        isPrimary: false
+      },
+      {
+        id: 'ct_anita',
+        name: 'Anita Roy',
+        roleTitle: 'Lead ASHA Worker',
+        relationship: 'Primary Health Centre (PHC)',
+        avatar: '🌾',
+        contact: '+91 94350 12345',
+        status: 'Bi-weekly home visit',
+        isPrimary: false
+      }
+    ];
+    this.setItem('CareTeamMember', members);
+  }
+
+  seedCareTeamMessages() {
+    const messages = [
+      {
+        id: 'msg_1',
+        channel: 'doctor',
+        sender: 'Sarah Vance',
+        senderRole: 'caregiver',
+        content: 'Dr. Thorne, Eleanor was very energetic during the memory game today. Her accuracy is stable.',
+        timestamp: new Date(Date.now() - 3600000 * 5).toISOString()
+      },
+      {
+        id: 'msg_2',
+        channel: 'doctor',
+        sender: 'Dr. Thorne',
+        senderRole: 'doctor',
+        content: 'Excellent to hear. Keep observing the morning medication routine. The 94% weekly adherence is very reassuring.',
+        timestamp: new Date(Date.now() - 3600000 * 3).toISOString()
+      },
+      {
+        id: 'msg_3',
+        channel: 'asha',
+        sender: 'Anita Roy (ASHA)',
+        senderRole: 'asha',
+        content: 'Namaste Sarah. I will visit Eleanor this Wednesday afternoon for the routine blood pressure and hydration check.',
+        timestamp: new Date(Date.now() - 3600000 * 8).toISOString()
+      },
+      {
+        id: 'msg_4',
+        channel: 'asha',
+        sender: 'Sarah Vance',
+        senderRole: 'caregiver',
+        content: 'Thank you Anita! Eleanor is looking forward to seeing you. Her tablet routine is going smoothly.',
+        timestamp: new Date(Date.now() - 3600000 * 7).toISOString()
+      }
+    ];
+    this.setItem('CareTeamMessage', messages);
+  }
+
+  seedActivityLogs() {
+    const activities = [
+      {
+        id: 'act_1',
+        author: 'Priya Vance',
+        role: 'Secondary Sibling',
+        action: 'Breakfast & Morning Check',
+        content: 'Checked in for breakfast. Eleanor enjoyed warm berry tea and toast.',
+        timestamp: new Date(Date.now() - 3600000 * 4.5).toISOString()
+      },
+      {
+        id: 'act_2',
+        author: 'Sarah Vance',
+        role: 'Primary Daughter',
+        action: 'Routine Confirmation',
+        content: 'Confirmed Lisinopril 10mg tablet was taken with water.',
+        timestamp: new Date(Date.now() - 3600000 * 3.8).toISOString()
+      }
+    ];
+    this.setItem('CaregiverActivityLog', activities);
+  }
+
+  // --- Seed Initial Data ---
+  seedInitialData() {
+    const now = new Date().toISOString();
+    const patientId = 'p_eleanor_vance_001';
+    const caregiverId = 'cg_sarah_vance_001';
+
+    const patient = {
+      patient_id: patientId,
+      full_name: 'Eleanor Vance',
+      date_of_birth: '1948-03-14',
+      device_id: 'tab_bedside_081',
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Kolkata',
+      care_notes: 'Mild cognitive impairment. Prefers morning visual routines. Daily Lisinopril 10mg.',
+      created_at: now
+    };
+
+    const caregiver = {
+      caregiver_id: caregiverId,
+      full_name: 'Sarah Vance',
+      email: 'sarah.vance@recollectcare.org',
+      phone: '+91 98765 43210',
+      role: 'primary',
+      auth_provider_id: 'auth_usr_sarah_01',
+      created_at: now
+    };
+
+    const link = {
+      link_id: 'link_001',
+      patient_id: patientId,
+      caregiver_id: caregiverId,
+      consent_confirmed_at: '2026-08-01T09:00:00Z',
+      notification_prefs: {
+        missed_medication: 'instant_sms_and_push',
+        inactivity_gap: 'push_only',
+        weekly_report: 'email_digest'
+      }
+    };
 
     const historicalGameSessions = [
       {
@@ -178,7 +308,6 @@ class RecollectDB {
     this.setItem('Patient', [patient]);
     this.setItem('Caregiver', [caregiver]);
     this.setItem('PatientCaregiverLink', [link]);
-    this.setItem('Reminder', initialReminders);
     this.setItem('GameSession', historicalGameSessions);
     this.setItem('ReminderLog', initialReminderLogs);
     this.setItem('CaregiverNote', initialCaregiverNotes);
@@ -197,6 +326,11 @@ class RecollectDB {
         error_detail: null
       }
     ]);
+
+    this.seedDefaultReminders();
+    this.seedCareTeam();
+    this.seedCareTeamMessages();
+    this.seedActivityLogs();
   }
 
   // --- Storage Helpers ---
@@ -219,10 +353,6 @@ class RecollectDB {
   }
 
   // --- Append-Only Write Methods ---
-
-  /**
-   * Insert a new GameSession (Rule: Append-only, never mutate)
-   */
   insertGameSession(session) {
     if (!session.session_id) {
       session.session_id = 'gs_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
@@ -234,9 +364,6 @@ class RecollectDB {
     return session;
   }
 
-  /**
-   * Insert a new ReminderLog (Rule: Append-only, never mutate)
-   */
   insertReminderLog(log) {
     if (!log.log_id) {
       log.log_id = 'rlog_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
@@ -248,9 +375,6 @@ class RecollectDB {
     return log;
   }
 
-  /**
-   * Insert a Caregiver Note (First-class queryable record)
-   */
   insertCaregiverNote(note) {
     if (!note.note_id) {
       note.note_id = 'note_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
@@ -263,9 +387,6 @@ class RecollectDB {
     return note;
   }
 
-  /**
-   * Insert a Mood Check-in
-   */
   insertMoodLog(mood) {
     if (!mood.mood_id) {
       mood.mood_id = 'mood_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
@@ -278,9 +399,6 @@ class RecollectDB {
     return mood;
   }
 
-  /**
-   * Upsert BehaviorFlag (Rule: evidence is mandatory)
-   */
   insertBehaviorFlag(flag) {
     if (!flag.evidence) {
       throw new Error('[HARD RULE VIOLATION] BehaviorFlag.evidence is required and cannot be null.');
@@ -306,6 +424,53 @@ class RecollectDB {
     return null;
   }
 
+  // --- Care Team & Messages ---
+  getCareTeamMembers() {
+    return this.getItem('CareTeamMember');
+  }
+
+  addCareTeamMember(member) {
+    if (!member.id) {
+      member.id = 'ct_' + Date.now();
+    }
+    const members = this.getItem('CareTeamMember');
+    members.push(member);
+    this.setItem('CareTeamMember', members);
+    return member;
+  }
+
+  getCareTeamMessages(channel = 'doctor') {
+    const all = this.getItem('CareTeamMessage');
+    return all.filter(m => m.channel === channel);
+  }
+
+  addCareTeamMessage(msg) {
+    if (!msg.id) {
+      msg.id = 'msg_' + Date.now();
+    }
+    msg.timestamp = msg.timestamp || new Date().toISOString();
+    const all = this.getItem('CareTeamMessage');
+    all.push(msg);
+    this.setItem('CareTeamMessage', all);
+    this.queueForSync('CareTeamMessage', msg);
+    return msg;
+  }
+
+  getActivityLogs() {
+    return this.getItem('CaregiverActivityLog');
+  }
+
+  addActivityLog(act) {
+    if (!act.id) {
+      act.id = 'act_' + Date.now();
+    }
+    act.timestamp = act.timestamp || new Date().toISOString();
+    const logs = this.getItem('CaregiverActivityLog');
+    logs.unshift(act);
+    this.setItem('CaregiverActivityLog', logs);
+    return act;
+  }
+
   // --- Cloud-Authoritative Reminder Methods ---
   saveReminder(reminder) {
     if (!reminder.reminder_id) {
@@ -326,6 +491,25 @@ class RecollectDB {
   deleteReminder(reminderId) {
     const reminders = this.getItem('Reminder').filter(r => r.reminder_id !== reminderId);
     this.setItem('Reminder', reminders);
+  }
+
+  // --- Alert Escalation Settings ---
+  getAlertSettings() {
+    try {
+      const data = localStorage.getItem(STORAGE_PREFIX + 'alert_settings');
+      return data ? JSON.parse(data) : {
+        instantPush: true,
+        smsFallback: true,
+        unackWindow: '30',
+        batchDigest: true
+      };
+    } catch(e) {
+      return { instantPush: true, smsFallback: true, unackWindow: '30', batchDigest: true };
+    }
+  }
+
+  saveAlertSettings(settings) {
+    localStorage.setItem(STORAGE_PREFIX + 'alert_settings', JSON.stringify(settings));
   }
 
   // --- Local-First Sync Queue Simulation ---
@@ -355,7 +539,7 @@ class RecollectDB {
       error_detail: null
     };
     syncLogs.unshift(newSync);
-    this.setItem('SyncLog', syncLogs.slice(0, 30)); // Keep last 30 operational logs
+    this.setItem('SyncLog', syncLogs.slice(0, 30));
     this.syncQueue = [];
   }
 
@@ -367,9 +551,8 @@ class RecollectDB {
     return null;
   }
 
-  // Data Export & Deletion (PRD FR-7 Data Retention & Rules Section 8)
+  // Data Export & Deletion
   exportPatientData(patientId) {
-    // LEGAL REVIEW REQUIRED: DPDP Act / GDPR Data Portability Export
     return {
       export_version: '1.0',
       exported_at: new Date().toISOString(),
@@ -379,12 +562,13 @@ class RecollectDB {
       game_sessions: this.getItem('GameSession').filter(g => g.patient_id === patientId),
       caregiver_notes: this.getItem('CaregiverNote').filter(n => n.patient_id === patientId),
       mood_logs: this.getItem('MoodLog').filter(m => m.patient_id === patientId),
-      behavior_flags: this.getItem('BehaviorFlag').filter(b => b.patient_id === patientId)
+      behavior_flags: this.getItem('BehaviorFlag').filter(b => b.patient_id === patientId),
+      care_team: this.getItem('CareTeamMember'),
+      activity_logs: this.getItem('CaregiverActivityLog')
     };
   }
 
   deletePatientData(patientId) {
-    // LEGAL REVIEW REQUIRED: Right to be Forgotten / Deletion Flow
     this.setItem('Patient', this.getItem('Patient').filter(p => p.patient_id !== patientId));
     this.setItem('Reminder', this.getItem('Reminder').filter(r => r.patient_id !== patientId));
     this.setItem('ReminderLog', this.getItem('ReminderLog').filter(r => r.patient_id !== patientId));
@@ -394,7 +578,7 @@ class RecollectDB {
     this.setItem('BehaviorFlag', this.getItem('BehaviorFlag').filter(b => b.patient_id !== patientId));
   }
 
-  // Session & Authentication (PRD FR-7.1, FR-9.11)
+  // Session & Authentication
   getActiveSession() {
     try {
       const s = localStorage.getItem(STORAGE_PREFIX + 'active_session');
@@ -424,7 +608,6 @@ class RecollectDB {
       };
     }
     if (role === 'caregiver') {
-      // Caregiver PIN 1234 or empty bypass for prototype
       if (!pin || pin === '1234') {
         return {
           success: true,
@@ -434,7 +617,6 @@ class RecollectDB {
       return { success: false, error: 'Incorrect Caregiver PIN. (Default demo PIN is 1234)' };
     }
     if (role === 'clinical') {
-      // Doctor/ASHA PIN 9999 or empty bypass for prototype
       if (!pin || pin === '9999') {
         return {
           success: true,

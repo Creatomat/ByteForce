@@ -15,6 +15,7 @@ class RecollectApp {
     this.voiceModeEnabled = true;
     this.activePhotoPack = 'family'; // 'family' | 'cultural'
     this.currentCategory = 'memory';
+    this.activeMessageChannel = 'doctor'; // 'doctor' | 'asha'
 
     // Game state
     this.gameStartTime = null;
@@ -26,14 +27,21 @@ class RecollectApp {
     this.selectedCards = [];
     this.isCheckingMatch = false;
 
+    // Active call state
+    this.activeCallInterval = null;
+    this.callDurationSec = 0;
+
     // Toast timeout
     this.toastTimeout = null;
-    
+
+    // Periodic time & orientation update
+    this.clockInterval = null;
+
     this.init();
   }
 
   init() {
-    // Restore persistent accessibility preferences
+    // 1. Restore persistent accessibility preferences
     this.isHighContrast = localStorage.getItem('recollect_high_contrast') === 'true';
     if (this.isHighContrast) {
       document.body.classList.add('high-contrast-mode');
@@ -47,7 +55,7 @@ class RecollectApp {
     const fontSelect = document.getElementById('fontSizeSelector');
     if (fontSelect) fontSelect.value = this.fontScale;
 
-    // Initialize i18n
+    // 2. Initialize i18n
     if (window.i18n) {
       window.i18n.updateDOM();
       const savedLang = localStorage.getItem('recollect_lang') || 'en';
@@ -57,13 +65,101 @@ class RecollectApp {
       if (settingsLang) settingsLang.value = savedLang;
     }
 
-    // Evaluate Phase-1 rules for patient
+    // 3. Dynamic Time & Orientation Engine
+    this.updateOrientationTime();
+    if (this.clockInterval) clearInterval(this.clockInterval);
+    this.clockInterval = setInterval(() => this.updateOrientationTime(), 30000);
+
+    // 4. Restore Alert Escalation Settings
+    this.restoreAlertSettings();
+
+    // 5. Evaluate Phase-1 rules
     if (window.ruleEngine) {
       window.ruleEngine.evaluateAllRules(this.patientId);
     }
 
-    // Restore authenticated session
+    // 6. Restore authenticated session
     this.restoreSession();
+  }
+
+  // --- Dynamic Time, Greeting, and Date Engine ---
+  updateOrientationTime() {
+    const now = new Date();
+    const hour = now.getHours();
+
+    // Determine greeting & weather keys
+    const greetingKey = window.i18n ? window.i18n.getTimeOfDayGreetingKey(hour) : 'greeting_morning';
+    const weatherKey = window.i18n ? window.i18n.getTimeOfDayWeatherKey(hour) : 'weather_morning';
+
+    // 1. Update Patient Greeting
+    const greetingEl = document.querySelector('.orientation-greeting');
+    if (greetingEl && window.i18n) {
+      greetingEl.setAttribute('data-i18n', greetingKey);
+      greetingEl.textContent = window.i18n.getText(greetingKey);
+    }
+
+    // 2. Update Patient Date
+    const dateEl = document.querySelector('.orientation-date');
+    if (dateEl && window.i18n) {
+      dateEl.textContent = window.i18n.getFormattedDate(now);
+    }
+
+    // 3. Update Weather Info
+    const weatherEl = document.querySelector('.orientation-meta span:first-child');
+    if (weatherEl && window.i18n) {
+      weatherEl.setAttribute('data-i18n', weatherKey);
+      weatherEl.textContent = window.i18n.getText(weatherKey);
+    }
+
+    // 4. Update Caregiver Header Live Sync time
+    const syncText = document.getElementById('cgSyncText');
+    if (syncText) {
+      syncText.textContent = `Live Hub Sync: ${now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+    }
+
+    // 5. Update next or current scheduled routine on patient dashboard
+    this.updatePatientRoutineCard();
+  }
+
+  updatePatientRoutineCard() {
+    const routineCard = document.getElementById('currentRoutineCard');
+    if (!routineCard) return;
+
+    const logs = window.recollectDB ? window.recollectDB.getItem('ReminderLog') : [];
+    const isTaken = logs.some(l => l.reminder_id === 'rem_001' && l.patient_response === 'acknowledged');
+
+    const takeMedBtn = document.getElementById('takeMedBtn');
+    const routineTimeTag = document.getElementById('routineTimeTag');
+    const routineNameEl = document.querySelector('[data-i18n="routine_name"]');
+    const routineSubEl = document.querySelector('[data-i18n="routine_sub"]');
+
+    if (isTaken) {
+      if (takeMedBtn) {
+        takeMedBtn.classList.add('done-state');
+        takeMedBtn.style.background = '#059669';
+        takeMedBtn.innerHTML = `<span>✓</span> <span>${window.i18n ? window.i18n.getText('med_taken_confirm', { time: '9:02 AM' }) : 'Completed • Wonderful job, Eleanor!'}</span>`;
+      }
+      if (routineTimeTag) {
+        routineTimeTag.textContent = 'Completed for today';
+        routineTimeTag.style.color = '#059669';
+      }
+    } else {
+      if (takeMedBtn) {
+        takeMedBtn.classList.remove('done-state');
+        takeMedBtn.style.background = '';
+        takeMedBtn.innerHTML = `<span>✓</span> <span data-i18n="take_med_btn">${window.i18n ? window.i18n.getText('take_med_btn') : 'I took my medicine'}</span>`;
+      }
+      if (routineTimeTag) {
+        routineTimeTag.textContent = 'Scheduled for 9:00 AM';
+        routineTimeTag.style.color = 'var(--on-surface-variant)';
+      }
+    }
+  }
+
+  // --- Brand Home Navigation ---
+  handleBrandClick() {
+    this.showLoginScreen();
+    this.showToast('Navigated to profile and space selection.', '🌿');
   }
 
   // --- Session & Authentication Engine (PRD FR-7.1, FR-9.11) ---
@@ -81,7 +177,6 @@ class RecollectApp {
     document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active-view'));
     document.getElementById('view-login')?.classList.add('active-view');
 
-    // Reset Header to Logged-Out state
     const badge = document.getElementById('activeUserBadge');
     if (badge) badge.style.display = 'none';
 
@@ -115,7 +210,6 @@ class RecollectApp {
   applySession(session) {
     this.activeSession = session;
 
-    // Configure Header for active role
     const badge = document.getElementById('activeUserBadge');
     const avatar = document.getElementById('activeUserAvatar');
     const name = document.getElementById('activeUserName');
@@ -124,138 +218,150 @@ class RecollectApp {
     if (badge && avatar && name && roleTitle) {
       badge.style.display = 'flex';
       name.textContent = session.name;
-      roleTitle.textContent = `(${session.title})`;
+      let roleKey = 'role_senior_space';
+      if (session.role === 'caregiver') roleKey = 'role_caregiver_title';
+      if (session.role === 'clinical') roleKey = 'role_clinical_title';
+      roleTitle.setAttribute('data-i18n', roleKey);
+      roleTitle.textContent = window.i18n ? window.i18n.getText(roleKey) : `(${session.title})`;
 
       if (session.role === 'patient') {
         avatar.textContent = '👵';
-        
-        // design.md Section 1 Principle 3 & Section 6.1:
-        // Patient app NEVER surfaces sync status, network pill, or technical switches.
         document.getElementById('networkToggleBtn')?.style.setProperty('display', 'none');
         document.getElementById('powerModeBtn')?.style.setProperty('display', 'none');
         document.getElementById('langSelect')?.style.setProperty('display', 'none');
         document.getElementById('appLogoutBtn')?.style.setProperty('display', 'none');
-        
-        // Show emergency quick-access and subtle caregiver settings affordance
         document.getElementById('emergencyHelpBtn')?.style.setProperty('display', 'inline-flex');
         document.getElementById('patientCaregiverSettingsBtn')?.style.setProperty('display', 'inline-flex');
       } else {
-        // Caregiver & Doctor modes show connectivity, language, and logout
         avatar.textContent = session.role === 'caregiver' ? '👩' : '🩺';
         document.getElementById('networkToggleBtn')?.style.setProperty('display', 'inline-flex');
         document.getElementById('powerModeBtn')?.style.setProperty('display', 'inline-flex');
         document.getElementById('langSelect')?.style.setProperty('display', 'inline-flex');
         document.getElementById('appLogoutBtn')?.style.setProperty('display', 'inline-flex');
-        
         document.getElementById('emergencyHelpBtn')?.style.setProperty('display', 'none');
         document.getElementById('patientCaregiverSettingsBtn')?.style.setProperty('display', 'none');
       }
     }
 
-    // Render respective dashboard
     document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active-view'));
+    const targetSection = document.getElementById(`view-${session.role}`);
+    if (targetSection) {
+      targetSection.classList.add('active-view');
+    }
 
     if (session.role === 'patient') {
-      document.getElementById('view-patient')?.classList.add('active-view');
       this.refreshPatientHomeState();
     } else if (session.role === 'caregiver') {
-      document.getElementById('view-caregiver')?.classList.add('active-view');
       this.renderCaregiverTimeline();
       this.renderCaregiverNotes();
+      this.renderCareTeamGrid();
+      this.renderCareTeamMessages();
+      this.renderActivityLogs();
     } else if (session.role === 'clinical') {
-      document.getElementById('view-clinical')?.classList.add('active-view');
       this.updateClinicalMetrics();
       this.renderBehaviorFlags();
     }
-
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   logoutUser() {
     window.recollectDB.clearActiveSession();
     this.showLoginScreen();
-    this.showToast('You have been logged out. Choose your space to enter.', '🚪');
+    this.showToast('Logged out securely.', '🔒');
   }
 
   refreshPatientHomeState() {
-    const logs = window.recollectDB.getItem('ReminderLog') || [];
-    const isTaken = logs.some(l => l.reminder_id === 'rem_001' && l.patient_response === 'acknowledged');
-
-    const btn = document.getElementById('takeMedBtn');
-    const timeTag = document.getElementById('routineTimeTag');
-
-    if (isTaken && btn) {
-      btn.classList.add('completed-state');
-      btn.innerHTML = `<span>✓</span> <span>${window.i18n.getText('med_taken_confirm')}</span>`;
-      if (timeTag) timeTag.textContent = 'Completed at 9:02 AM';
-    } else if (btn) {
-      btn.classList.remove('completed-state');
-      btn.innerHTML = `<span>✓</span> <span data-i18n="take_med_btn">${window.i18n.getText('take_med_btn')}</span>`;
-      if (timeTag) timeTag.textContent = 'Scheduled for 9:00 AM';
-    }
+    this.updateOrientationTime();
   }
 
-  // --- Reminder Full-Attention Prompt Takeover (design.md Section 3.2, FR-1.2, FR-1.3) ---
+  // --- Patient Actions & Full Attention Modal ---
   openReminderAttention() {
     const modal = document.getElementById('reminderAttentionModal');
     if (modal) {
-      modal.classList.add('active-takeover');
-      const badge = document.getElementById('voiceListeningBadge');
-      if (badge) {
-        badge.style.display = this.voiceModeEnabled ? 'inline-flex' : 'none';
+      modal.classList.add('active-modal');
+      const listeningText = document.getElementById('voiceListeningText');
+      if (listeningText && window.i18n) {
+        listeningText.textContent = window.i18n.getText('voice_listening');
       }
       if (this.voiceModeEnabled && window.i18n) {
-        window.i18n.speakText("Eleanor, it is time for your morning medicine. Take 1 yellow oval tablet with a full glass of cool water.");
+        const promptText = "Eleanor, it is time for your morning medicine. Take 1 yellow tablet with a full glass of cool water.";
+        window.i18n.speakText(promptText);
       }
     }
   }
 
   closeReminderAttention() {
-    document.getElementById('reminderAttentionModal')?.classList.remove('active-takeover');
+    document.getElementById('reminderAttentionModal')?.classList.remove('active-modal');
   }
 
   confirmMorningMedicine() {
-    const now = new Date().toISOString();
-    
-    // Append-only write directly to local storage first (rules.md Section 3)
+    const now = new Date();
+    const isoString = now.toISOString();
+    const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
     window.recollectDB.insertReminderLog({
       reminder_id: 'rem_001',
       patient_id: this.patientId,
-      scheduled_for: '2026-10-24T09:00:00Z',
+      scheduled_for: '2026-09-07T09:00:00Z',
       patient_response: 'acknowledged',
-      responded_at: now,
+      responded_at: isoString,
       response_latency_seconds: 120
     });
 
-    this.closeReminderAttention();
-    this.refreshPatientHomeState();
+    // Append to Caregiver Activity & Hand-off Log (Cross-role synchronization)
+    window.recollectDB.addActivityLog({
+      author: 'Eleanor Vance (Bedside Tablet)',
+      role: 'Senior Patient Space',
+      action: 'Routine Completed',
+      content: `Eleanor confirmed taking Morning Blood Pressure Pill (Lisinopril 10mg) with a glass of water at ${timeStr}.`,
+      timestamp: isoString
+    });
 
-    this.showToast('Medicine confirmed and saved on Eleanor\'s tablet.', '💊');
-    this.updateClinicalMetrics();
+    this.closeReminderAttention();
+    this.updatePatientRoutineCard();
+    this.renderCaregiverTimeline();
+    this.renderActivityLogs();
+
+    if (window.ruleEngine) {
+      window.ruleEngine.evaluateAllRules(this.patientId);
+      this.renderBehaviorFlags();
+    }
+
+    const confirmMsg = window.i18n 
+      ? window.i18n.getText('med_taken_confirm', { time: timeStr })
+      : `Completed at ${timeStr} • Wonderful job, Eleanor!`;
+    this.showToast(confirmMsg, '🌸');
+
+    if (window.i18n) {
+      window.i18n.speakText("Wonderful job Eleanor, you took your morning medicine!");
+    }
   }
 
   snoozeReminder() {
     this.closeReminderAttention();
-    this.showToast('⏰ Reminder snoozed. We will gently remind you in 10 minutes.', '⏰');
+    const now = new Date().toISOString();
+    window.recollectDB.addActivityLog({
+      author: 'Eleanor Vance (Bedside Tablet)',
+      role: 'Senior Patient Space',
+      action: 'Routine Snoozed',
+      content: 'Eleanor requested a 10-minute snooze for Morning Medicine.',
+      timestamp: now
+    });
+    this.renderActivityLogs();
+    this.showToast('Reminder snoozed for 10 minutes. Sarah has been notified.', '⏰');
   }
 
   requestReminderHelp() {
     this.closeReminderAttention();
-    
-    // Log gentle support flag for caregiver
-    window.recollectDB.insertBehaviorFlag({
-      patient_id: this.patientId,
-      flag_type: 'assistance_request',
-      severity: 'watch',
-      generated_by: 'patient_app_v1',
-      evidence: {
-        task: 'Morning Medicine (rem_001)',
-        requested_at: new Date().toISOString(),
-        description: 'Eleanor requested gentle assistance from Sarah for her morning medication.'
-      }
+    const now = new Date().toISOString();
+    window.recollectDB.addActivityLog({
+      author: 'Eleanor Vance (Bedside Tablet)',
+      role: 'Senior Patient Space',
+      action: '🚨 Assistance Requested',
+      content: 'Eleanor requested help with morning medicine from daughter Sarah.',
+      timestamp: now
     });
-
-    this.showToast('🤝 We notified Sarah that you need a little help. Take your time, Eleanor.', '💚');
+    this.renderActivityLogs();
+    this.showToast('Sarah has been notified that you need help. She will call you shortly!', '🤝');
   }
 
   // --- Auditory Narration & Speech (PRD FR-9.8) ---
@@ -284,7 +390,7 @@ class RecollectApp {
     window.i18n.speakText(instruction);
   }
 
-  // --- Games Hub & Sessions (design.md Section 3.3) ---
+  // --- Brain & Memory Games Hub ---
   openGamesHub() {
     document.getElementById('gamesHubModal')?.classList.add('active-modal');
   }
@@ -303,10 +409,10 @@ class RecollectApp {
       btnFamily?.classList.add('primary');
       btnCultural?.classList.remove('primary');
       if (subtitle) subtitle.textContent = 'Family Photo Match';
-      this.showToast('Switched to Family Photo Memories (Lily, Buddy, Garden)', '📷');
+      this.showToast('Switched to Family Photos Pack (Granddaughter Lily, Buddy)', '📷');
     } else {
-      btnFamily?.classList.remove('primary');
       btnCultural?.classList.add('primary');
+      btnFamily?.classList.remove('primary');
       if (subtitle) subtitle.textContent = 'Northeast Cultural Pack';
       this.showToast('Switched to Northeast India Cultural Memories (Bihu, Tea, River)', '🌿');
     }
@@ -316,6 +422,19 @@ class RecollectApp {
     this.currentCategory = category;
     this.closeGamesHub();
     this.setupMemoryGameCards();
+
+    // Update modal title
+    const gameModalTitle = document.getElementById('gameModalTitle');
+    if (gameModalTitle) {
+      const titles = {
+        memory: '🌸 Family Photo Memory Game',
+        attention: '🔍 Garden Flower Focus Game',
+        language: '🗣️ Word & Object Recall Game',
+        problem: '🧩 Daily Routine Step Game'
+      };
+      gameModalTitle.textContent = titles[category] || '🌸 Memory & Brain Game';
+    }
+
     document.getElementById('gameModal')?.classList.add('active-modal');
   }
 
@@ -352,7 +471,7 @@ class RecollectApp {
         { id: 'l3', label: 'Teacup & Honey', subtitle: 'Warm Comfort Drink', art: '☕' },
         { id: 'l4', label: 'Favorite Book', subtitle: 'Stories & Memories', art: '📖' }
       ];
-    } else { // problem solving
+    } else {
       cardData = [
         { id: 'p1', label: 'Step 1: Wake Up', subtitle: 'Morning Stretch', art: '🌅' },
         { id: 'p2', label: 'Step 2: Warm Water', subtitle: 'Hydrate Gently', art: '🥤' },
@@ -385,26 +504,21 @@ class RecollectApp {
     grid.innerHTML = '';
     this.activeCards.forEach((card, index) => {
       const cardEl = document.createElement('div');
-      cardEl.className = `photo-card ${card.isRevealed ? 'revealed' : 'hidden-card'} ${card.isMatched ? 'matched' : ''}`;
-      cardEl.setAttribute('tabindex', '0');
-      cardEl.setAttribute('role', 'button');
-      cardEl.setAttribute('aria-label', card.isRevealed ? card.label : 'Hidden photo card');
+      cardEl.className = `game-card ${card.isRevealed || card.isMatched ? 'flipped' : ''} ${card.isMatched ? 'matched' : ''}`;
+      cardEl.onclick = () => this.handleCardClick(index);
 
       if (card.isRevealed || card.isMatched) {
         cardEl.innerHTML = `
-          <div class="card-art">${card.art}</div>
-          <div class="card-label">${card.label}</div>
-          <div class="card-subtitle">${card.subtitle}</div>
+          <div style="font-size:3.5rem; line-height:1;">${card.art}</div>
+          <strong style="font-size:1.15rem; margin-top:0.4rem; color:var(--on-surface);">${card.label}</strong>
+          <span style="font-size:0.9rem; color:var(--on-surface-variant);">${card.subtitle}</span>
         `;
       } else {
         cardEl.innerHTML = `
-          <div class="card-art">🌸</div>
-          <div class="card-label">Tap to Peek</div>
-          <div class="card-subtitle">Touch gently 👆</div>
+          <div style="font-size:2.8rem; color:var(--primary);">🌿</div>
+          <span style="font-size:1.05rem; font-weight:700; color:var(--on-surface-variant); margin-top:0.4rem;">Touch to Peek</span>
         `;
       }
-
-      cardEl.onclick = () => this.handleCardClick(index);
       grid.appendChild(cardEl);
     });
   }
@@ -415,16 +529,12 @@ class RecollectApp {
     if (card.isRevealed || card.isMatched) return;
 
     const now = Date.now();
-    if (this.lastCardClickTime) {
-      const latencyMs = now - this.lastCardClickTime;
-      if (latencyMs < 10000) {
-        this.hesitationSamples.push(latencyMs);
-      }
-    }
+    const hesitation = now - this.lastCardClickTime;
+    this.hesitationSamples.push(hesitation);
     this.lastCardClickTime = now;
 
     card.isRevealed = true;
-    this.selectedCards.push({ index, card });
+    this.selectedCards.push({ card, index });
     this.renderGameGrid();
 
     if (this.selectedCards.length === 2) {
@@ -434,20 +544,23 @@ class RecollectApp {
 
   checkSelectedMatch() {
     this.isCheckingMatch = true;
-    const [c1, c2] = this.selectedCards;
+    const [first, second] = this.selectedCards;
     const banner = document.getElementById('gameFeedbackBanner');
 
-    if (c1.card.id === c2.card.id) {
-      c1.card.isMatched = true;
-      c2.card.isMatched = true;
+    if (first.card.id === second.card.id) {
+      // Gentle positive feedback
+      first.card.isMatched = true;
+      second.card.isMatched = true;
       this.gameMatches++;
       this.updateBloomProgress(this.gameMatches);
 
-      // Positive reinforcement (design.md Section 2.2)
       if (banner) {
-        banner.style.background = '#f0fdf4';
-        banner.style.color = '#065f46';
-        banner.textContent = `💚 Wonderful match! You found sweet ${c1.card.label}!`;
+        const encouragements = [
+          '🌸 Beautiful! A happy memory found.',
+          '🌻 Wonderful gentle recall, Eleanor!',
+          '🌿 Bloomed like a sweet garden flower!'
+        ];
+        banner.textContent = encouragements[Math.floor(Math.random() * encouragements.length)];
       }
 
       this.selectedCards = [];
@@ -455,20 +568,18 @@ class RecollectApp {
       this.renderGameGrid();
 
       if (this.gameMatches === 4) {
-        this.handleGameCompletion();
+        setTimeout(() => this.handleGameCompletion(), 800);
       }
     } else {
+      // Gentle, non-punitive mismatch
       this.gameMistakes++;
-      // Neutral, encouraging redirection (NO red, NO buzzer per design.md Section 2.2 & rules.md Section 2)
       if (banner) {
-        banner.style.background = '#fefce8';
-        banner.style.color = '#854d0e';
-        banner.textContent = "🌸 Let's touch another gentle petal together!";
+        banner.textContent = '💚 Good peek! Cards will gently turn back over.';
       }
 
       setTimeout(() => {
-        c1.card.isRevealed = false;
-        c2.card.isRevealed = false;
+        first.card.isRevealed = false;
+        second.card.isRevealed = false;
         this.selectedCards = [];
         this.isCheckingMatch = false;
         this.renderGameGrid();
@@ -481,56 +592,70 @@ class RecollectApp {
       const dot = document.getElementById(`bloomDot${i}`);
       if (dot) {
         if (i <= matchesCount) {
-          dot.classList.add('bloomed');
           dot.textContent = '🌻';
+          dot.classList.add('bloomed');
         } else {
-          dot.classList.remove('bloomed');
           dot.textContent = '🌱';
+          dot.classList.remove('bloomed');
         }
       }
     }
   }
 
   giveGameHint() {
-    this.activeCards.forEach(c => { if (!c.isMatched) c.isRevealed = true; });
-    this.renderGameGrid();
-    const banner = document.getElementById('gameFeedbackBanner');
-    if (banner) banner.textContent = '💡 Peek at the garden memories!';
-
-    setTimeout(() => {
-      this.activeCards.forEach(c => { if (!c.isMatched) c.isRevealed = false; });
+    const unmatched = this.activeCards.filter(c => !c.isMatched && !c.isRevealed);
+    if (unmatched.length > 0) {
+      const targetId = unmatched[0].id;
+      const pair = this.activeCards.filter(c => c.id === targetId);
+      pair.forEach(c => c.isRevealed = true);
       this.renderGameGrid();
-    }, 1500);
+
+      setTimeout(() => {
+        pair.forEach(c => {
+          if (!c.isMatched) c.isRevealed = false;
+        });
+        this.renderGameGrid();
+      }, 1400);
+
+      this.showToast('Gentle hint: Here is a lovely card pair blooming!', '💡');
+    }
   }
 
   handleGameCompletion() {
     const duration = Math.round((Date.now() - this.gameStartTime) / 1000);
-    const avgHesitation = this.hesitationSamples.length > 0 
-      ? Math.round(this.hesitationSamples.reduce((a, b) => a + b, 0) / this.hesitationSamples.length)
-      : 1350;
+    const avgHesitation = Math.round(this.hesitationSamples.reduce((a, b) => a + b, 0) / (this.hesitationSamples.length || 1));
+    const score = Math.max(70, 100 - (this.gameMistakes * 5));
 
-    const normalizedScore = Math.max(70, Math.min(100, 100 - (this.gameMistakes * 5)));
-
-    // Save session in DB for Caregiver / Doctor reporting
     window.recollectDB.insertGameSession({
       patient_id: this.patientId,
-      game_type: 'memory_match',
-      started_at: new Date(this.gameStartTime).toISOString(),
-      completed_at: new Date().toISOString(),
-      score: normalizedScore,
+      game_type: `${this.currentCategory}_match`,
+      score,
       duration_seconds: duration,
       mistake_count: this.gameMistakes,
       hesitation_avg_ms: avgHesitation,
-      difficulty_level: 'gentle_adaptive',
-      device_battery_pct_at_start: 85,
+      started_at: new Date(this.gameStartTime).toISOString(),
+      completed_at: new Date().toISOString(),
       status: 'completed'
     });
 
-    // Close game modal, open warm completion summary (score is HIDDEN from patient per design.md Section 3.3)
+    // Cross-role sync: Log to Caregiver Activity Stream
+    window.recollectDB.addActivityLog({
+      author: 'Eleanor Vance (Bedside Tablet)',
+      role: 'Senior Patient Space',
+      action: 'Game Completed',
+      content: `Eleanor completed ${this.currentCategory.toUpperCase()} game. Engagement score: ${score}/100 with ${this.gameMistakes} mistake(s).`,
+      timestamp: new Date().toISOString()
+    });
+
+    this.renderActivityLogs();
     this.closeMemoryGameModal();
     document.getElementById('gameCompleteModal')?.classList.add('active-modal');
 
-    this.updateClinicalMetrics();
+    // Update clinical telemetry
+    if (window.ruleEngine) {
+      window.ruleEngine.evaluateAllRules(this.patientId);
+      this.updateClinicalMetrics();
+    }
   }
 
   closeMemoryGameModal() {
@@ -541,7 +666,7 @@ class RecollectApp {
     document.getElementById('gameCompleteModal')?.classList.remove('active-modal');
   }
 
-  // --- Mood Check-In (design.md Section 3.4) ---
+  // --- Mood Check-in Modal ---
   openMoodModal() {
     document.getElementById('moodModal')?.classList.add('active-modal');
   }
@@ -552,50 +677,134 @@ class RecollectApp {
 
   logMood(score, label, btnElement) {
     document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('selected'));
-    if (btnElement) btnElement.classList.add('selected');
+    btnElement?.classList.add('selected');
 
-    const isAssisted = document.getElementById('moodCaregiverAssisted')?.checked;
-    const source = isAssisted ? 'caregiver_reported' : 'patient_self_report';
+    const isCaregiverAssisted = document.getElementById('moodCaregiverAssisted')?.checked;
+    const now = new Date().toISOString();
 
     window.recollectDB.insertMoodLog({
       patient_id: this.patientId,
       mood_score: score,
       mood_label: label,
-      source: source
+      recorded_by: isCaregiverAssisted ? 'caregiver' : 'patient'
     });
 
-    this.showToast(`Mood check-in recorded: ${label} (${isAssisted ? 'Caregiver Assisted' : 'Self Report'})`, '💚');
+    // Append to Caregiver Activity Log
+    window.recollectDB.addActivityLog({
+      author: isCaregiverAssisted ? 'Sarah Vance' : 'Eleanor Vance',
+      role: isCaregiverAssisted ? 'Family Caregiver' : 'Senior Patient Space',
+      action: 'Mood Check-in',
+      content: `Mood recorded: "${label}" (${score}/5). Recorded by ${isCaregiverAssisted ? 'Sarah on Eleanor\'s behalf' : 'Eleanor on bedside tablet'}.`,
+      timestamp: now
+    });
+
+    this.renderActivityLogs();
+    this.showToast(`Mood check-in recorded: ${label}`, '🌸');
   }
 
+  // --- Interactive Audio Calls & Emergency System ---
   callSarah() {
-    this.showToast('Calling Sarah Vance (Daughter) on +91 98765 43210...', '📞');
+    this.startAudioCallSimulation('Sarah Vance (Daughter)', 'Calling Sarah...');
+    window.recollectDB.addActivityLog({
+      author: 'Eleanor Vance (Bedside Tablet)',
+      role: 'Senior Patient Space',
+      action: 'Call Initiated',
+      content: 'Eleanor placed a tablet call to Sarah Vance.',
+      timestamp: new Date().toISOString()
+    });
+    this.renderActivityLogs();
   }
 
   callEleanor() {
-    this.showToast('Calling Eleanor\'s Bedside Tablet...', '📞');
+    this.startAudioCallSimulation('Eleanor Vance (Mother)', 'Calling Bedside Tablet...');
+    window.recollectDB.addActivityLog({
+      author: 'Sarah Vance',
+      role: 'Primary Family Caregiver',
+      action: 'Call Initiated',
+      content: 'Sarah placed a call to Eleanor\'s bedside tablet.',
+      timestamp: new Date().toISOString()
+    });
+    this.renderActivityLogs();
+  }
+
+  startAudioCallSimulation(targetName, detail) {
+    const modal = document.getElementById('audioCallModal');
+    const targetEl = document.getElementById('callTargetName');
+    const statusEl = document.getElementById('callStatusDetail');
+    const timerEl = document.getElementById('callTimerDisplay');
+
+    if (modal && targetEl && statusEl && timerEl) {
+      targetEl.textContent = targetName;
+      statusEl.textContent = detail;
+      timerEl.textContent = '00:00';
+      modal.classList.add('active-modal');
+
+      this.callDurationSec = 0;
+      if (this.activeCallInterval) clearInterval(this.activeCallInterval);
+
+      // Play soft call tone
+      if (window.i18n) {
+        window.i18n.playMelodicChime();
+      }
+
+      // Simulate connection after 2 seconds
+      setTimeout(() => {
+        if (modal.classList.contains('active-modal')) {
+          statusEl.textContent = '🟢 Connected • Audio Call Active';
+          this.activeCallInterval = setInterval(() => {
+            this.callDurationSec++;
+            const mins = String(Math.floor(this.callDurationSec / 60)).padStart(2, '0');
+            const secs = String(this.callDurationSec % 60).padStart(2, '0');
+            timerEl.textContent = `${mins}:${secs}`;
+          }, 1000);
+        }
+      }, 2000);
+    }
+  }
+
+  endAudioCall() {
+    if (this.activeCallInterval) clearInterval(this.activeCallInterval);
+    document.getElementById('audioCallModal')?.classList.remove('active-modal');
+    this.showToast('Call ended.', '📞');
   }
 
   triggerEmergencyHelp() {
-    this.showToast('🚨 Alert sent to Primary Caregiver (Sarah) and local emergency contacts.', '🚨');
+    document.getElementById('emergencyModal')?.classList.add('active-modal');
+    if (window.i18n) window.i18n.playMelodicChime();
+
+    window.recollectDB.addActivityLog({
+      author: 'Eleanor Vance (Bedside Tablet)',
+      role: 'Senior Patient Space',
+      action: '🚨 EMERGENCY ALERT',
+      content: 'Eleanor pressed Emergency Help on bedside tablet. Immediate alert dispatched.',
+      timestamp: new Date().toISOString()
+    });
+    this.renderActivityLogs();
   }
 
   triggerCaregiverEmergency() {
-    this.showToast('🚨 Calling emergency services / secondary contact for Eleanor Vance...', '🚨');
+    document.getElementById('emergencyModal')?.classList.add('active-modal');
+    if (window.i18n) window.i18n.playMelodicChime();
   }
 
-  // --- Caregiver Settings Modal (design.md Section 3.5 & 3.6) ---
+  closeEmergencyModal() {
+    document.getElementById('emergencyModal')?.classList.remove('active-modal');
+  }
+
+  acknowledgeEmergency() {
+    this.closeEmergencyModal();
+    this.showToast('Emergency response confirmed. Team is on the way.', '🚨');
+  }
+
+  // --- Caregiver Settings & Accessibility Controls ---
   openCaregiverSettings() {
     const modal = document.getElementById('caregiverSettingsModal');
-    const pinGate = document.getElementById('settingsPinGate');
-    const unlocked = document.getElementById('settingsUnlockedBody');
-    const pinInput = document.getElementById('settingsPinInput');
-
-    if (modal) modal.classList.add('active-modal');
-    if (pinGate) pinGate.style.display = 'block';
-    if (unlocked) unlocked.style.display = 'none';
-    if (pinInput) {
-      pinInput.value = '1234';
-      pinInput.focus();
+    if (modal) {
+      modal.classList.add('active-modal');
+      document.getElementById('settingsPinGate').style.display = 'block';
+      document.getElementById('settingsUnlockedBody').style.display = 'none';
+      const pinInput = document.getElementById('settingsPinInput');
+      if (pinInput) pinInput.value = '1234';
     }
   }
 
@@ -608,53 +817,49 @@ class RecollectApp {
     if (pin === '1234') {
       document.getElementById('settingsPinGate').style.display = 'none';
       document.getElementById('settingsUnlockedBody').style.display = 'block';
-      
-      const toggle = document.getElementById('toggleHighContrast');
-      if (toggle) toggle.checked = this.isHighContrast;
-      const fontSel = document.getElementById('fontSizeSelector');
-      if (fontSel) fontSel.value = this.fontScale;
-      const voiceToggle = document.getElementById('toggleVoiceMode');
-      if (voiceToggle) voiceToggle.checked = this.voiceModeEnabled;
     } else {
-      this.showToast('Incorrect Caregiver PIN (Default demo PIN is 1234)', '⚠️');
+      this.showToast('Incorrect Caregiver PIN. Demo default is 1234.', '⚠️');
     }
   }
 
   toggleHighContrast(enabled) {
     this.isHighContrast = enabled;
+    localStorage.setItem('recollect_high_contrast', enabled);
     document.body.classList.toggle('high-contrast-mode', enabled);
-    localStorage.setItem('recollect_high_contrast', enabled ? 'true' : 'false');
-    this.showToast(enabled ? 'High-contrast mode enabled (WCAG AAA)' : 'Standard theme restored', '🎨');
+    this.showToast(enabled ? 'High-contrast black & white theme active.' : 'Standard theme restored.', '🎨');
   }
 
   setFontScale(scale) {
     this.fontScale = scale;
+    localStorage.setItem('recollect_font_scale', scale);
     document.body.classList.remove('font-scale-normal', 'font-scale-large', 'font-scale-xlarge');
     document.body.classList.add(`font-scale-${scale}`);
-    localStorage.setItem('recollect_font_scale', scale);
-    this.showToast(`Patient font scaling set to ${scale.toUpperCase()}`, '🔤');
+    
+    const selector = document.getElementById('fontSizeSelector');
+    if (selector) selector.value = scale;
+    
+    this.showToast(`Patient app text size set to ${scale.toUpperCase()}`, '🔤');
   }
 
   toggleVoiceMode(enabled) {
     this.voiceModeEnabled = enabled;
-    this.showToast(enabled ? 'Voice narration & listening mode active.' : 'Voice mode turned off.', '🔊');
+    this.showToast(enabled ? 'Voice narration enabled.' : 'Voice narration silenced.', '🔊');
   }
 
   switchSpaceFromSettings(role) {
     this.closeCaregiverSettings();
-    if (role === 'patient') {
-      this.loginAsRole('patient');
-    } else if (role === 'caregiver') {
-      this.loginAsRole('caregiver');
-    } else if (role === 'clinical') {
-      this.loginAsRole('clinical');
+    const authResult = window.recollectDB.authenticateUser(role, role === 'clinical' ? '9999' : '1234');
+    if (authResult.success) {
+      window.recollectDB.setActiveSession(authResult.session);
+      this.applySession(authResult.session);
+      this.showToast(`Switched space to ${authResult.session.title}`, '🌿');
     }
   }
 
-  // --- Consent & Onboarding Multi-Step (design.md Section 6.4) ---
+  // --- Consent Modal ---
   openConsentModal() {
-    this.setConsentStep(1);
     document.getElementById('consentModal')?.classList.add('active-modal');
+    this.setConsentStep(1);
   }
 
   closeConsentModal() {
@@ -669,26 +874,136 @@ class RecollectApp {
   }
 
   finishConsent() {
-    const aiConsent = document.getElementById('consentAiMonitoring')?.checked;
     this.closeConsentModal();
-    this.showToast(`Consent record updated. AI Monitoring: ${aiConsent ? 'Opted-In' : 'Opted-Out'}.`, '📋');
+    this.showToast('Patient & Caregiver consent confirmed and signed locally.', '✓');
   }
 
-  // --- Caregiver Platform Features (design.md Section 4) ---
+  // --- Caregiver Platform Tabs ---
   setCaregiverTab(tabName) {
-    const tabs = ['today', 'trends', 'journal', 'careteam', 'alerts'];
-    tabs.forEach(t => {
-      const btn = document.getElementById(`cgTabBtn${t.charAt(0).toUpperCase() + t.slice(1)}`);
-      const content = document.getElementById(`cgTabContent${t.charAt(0).toUpperCase() + t.slice(1)}`);
-      if (btn) btn.classList.toggle('active', t === tabName);
-      if (content) content.style.display = t === tabName ? 'block' : 'none';
-    });
+    document.querySelectorAll('.cg-tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('cgTabContentToday').style.display = 'none';
+    document.getElementById('cgTabContentTrends').style.display = 'none';
+    document.getElementById('cgTabContentJournal').style.display = 'none';
+    document.getElementById('cgTabContentCareTeam').style.display = 'none';
+    document.getElementById('cgTabContentAlerts').style.display = 'none';
+
+    const tabMap = {
+      today: { btn: 'cgTabBtnToday', content: 'cgTabContentToday' },
+      trends: { btn: 'cgTabBtnTrends', content: 'cgTabContentTrends' },
+      journal: { btn: 'cgTabBtnJournal', content: 'cgTabContentJournal' },
+      careteam: { btn: 'cgTabBtnCareTeam', content: 'cgTabContentCareTeam' },
+      alerts: { btn: 'cgTabBtnAlerts', content: 'cgTabContentAlerts' }
+    };
+
+    if (tabMap[tabName]) {
+      document.getElementById(tabMap[tabName].btn)?.classList.add('active');
+      document.getElementById(tabMap[tabName].content)?.style.setProperty('display', 'block');
+    }
+
+    if (tabName === 'careteam') {
+      this.renderCareTeamGrid();
+      this.renderCareTeamMessages();
+      this.renderActivityLogs();
+    } else if (tabName === 'today') {
+      this.renderCaregiverTimeline();
+    }
   }
 
+  // --- Timeframe Switching (Daily, Weekly, Monthly, Quarterly) ---
   setTimeframe(tf, btn) {
-    document.querySelectorAll('.timeframe-pill').forEach(p => p.classList.remove('active'));
-    if (btn) btn.classList.add('active');
-    this.showToast(`Switched trends view to ${tf.toUpperCase()} aggregation.`, '📈');
+    document.querySelectorAll('.timeframe-pill').forEach(b => b.classList.remove('active'));
+    btn?.classList.add('active');
+
+    const chartContainer = document.querySelector('.trends-chart-container');
+    if (!chartContainer) return;
+
+    // Distinct realistic datasets per timeframe
+    const datasets = {
+      daily: {
+        summary: '🟢 Daily Routine Complete (96% adherence)',
+        avgAdh: 'Avg 96%',
+        avgScore: 'Avg 94/100',
+        labels: ['6 AM', '9 AM', '12 PM', '3 PM', '6 PM', '9 PM'],
+        adherencePoints: '80,40  188,35  296,48  404,42  512,38  620,32',
+        scorePoints: '80,60  188,58  296,65  404,60  512,55  620,52',
+        dots: [
+          { cx: 80, cy: 40 }, { cx: 188, cy: 35 }, { cx: 296, cy: 48 },
+          { cx: 404, cy: 42 }, { cx: 512, cy: 38 }, { cx: 620, cy: 32 }
+        ]
+      },
+      weekly: {
+        summary: '🟢 Baseline Stable (94% adherence)',
+        avgAdh: 'Avg 94%',
+        avgScore: 'Avg 91/100',
+        labels: ['Oct 18', 'Oct 19', 'Oct 20', 'Oct 21', 'Oct 22', 'Oct 23', 'Today'],
+        adherencePoints: '80,55  170,45  260,60  350,40  440,50  530,45  620,42',
+        scorePoints: '80,70  170,68  260,75  350,65  440,68  530,62  620,60',
+        dots: [
+          { cx: 80, cy: 55 }, { cx: 170, cy: 45 }, { cx: 260, cy: 60 },
+          { cx: 350, cy: 40 }, { cx: 440, cy: 50 }, { cx: 530, cy: 45 }, { cx: 620, cy: 42 }
+        ]
+      },
+      monthly: {
+        summary: '🟢 4-Week Adherence Trend Healthy (92%)',
+        avgAdh: 'Avg 92%',
+        avgScore: 'Avg 89/100',
+        labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+        adherencePoints: '110,65  270,50  430,45  590,40',
+        scorePoints: '110,75  270,72  430,68  590,62',
+        dots: [
+          { cx: 110, cy: 65 }, { cx: 270, cy: 50 }, { cx: 430, cy: 45 }, { cx: 590, cy: 40 }
+        ]
+      },
+      quarterly: {
+        summary: '🟢 90-Day Cohort Adherence High (93%)',
+        avgAdh: 'Avg 93%',
+        avgScore: 'Avg 90/100',
+        labels: ['July', 'August', 'September'],
+        adherencePoints: '150,60  350,48  550,42',
+        scorePoints: '150,72  350,66  550,58',
+        dots: [
+          { cx: 150, cy: 60 }, { cx: 350, cy: 48 }, { cx: 550, cy: 42 }
+        ]
+      }
+    };
+
+    const d = datasets[tf] || datasets.weekly;
+
+    // Render SVG
+    const svgContent = `
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+        <strong>Routine Adherence & Composite Score Timeline (${tf.toUpperCase()})</strong>
+        <span style="font-size:0.9rem; color:#059669; font-weight:700;">${d.summary}</span>
+      </div>
+      
+      <svg viewBox="0 0 700 200" width="100%" height="180" style="background:#f8fafc; border-radius:12px; border:1px solid #e2e8f0;">
+        <line x1="50" y1="30" x2="680" y2="30" stroke="#e2e8f0" stroke-dasharray="4"/>
+        <line x1="50" y1="80" x2="680" y2="80" stroke="#e2e8f0" stroke-dasharray="4"/>
+        <line x1="50" y1="130" x2="680" y2="130" stroke="#e2e8f0" stroke-dasharray="4"/>
+        
+        <text x="15" y="35" font-size="12" fill="#64748b">100%</text>
+        <text x="15" y="85" font-size="12" fill="#64748b">80%</text>
+        <text x="15" y="135" font-size="12" fill="#64748b">60%</text>
+        
+        <polyline fill="none" stroke="#059669" stroke-width="3.5" points="${d.adherencePoints}"/>
+        <polyline fill="none" stroke="#2563eb" stroke-width="2.5" stroke-dasharray="6,4" points="${d.scorePoints}"/>
+        
+        ${d.dots.map(dot => `<circle cx="${dot.cx}" cy="${dot.cy}" r="5" fill="#059669"/>`).join('')}
+
+        ${d.labels.map((lbl, idx) => {
+          const step = (680 - 80) / (d.labels.length - 1 || 1);
+          const x = 80 + idx * step;
+          return `<text x="${x}" y="180" font-size="12" fill="#64748b" text-anchor="middle">${lbl}</text>`;
+        }).join('')}
+      </svg>
+      <div style="display:flex; gap:1.5rem; justify-content:center; margin-top:0.5rem; font-size:0.85rem;">
+        <span>🟢 <strong>Adherence Rate</strong> (${d.avgAdh})</span>
+        <span>🔵 <strong>Composite Score</strong> (${d.avgScore})</span>
+      </div>
+    `;
+
+    chartContainer.innerHTML = svgContent;
+    this.showToast(`Timeline timeframe switched to: ${tf.toUpperCase()}`, '📈');
   }
 
   toggleFlagAccordion(el) {
@@ -701,51 +1016,126 @@ class RecollectApp {
     }
   }
 
+  // --- Today's Visual Schedule Checklist ---
   renderCaregiverTimeline() {
     const stream = document.getElementById('cgTimelineStream');
     if (!stream) return;
 
     const logs = window.recollectDB.getItem('ReminderLog') || [];
-    const isTaken = logs.some(l => l.reminder_id === 'rem_001' && l.patient_response === 'acknowledged');
+    const isMedTaken = logs.some(l => l.reminder_id === 'rem_001' && l.patient_response === 'acknowledged');
 
-    const items = [
+    // Default baseline schedule items
+    const baseItems = [
       {
+        id: 'base_001',
         time: '8:15 AM',
-        title: 'Warm Breakfast & Tea',
+        title: window.i18n ? window.i18n.getText('breakfast_label') : 'Warm Breakfast & Tea',
         status: 'completed',
-        badge: 'Completed 8:15 AM',
-        sensor: 'Kitchen kettle logged at 8:22 AM'
+        badge: window.i18n ? `${window.i18n.getText('badge_completed')} 8:15 AM` : 'Completed 8:15 AM',
+        sensor: window.i18n ? window.i18n.getText('breakfast_sensor') : 'Kitchen kettle logged at 8:22 AM',
+        isDefault: true
       },
       {
+        id: 'rem_001',
         time: '9:00 AM',
-        title: 'Morning Blood Pressure Pill (Lisinopril 10mg)',
-        status: isTaken ? 'completed' : 'overdue',
-        badge: isTaken ? 'Completed 9:02 AM' : 'Pending / 35m Overdue',
-        sensor: isTaken ? 'Bedside tablet confirmed at 9:02 AM' : 'Bedside chime played at 9:00 AM'
+        title: window.i18n ? window.i18n.getText('med_pill_label') : 'Morning Blood Pressure Pill (Lisinopril 10mg)',
+        status: isMedTaken ? 'completed' : 'overdue',
+        badge: isMedTaken ? (window.i18n ? `${window.i18n.getText('badge_completed')} 9:02 AM` : 'Completed 9:02 AM') : (window.i18n ? window.i18n.getText('badge_pending_overdue') : 'Pending / 35m Overdue'),
+        sensor: isMedTaken ? (window.i18n ? window.i18n.getText('sensor_tablet_confirmed') : 'Bedside tablet confirmed at 9:02 AM') : (window.i18n ? window.i18n.getText('sensor_tablet_chime') : 'Bedside chime played at 9:00 AM'),
+        isDefault: true
       },
       {
+        id: 'base_002',
         time: '11:30 AM',
-        title: 'Garden Walk with Sarah',
+        title: window.i18n ? window.i18n.getText('garden_walk_label') : 'Garden Walk with Sarah',
         status: 'upcoming',
-        badge: 'Upcoming (11:30 AM)',
-        sensor: 'Terrace door sensor active'
+        badge: window.i18n ? `${window.i18n.getText('badge_upcoming')} (11:30 AM)` : 'Upcoming (11:30 AM)',
+        sensor: window.i18n ? window.i18n.getText('sensor_terrace_door') : 'Terrace door sensor active',
+        isDefault: true
       }
     ];
 
-    stream.innerHTML = items.map(item => `
+    // Additional custom reminders saved by caregiver
+    const customReminders = (window.recollectDB.getItem('Reminder') || []).filter(r => r.reminder_id !== 'rem_001');
+    const customItems = customReminders.map(r => {
+      const done = logs.some(l => l.reminder_id === r.reminder_id && l.patient_response === 'acknowledged');
+      return {
+        id: r.reminder_id,
+        time: r.scheduled_time || '14:00',
+        title: r.label,
+        status: done ? 'completed' : 'upcoming',
+        badge: done ? (window.i18n ? window.i18n.getText('badge_completed') : 'Completed') : (r.priority === 'critical' ? 'Critical Pending' : (window.i18n ? window.i18n.getText('badge_upcoming') : 'Upcoming')),
+        sensor: r.instructions || 'Scheduled caregiver reminder',
+        isDefault: false
+      };
+    });
+
+    const allItems = [...baseItems, ...customItems];
+
+    stream.innerHTML = allItems.map(item => `
       <div class="timeline-node ${item.status}">
         <div class="timeline-node-header">
           <strong>${item.time} • ${item.title}</strong>
-          <span class="routine-status-pill ${item.status === 'completed' ? 'done-badge' : (item.status === 'overdue' ? 'pending-badge' : '')}">${item.badge}</span>
+          <div style="display:flex; align-items:center; gap:0.5rem;">
+            <span class="routine-status-pill ${item.status === 'completed' ? 'done-badge' : (item.status === 'overdue' ? 'pending-badge' : '')}">${item.badge}</span>
+            <button class="checklist-action-btn ${item.status === 'completed' ? 'done' : ''}" onclick="app.toggleReminderDone('${item.id}', ${item.status === 'completed'})">
+              ${item.status === 'completed' ? (window.i18n ? '↺ ' + window.i18n.getText('btn_undo') : '↺ Undo') : (window.i18n ? '✓ ' + window.i18n.getText('btn_done') : '✓ Done')}
+            </button>
+            ${!item.isDefault ? `<button class="checklist-action-btn delete" onclick="app.deleteCustomReminder('${item.id}')" title="Delete task">✕</button>` : ''}
+          </div>
         </div>
-        <div class="timeline-node-sensor">📡 Sensor: ${item.sensor}</div>
+        <div class="timeline-node-sensor">📡 ${window.i18n ? window.i18n.getText('sensor_label') : 'Sensor'}: ${item.sensor}</div>
       </div>
     `).join('');
 
     const overdueBanner = document.getElementById('cgOverdueBanner');
     if (overdueBanner) {
-      overdueBanner.style.display = isTaken ? 'none' : 'flex';
+      overdueBanner.style.display = isMedTaken ? 'none' : 'flex';
     }
+  }
+
+  toggleReminderDone(reminderId, isCurrentlyDone) {
+    if (reminderId === 'base_001' || reminderId === 'base_002') {
+      this.showToast('Baseline schedule checkpoints are auto-logged.', 'ℹ️');
+      return;
+    }
+
+    if (reminderId === 'rem_001') {
+      if (isCurrentlyDone) {
+        // Undo
+        const logs = window.recollectDB.getItem('ReminderLog').filter(l => l.reminder_id !== 'rem_001');
+        window.recollectDB.setItem('ReminderLog', logs);
+        this.showToast('Marked morning pill as pending.', '↺');
+      } else {
+        this.caregiverMarkTaken();
+      }
+    } else {
+      const logs = window.recollectDB.getItem('ReminderLog');
+      if (isCurrentlyDone) {
+        const filtered = logs.filter(l => l.reminder_id !== reminderId);
+        window.recollectDB.setItem('ReminderLog', filtered);
+        this.showToast('Reminder marked as pending.', '↺');
+      } else {
+        window.recollectDB.insertReminderLog({
+          reminder_id: reminderId,
+          patient_id: this.patientId,
+          scheduled_for: new Date().toISOString(),
+          patient_response: 'acknowledged',
+          responded_at: new Date().toISOString(),
+          response_latency_seconds: 60
+        });
+        this.showToast('Reminder marked as completed.', '✓');
+      }
+    }
+
+    this.renderCaregiverTimeline();
+    this.updatePatientRoutineCard();
+  }
+
+  deleteCustomReminder(reminderId) {
+    window.recollectDB.deleteReminder(reminderId);
+    this.renderCaregiverTimeline();
+    this.showToast('Task removed from schedule.', '🗑️');
   }
 
   refreshCaregiverTimeline() {
@@ -756,17 +1146,29 @@ class RecollectApp {
   }
 
   caregiverMarkTaken() {
-    const now = new Date().toISOString();
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
     window.recollectDB.insertReminderLog({
       reminder_id: 'rem_001',
       patient_id: this.patientId,
-      scheduled_for: '2026-10-24T09:00:00Z',
+      scheduled_for: '2026-09-07T09:00:00Z',
       patient_response: 'acknowledged',
-      responded_at: now,
+      responded_at: now.toISOString(),
       response_latency_seconds: 2100
     });
 
+    window.recollectDB.addActivityLog({
+      author: 'Sarah Vance',
+      role: 'Primary Family Caregiver',
+      action: 'Routine Marked by Caregiver',
+      content: `Sarah confirmed Lisinopril 10mg tablet was taken by Eleanor at ${timeStr}.`,
+      timestamp: now.toISOString()
+    });
+
     this.renderCaregiverTimeline();
+    this.renderActivityLogs();
+    this.updatePatientRoutineCard();
     this.showToast('Marked as taken by Caregiver (Sarah).', '✓');
   }
 
@@ -774,24 +1176,7 @@ class RecollectApp {
     this.showToast('📱 SMS Alert sent to Sarah (+91 98765 43210): "Recollect Alert: Eleanor\'s 9:00 AM Blood Pressure Pill unconfirmed."', '📱');
   }
 
-  sendDoctorMessage() {
-    const input = document.getElementById('doctorMsgInput');
-    const text = input?.value?.trim();
-    if (!text) return;
-
-    const stream = document.getElementById('doctorMessagesStream');
-    if (stream) {
-      const bubble = document.createElement('div');
-      bubble.className = 'doctor-msg-bubble from-caregiver';
-      bubble.innerHTML = `<strong>Sarah:</strong> ${text}`;
-      stream.appendChild(bubble);
-      stream.scrollTop = stream.scrollHeight;
-    }
-
-    if (input) input.value = '';
-    this.showToast('Non-emergency message delivered to Dr. Thorne.', '💬');
-  }
-
+  // --- Caregiver Notes ---
   submitCaregiverNote() {
     const input = document.getElementById('caregiverNoteInput');
     const tagSelect = document.getElementById('noteTagSelect');
@@ -809,8 +1194,17 @@ class RecollectApp {
       tag: tagSelect?.value || 'Cognitive Spark'
     });
 
+    window.recollectDB.addActivityLog({
+      author: 'Sarah Vance',
+      role: 'Primary Family Caregiver',
+      action: 'Memory Journal Note',
+      content: `"${text}" [Tag: ${tagSelect?.value || 'Observation'}]`,
+      timestamp: new Date().toISOString()
+    });
+
     if (input) input.value = '';
     this.renderCaregiverNotes();
+    this.renderActivityLogs();
     this.showToast('Caregiver observation saved to patient clinical record.', '📝');
   }
 
@@ -830,6 +1224,7 @@ class RecollectApp {
     `).join('');
   }
 
+  // --- Add Reminder Modal ---
   openNewReminderModal() {
     document.getElementById('reminderModal')?.classList.add('active-modal');
   }
@@ -857,9 +1252,222 @@ class RecollectApp {
       created_by: this.caregiverId
     });
 
+    window.recollectDB.addActivityLog({
+      author: 'Sarah Vance',
+      role: 'Primary Family Caregiver',
+      action: 'Scheduled New Routine',
+      content: `Scheduled "${label}" for ${time} (${priority} priority).`,
+      timestamp: new Date().toISOString()
+    });
+
     this.closeNewReminderModal();
     this.renderCaregiverTimeline();
+    this.renderActivityLogs();
     this.showToast(`New reminder "${label}" scheduled for ${time}.`, '➕');
+  }
+
+  // --- Multi-Disciplinary Care Circle & Messaging ---
+  renderCareTeamGrid() {
+    const grid = document.getElementById('cgCareTeamGrid');
+    if (!grid) return;
+
+    const members = window.recollectDB.getCareTeamMembers();
+    grid.innerHTML = members.map(m => `
+      <div class="care-team-member-card">
+        <div class="care-team-member-avatar">${m.avatar || '👤'}</div>
+        <div class="care-team-member-info">
+          <h4>${m.name}</h4>
+          <p><strong>${m.roleTitle}</strong> • ${m.relationship}</p>
+          <div style="display:flex; gap:0.4rem; align-items:center;">
+            <button class="care-team-contact-btn" onclick="app.contactCareTeamMember('${m.name}', '${m.contact}')">
+              📞 ${m.contact}
+            </button>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  contactCareTeamMember(name, contact) {
+    this.startAudioCallSimulation(name, `Connecting to ${contact}...`);
+  }
+
+  promptAddCareTeamMember() {
+    const name = prompt('Enter new care circle member name:');
+    if (!name) return;
+    const role = prompt('Enter role/relation (e.g. Physiotherapist, Neighbor):') || 'Care Partner';
+    const phone = prompt('Enter phone or email:') || '+91 98000 00000';
+
+    window.recollectDB.addCareTeamMember({
+      name,
+      roleTitle: role,
+      relationship: 'Care Circle Partner',
+      avatar: '🤝',
+      contact: phone
+    });
+
+    this.renderCareTeamGrid();
+    this.showToast(`Added ${name} to Care Circle.`, '👥');
+  }
+
+  switchMessageChannel(channel) {
+    this.activeMessageChannel = channel;
+    const btnDoc = document.getElementById('chanBtnDoctor');
+    const btnAsha = document.getElementById('chanBtnAsha');
+    const title = document.getElementById('channelHeaderTitle');
+    const banner = document.getElementById('channelNoticeBanner');
+    const input = document.getElementById('doctorMsgInput');
+
+    if (channel === 'doctor') {
+      btnDoc?.classList.add('active');
+      btnAsha?.classList.remove('active');
+      if (title) title.innerHTML = `<span>🩺</span> ${window.i18n ? window.i18n.getText('channel_doctor_title') : 'Dr. Robert Thorne — Clinical Channel'}`;
+      if (banner) banner.innerHTML = window.i18n ? window.i18n.getText('channel_doctor_banner') : '<span>💬 <strong>Non-Emergency Channel:</strong> Replies typically within 24–48 hours. For immediate medical needs, use Emergency Quick Call.</span>';
+      if (input) input.placeholder = window.i18n ? window.i18n.getText('msg_input_ph') : 'Write a non-emergency message to Dr. Thorne...';
+    } else {
+      btnAsha?.classList.add('active');
+      btnDoc?.classList.remove('active');
+      if (title) title.innerHTML = `<span>🌾</span> ${window.i18n ? window.i18n.getText('channel_asha_title') : 'Anita Roy (ASHA Lead) — Community Health Channel'}`;
+      if (banner) banner.innerHTML = window.i18n ? window.i18n.getText('channel_asha_banner') : '<span>💬 <strong>ASHA Rural Channel:</strong> Direct coordination for weekly home visits, water checks & local PHC support.</span>';
+      if (input) input.placeholder = window.i18n ? window.i18n.getText('msg_input_ph') : 'Message Anita Roy regarding home visit or vitals...';
+    }
+
+    this.renderCareTeamMessages();
+  }
+
+  renderCareTeamMessages() {
+    const stream = document.getElementById('doctorMessagesStream');
+    if (!stream) return;
+
+    const messages = window.recollectDB.getCareTeamMessages(this.activeMessageChannel);
+    stream.innerHTML = messages.map(m => `
+      <div class="doctor-msg-bubble ${m.senderRole === 'caregiver' ? 'from-caregiver' : 'from-doctor'}">
+        <strong>${m.sender}:</strong> ${m.content}
+        <div style="font-size:0.75rem; opacity:0.8; margin-top:0.25rem;">${new Date(m.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+      </div>
+    `).join('');
+    stream.scrollTop = stream.scrollHeight;
+  }
+
+  sendCareMessage() {
+    const input = document.getElementById('doctorMsgInput');
+    const text = input?.value?.trim();
+    if (!text) return;
+
+    window.recollectDB.addCareTeamMessage({
+      channel: this.activeMessageChannel,
+      sender: 'Sarah Vance',
+      senderRole: 'caregiver',
+      content: text
+    });
+
+    if (input) input.value = '';
+    this.renderCareTeamMessages();
+    this.showToast('Message delivered.', '💬');
+
+    // Simulate realistic auto-reply after 1.8 seconds
+    const activeChan = this.activeMessageChannel;
+    setTimeout(() => {
+      let replySender = 'Dr. Thorne';
+      let replyRole = 'doctor';
+      let replyText = 'Received your update. Adherence looks very steady, keep up the positive routine support.';
+
+      if (activeChan === 'asha') {
+        replySender = 'Anita Roy (ASHA)';
+        replyRole = 'asha';
+        replyText = 'Namaste Sarah. Thank you for the note. I will inspect Eleanor\'s pillbox during Wednesday visit.';
+      }
+
+      window.recollectDB.addCareTeamMessage({
+        channel: activeChan,
+        sender: replySender,
+        senderRole: replyRole,
+        content: replyText
+      });
+
+      if (this.activeMessageChannel === activeChan) {
+        this.renderCareTeamMessages();
+      }
+    }, 1800);
+  }
+
+  sendDoctorMessage() {
+    this.sendCareMessage();
+  }
+
+  // --- Caregiver Activity & Hand-off Log ---
+  renderActivityLogs() {
+    const logContainer = document.getElementById('cgSharedActivityLog');
+    if (!logContainer) return;
+
+    const logs = window.recollectDB.getActivityLogs();
+    logContainer.innerHTML = logs.map(l => `
+      <div class="note-item-card">
+        <div class="note-meta-row">
+          <strong>${l.author} <span style="font-size:0.8rem; color:var(--on-surface-variant); font-weight:normal;">(${l.role || 'Care Team'})</span></strong>
+          <span>${new Date(l.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+        </div>
+        <p style="font-size:0.95rem; margin-top:0.25rem;">${l.content}</p>
+      </div>
+    `).join('');
+  }
+
+  addHandoffNote() {
+    const input = document.getElementById('handoffNoteInput');
+    const authorSelect = document.getElementById('handoffAuthorSelect');
+    const text = input?.value?.trim();
+
+    if (!text) {
+      this.showToast('Please type a hand-off note first.', '⚠️');
+      return;
+    }
+
+    const author = authorSelect?.value || 'Sarah Vance (Daughter)';
+    window.recollectDB.addActivityLog({
+      author,
+      role: 'Care Circle Hand-off',
+      action: 'Shift Log',
+      content: text,
+      timestamp: new Date().toISOString()
+    });
+
+    if (input) input.value = '';
+    this.renderActivityLogs();
+    this.showToast('Hand-off observation logged for the care team.', '📋');
+  }
+
+  // --- Alert Escalation Settings ---
+  restoreAlertSettings() {
+    const settings = window.recollectDB.getAlertSettings();
+    const pushEl = document.getElementById('togglePushAlerts');
+    const smsEl = document.getElementById('toggleSmsFallback');
+    const digestEl = document.getElementById('toggleDigestAlerts');
+
+    if (pushEl) {
+      pushEl.checked = settings.instantPush;
+      pushEl.onchange = () => this.saveAlertSettingsState();
+    }
+    if (smsEl) {
+      smsEl.checked = settings.smsFallback;
+      smsEl.onchange = () => this.saveAlertSettingsState();
+    }
+    if (digestEl) {
+      digestEl.checked = settings.batchDigest;
+      digestEl.onchange = () => this.saveAlertSettingsState();
+    }
+  }
+
+  saveAlertSettingsState() {
+    const pushEl = document.getElementById('togglePushAlerts');
+    const smsEl = document.getElementById('toggleSmsFallback');
+    const digestEl = document.getElementById('toggleDigestAlerts');
+
+    window.recollectDB.saveAlertSettings({
+      instantPush: pushEl?.checked ?? true,
+      smsFallback: smsEl?.checked ?? true,
+      batchDigest: digestEl?.checked ?? true
+    });
+    this.showToast('Alert escalation preferences saved.', '🔔');
   }
 
   // --- Clinical Hub & Behavior Flags (design.md Section 5) ---
@@ -968,23 +1576,40 @@ class RecollectApp {
       return;
     }
 
-    const stream = document.getElementById('doctorMessagesStream');
-    if (stream) {
-      const bubble = document.createElement('div');
-      bubble.className = 'doctor-msg-bubble from-doctor';
-      bubble.innerHTML = `<strong>Dr. Thorne:</strong> ${text}`;
-      stream.appendChild(bubble);
-    }
+    window.recollectDB.addCareTeamMessage({
+      channel: 'doctor',
+      sender: 'Dr. Thorne',
+      senderRole: 'doctor',
+      content: text
+    });
 
     if (input) input.value = '';
     this.showToast('Physician report reply transmitted to Sarah Vance.', '🩺');
   }
 
   logAshaHomeVisit() {
-    this.showToast('ASHA Home Visit Checkpoint logged successfully.', '🌾');
+    const now = new Date();
+    window.recollectDB.addActivityLog({
+      author: 'Anita Roy (ASHA Worker)',
+      role: 'Primary Health Centre (PHC)',
+      action: 'Home Visit Check Completed',
+      content: `Completed routine home visit. Blood pressure stable, hydration clean, pillbox verified at ${now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}.`,
+      timestamp: now.toISOString()
+    });
+    this.renderActivityLogs();
+    this.showToast('ASHA Home Visit Checkpoint logged successfully to state register.', '🌾');
   }
 
   initiateTelemedicineReferral() {
+    const packet = {
+      patientId: this.patientId,
+      name: 'Eleanor Vance',
+      abhaId: '91-4521-8890-1234',
+      referralHospital: 'District Civil Hospital Telemedicine Hub',
+      attendingDoctor: 'Dr. Robert Thorne',
+      generatedAt: new Date().toISOString()
+    };
+    alert(`📡 Ayushman Bharat Telemedicine Referral Generated:\n\nPatient: ${packet.name} (ABHA ID: ${packet.abhaId})\nCenter: ${packet.referralHospital}\nProvider: ${packet.attendingDoctor}\nStatus: Packet queued for district consultation.`);
     this.showToast('Telemedicine referral packet generated under Ayushman Bharat Digital Health integration.', '🏥');
   }
 
@@ -1011,13 +1636,21 @@ class RecollectApp {
     if (this.isOnline) {
       if (btn) btn.className = 'status-pill online';
       if (dot) dot.textContent = '🟢';
-      if (text) text.textContent = 'Online';
+      const netKey = 'net_online';
+      if (text) {
+        text.setAttribute('data-i18n', netKey);
+        text.textContent = window.i18n ? window.i18n.getText(netKey) : 'Online';
+      }
       window.recollectDB.processSyncQueue();
       this.showToast('Connected to network. Background sync queue processed.', '🟢');
     } else {
       if (btn) btn.className = 'status-pill offline';
       if (dot) dot.textContent = '🟠';
-      if (text) text.textContent = 'Offline (Local-Only)';
+      const netKey = 'net_offline';
+      if (text) {
+        text.setAttribute('data-i18n', netKey);
+        text.textContent = window.i18n ? window.i18n.getText(netKey) : 'Offline (Local-Only)';
+      }
       this.showToast('Zero-connectivity offline mode active. All patient writes persist locally.', '🟠');
     }
   }
@@ -1027,12 +1660,58 @@ class RecollectApp {
     document.body.classList.toggle('low-power-mode', this.isLowPower);
 
     const text = document.getElementById('powerModeText');
-    if (text) text.textContent = this.isLowPower ? 'Low Power' : 'Normal';
-    
+    const pwrKey = this.isLowPower ? 'power_low' : 'power_normal';
+    if (text) {
+      text.setAttribute('data-i18n', pwrKey);
+      text.textContent = window.i18n ? window.i18n.getText(pwrKey) : (this.isLowPower ? 'Low Power' : 'Normal');
+    }
+
     const settingsToggle = document.getElementById('toggleLowPowerSettings');
     if (settingsToggle) settingsToggle.checked = this.isLowPower;
 
     this.showToast(this.isLowPower ? 'Low-power mode enabled (reduced animation and background polling).' : 'Normal power mode restored.', '⚡');
+  }
+
+  applyLanguageToAllViews() {
+    // 1. Update header role title
+    const session = this.activeSession || (window.recollectDB ? window.recollectDB.getActiveSession() : null);
+    const roleTitle = document.getElementById('activeUserRoleTitle');
+    if (session && roleTitle && window.i18n) {
+      let roleKey = 'role_senior_space';
+      if (session.role === 'caregiver') roleKey = 'role_caregiver_title';
+      if (session.role === 'clinical') roleKey = 'role_clinical_title';
+      roleTitle.setAttribute('data-i18n', roleKey);
+      roleTitle.textContent = window.i18n.getText(roleKey);
+    }
+
+    // 2. Update network and power labels in header
+    const netText = document.getElementById('netStatusText');
+    if (netText && window.i18n) {
+      const netKey = this.isOnline ? 'net_online' : 'net_offline';
+      netText.setAttribute('data-i18n', netKey);
+      netText.textContent = window.i18n.getText(netKey);
+    }
+    const pwrText = document.getElementById('powerModeText');
+    if (pwrText && window.i18n) {
+      const pwrKey = this.isLowPower ? 'power_low' : 'power_normal';
+      pwrText.setAttribute('data-i18n', pwrKey);
+      pwrText.textContent = window.i18n.getText(pwrKey);
+    }
+
+    // 3. Update dynamic orientation, date, greeting
+    this.updateOrientationTime();
+
+    // 4. Update role-specific dynamic streams
+    if (session && session.role === 'caregiver') {
+      this.renderCaregiverTimeline();
+      this.renderCaregiverNotes();
+      this.renderCareTeamGrid();
+      this.renderCareTeamMessages();
+      this.renderActivityLogs();
+    } else if (session && session.role === 'clinical') {
+      this.updateClinicalMetrics();
+      this.renderBehaviorFlags();
+    }
   }
 
   changeLanguage(lang) {
@@ -1042,7 +1721,15 @@ class RecollectApp {
       if (mainSelect) mainSelect.value = lang;
       const settingsSelect = document.getElementById('settingsLangSelect');
       if (settingsSelect) settingsSelect.value = lang;
-      this.showToast(`Language switched to ${lang.toUpperCase()}`, '🌐');
+      this.applyLanguageToAllViews();
+      const langNameMap = {
+        'en': 'English',
+        'as': 'অসমীয়া (Assamese)',
+        'bn': 'বাংলা (Bengali)',
+        'kha': 'Khasi (Meghalaya)',
+        'hi': 'हिन्दी (Hindi)'
+      };
+      this.showToast(`Language switched to ${langNameMap[lang] || lang.toUpperCase()}`, '🌐');
     }
   }
 

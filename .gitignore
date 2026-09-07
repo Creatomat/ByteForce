@@ -1,0 +1,8 @@
+.venv/
+__pycache__/
+*.pyc
+base_i18n.json
+update_all_i18n.py
+build_full_i18n_system.py
+generate_i18n_js.py
+apply_i18n_to_html.py

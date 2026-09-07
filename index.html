@@ -17,7 +17,7 @@
        ========================================================================== -->
   <header class="global-header" role="banner" id="appHeader">
     <div style="display:flex; align-items:center; gap:0.75rem;">
-      <a href="#" class="brand-badge" id="brandHomeLink" onclick="return false;">
+      <a href="#" class="brand-badge" id="brandHomeLink" onclick="app.handleBrandClick(); return false;">
         <span class="brand-leaf">🌿</span>
         <span data-i18n="brand_title">Recollect</span>
       </a>
@@ -26,24 +26,24 @@
       <div id="activeUserBadge" class="authenticated-role-badge" style="display:none;">
         <span class="user-avatar" id="activeUserAvatar">👵</span>
         <span id="activeUserName">Eleanor Vance</span>
-        <span id="activeUserRoleTitle" style="font-size:0.8rem; color:var(--on-surface-variant); font-weight:600;">(Senior Space)</span>
+        <span id="activeUserRoleTitle" style="font-size:0.8rem; color:var(--on-surface-variant); font-weight:600;" data-i18n="role_senior_space">(Senior Space)</span>
       </div>
     </div>
 
     <!-- Header Action Controls -->
     <div class="system-status-pills">
       <!-- Network Simulation Pill (Hidden in Patient Mode per design.md Section 6.1) -->
-      <button class="status-pill online" id="networkToggleBtn" onclick="app.toggleNetworkMode()" title="Toggle simulated network connectivity">
-        <span id="netStatusDot">🟢</span> <span id="netStatusText">Online</span>
+      <button class="status-pill online" id="networkToggleBtn" onclick="app.toggleNetworkMode()" title="Toggle simulated network connectivity" data-i18n-title="title_network_toggle">
+        <span id="netStatusDot">🟢</span> <span id="netStatusText" data-i18n="net_online">Online</span>
       </button>
 
       <!-- Low-Power Mode Toggle (Hidden in Patient Mode per design.md Section 3.1) -->
-      <button class="status-pill power-saving" id="powerModeBtn" onclick="app.togglePowerMode()" title="Toggle low-power mode">
-        <span>⚡</span> <span id="powerModeText">Normal</span>
+      <button class="status-pill power-saving" id="powerModeBtn" onclick="app.togglePowerMode()" title="Toggle low-power mode" data-i18n-title="title_power_toggle">
+        <span>⚡</span> <span id="powerModeText" data-i18n="power_normal">Normal</span>
       </button>
 
       <!-- Language Selector (Hidden in Patient Mode per design.md Section 3.1) -->
-      <select class="lang-selector" id="langSelect" onchange="app.changeLanguage(this.value)" aria-label="Select Language">
+      <select class="lang-selector" id="langSelect" onchange="app.changeLanguage(this.value)" aria-label="Select Language" data-i18n-aria="aria_select_language">
         <option value="en">English</option>
         <option value="as">অসমীয়া (Assamese)</option>
         <option value="bn">বাংলা (Bengali)</option>
@@ -52,18 +52,18 @@
       </select>
 
       <!-- Patient-Specific Emergency Help Pill (Visible only in Patient Mode) -->
-      <button class="emergency-trigger-btn" id="emergencyHelpBtn" onclick="app.triggerEmergencyHelp()" style="display:none;" aria-label="Call emergency help">
-        <span>🚨</span> Call Help
+      <button class="emergency-trigger-btn" id="emergencyHelpBtn" onclick="app.triggerEmergencyHelp()" style="display:none;" aria-label="Call emergency help" data-i18n-aria="aria_call_emergency">
+        <span>🚨</span> <span data-i18n="btn_call_help">Call Help</span>
       </button>
 
       <!-- Patient Mode Subtle Caregiver Settings Affordance (PIN Protected per design.md Section 3.5) -->
-      <button class="caregiver-gate-subtle-btn" id="patientCaregiverSettingsBtn" onclick="app.openCaregiverSettings()" style="display:none;" title="Caregiver Settings">
-        <span>⚙️</span> Caregiver Settings
+      <button class="caregiver-gate-subtle-btn" id="patientCaregiverSettingsBtn" onclick="app.openCaregiverSettings()" style="display:none;" title="Caregiver Settings" data-i18n-title="title_cg_settings">
+        <span>⚙️</span> <span data-i18n="btn_cg_settings">Caregiver Settings</span>
       </button>
 
       <!-- Caregiver / Doctor Logout Action -->
-      <button class="logout-action-btn" id="appLogoutBtn" onclick="app.logoutUser()" style="display:none;" title="Log out from current dashboard">
-        <span>🚪</span> Switch Account / Log Out
+      <button class="logout-action-btn" id="appLogoutBtn" onclick="app.logoutUser()" style="display:none;" title="Log out from current dashboard" data-i18n-title="title_app_logout">
+        <span>🚪</span> <span data-i18n="btn_logout">Switch Account / Log Out</span>
       </button>
     </div>
   </header>
@@ -80,8 +80,8 @@
       <div class="login-screen-wrapper">
         <div class="login-hero-header">
           <span class="app-icon-large">🌿</span>
-          <h1>Welcome to Recollect</h1>
-          <p>Please select your profile to enter your dedicated dashboard. Caregiver, Patient, and Clinical dashboards are strictly segregated.</p>
+          <h1 data-i18n="login_welcome_title">Welcome to Recollect</h1>
+          <p data-i18n="login_welcome_sub">Please select your profile to enter your dedicated dashboard. Caregiver, Patient, and Clinical dashboards are strictly segregated.</p>
         </div>
 
         <div class="login-cards-container">
@@ -93,15 +93,15 @@
                 <div class="profile-avatar-circle">👵</div>
                 <div class="profile-info">
                   <h3>Eleanor Vance</h3>
-                  <span>Senior Patient Space</span>
+                  <span data-i18n="login_patient_role">Senior Patient Space</span>
                 </div>
               </div>
               <div class="profile-details-box">
-                <p>🧘 <strong>Bedside Tablet Mode:</strong> Large text, 1-tap reminders, photo memory games & reassuring calm audio.</p>
+                <p>🧘 <strong data-i18n="login_patient_mode_label">Bedside Tablet Mode:</strong> <span data-i18n="login_patient_desc">Large text, 1-tap reminders, photo memory games & reassuring calm audio.</span></p>
               </div>
             </div>
             <button class="profile-action-btn primary-btn" onclick="app.loginAsRole('patient')">
-              <span>👵</span> Tap Here to Enter (Eleanor)
+              <span>👵</span> <span data-i18n="login_patient_btn">Tap Here to Enter (Eleanor)</span>
             </button>
           </article>
 
@@ -112,19 +112,19 @@
                 <div class="profile-avatar-circle" style="background:#dbeafe; border-color:#3b82f6;">👩</div>
                 <div class="profile-info">
                   <h3>Sarah Vance</h3>
-                  <span>Family Caregiver</span>
+                  <span data-i18n="login_cg_role">Family Caregiver</span>
                 </div>
               </div>
               <div class="profile-details-box">
-                <p>🛡️ <strong>Family Oversight:</strong> Live sync timeline, overdue alerts, memory journal, trends & reminder manager.</p>
+                <p>🛡️ <strong data-i18n="login_cg_mode_label">Family Oversight:</strong> <span data-i18n="login_cg_desc">Live sync timeline, overdue alerts, memory journal, trends & reminder manager.</span></p>
               </div>
               <div class="pin-login-box">
-                <label for="cgPinInput" style="font-size:0.9rem; font-weight:700;">Caregiver PIN (Demo: 1234):</label>
+                <label for="cgPinInput" style="font-size:0.9rem; font-weight:700;" data-i18n="login_cg_pin_label">Caregiver PIN (Demo: 1234):</label>
                 <input type="password" id="cgPinInput" class="pin-input-field" maxlength="4" placeholder="••••" value="1234">
               </div>
             </div>
             <button class="profile-action-btn secondary-btn" style="margin-top:1rem;" onclick="app.loginAsRole('caregiver')">
-              <span>🛡️</span> Log In as Caregiver
+              <span>🛡️</span> <span data-i18n="login_cg_btn">Log In as Caregiver</span>
             </button>
           </article>
 
@@ -134,20 +134,20 @@
               <div class="profile-avatar-row">
                 <div class="profile-avatar-circle" style="background:#e2e8f0; border-color:#64748b;">🩺</div>
                 <div class="profile-info">
-                  <h3>Dr. Thorne / ASHA Lead</h3>
-                  <span>Clinical & Community Health</span>
+                  <h3 data-i18n="login_clin_title">Dr. Thorne / ASHA Lead</h3>
+                  <span data-i18n="login_clin_role">Clinical & Community Health</span>
                 </div>
               </div>
               <div class="profile-details-box">
-                <p>📊 <strong>Clinical Hub:</strong> Cognitive telemetry, explainable Phase-1 flags, structured weekly PDF reports & ASHA view.</p>
+                <p>📊 <strong data-i18n="login_clin_mode_label">Clinical Hub:</strong> <span data-i18n="login_clin_desc">Cognitive telemetry, explainable Phase-1 flags, structured weekly PDF reports & ASHA view.</span></p>
               </div>
               <div class="pin-login-box">
-                <label for="clinPinInput" style="font-size:0.9rem; font-weight:700;">Clinical Passcode (Demo: 9999):</label>
+                <label for="clinPinInput" style="font-size:0.9rem; font-weight:700;" data-i18n="login_clin_pin_label">Clinical Passcode (Demo: 9999):</label>
                 <input type="password" id="clinPinInput" class="pin-input-field" maxlength="4" placeholder="••••" value="9999">
               </div>
             </div>
             <button class="profile-action-btn clinical-btn" style="margin-top:1rem;" onclick="app.loginAsRole('clinical')">
-              <span>📊</span> Log In to Clinical Hub
+              <span>📊</span> <span data-i18n="login_clin_btn">Log In to Clinical Hub</span>
             </button>
           </article>
 
@@ -166,8 +166,8 @@
         <!-- Orientation Anchor Bar (design.md Section 3.1) -->
         <header class="orientation-anchor-bar">
           <div class="orientation-meta">
-            <span data-i18n="weather_info">Morning Sunshine • 72° Mild</span>
-            <span>🌿 Eleanor's Tablet</span>
+            <span id="patientWeatherPill" data-i18n="weather_morning">Morning Sunshine • 72° Mild</span>
+            <span data-i18n="patient_tablet_label">🌿 Eleanor's Tablet</span>
           </div>
           <h1 class="orientation-greeting" data-i18n="greeting_morning">Good Morning, Eleanor!</h1>
           <p class="orientation-date" data-i18n="date_display">Thursday, October 24</p>
@@ -184,7 +184,7 @@
             <span class="routine-tag-pill">
               <span>⏰</span> <span data-i18n="current_routine">Right now • 9:00 AM routine</span>
             </span>
-            <span id="routineTimeTag" style="font-weight:700; color:var(--on-surface-variant); font-size:1.15rem;">Scheduled for 9:00 AM</span>
+            <span id="routineTimeTag" style="font-weight:700; color:var(--on-surface-variant); font-size:1.15rem;" data-i18n="routine_scheduled_time">Scheduled for 9:00 AM</span>
           </div>
 
           <div class="routine-title-box">
@@ -215,7 +215,7 @@
                 <rect x="230" y="40" width="110" height="150" rx="14" fill="url(#glassGrad)" stroke="#0284c7" stroke-width="2"/>
                 <ellipse cx="285" cy="50" rx="50" ry="12" fill="#e0f2fe" opacity="0.6"/>
                 <path d="M 245 75 Q 285 85 325 75 L 320 170 Q 285 180 250 170 Z" fill="#7dd3fc" opacity="0.75"/>
-                <text x="285" y="130" font-size="14" font-weight="700" fill="#0369a1" text-anchor="middle">Cool Water</text>
+                <text x="285" y="130" font-size="14" font-weight="700" fill="#0369a1" text-anchor="middle" data-i18n="cool_water_label">Cool Water</text>
                 
                 <!-- Yellow Tablet -->
                 <ellipse cx="120" cy="130" rx="55" ry="32" fill="url(#pillGrad)" stroke="#ca8a04" stroke-width="3"/>
@@ -228,15 +228,15 @@
               <div class="spec-tile">
                 <span class="spec-icon">💊</span>
                 <div class="spec-txt">
-                  <strong style="font-size:1.25rem;">1 Pill</strong>
-                  <span style="font-size:1.05rem;">Yellow Oval V 42 (Lisinopril 10mg)</span>
+                  <strong style="font-size:1.25rem;" data-i18n="pill_spec_label">1 Pill</strong>
+                  <span style="font-size:1.05rem;" data-i18n="pill_spec_name">Yellow Oval V 42 (Lisinopril 10mg)</span>
                 </div>
               </div>
               <div class="spec-tile">
                 <span class="spec-icon">🥤</span>
                 <div class="spec-txt">
-                  <strong style="font-size:1.25rem;">1 Glass</strong>
-                  <span style="font-size:1.05rem;">Full of fresh cool water</span>
+                  <strong style="font-size:1.25rem;" data-i18n="glass_spec_label">1 Glass</strong>
+                  <span style="font-size:1.05rem;" data-i18n="glass_spec_desc">Full of fresh cool water</span>
                 </div>
               </div>
             </div>
@@ -249,7 +249,7 @@
           
           <div style="display:flex; justify-content:center;">
             <button type="button" class="cg-btn" style="background:transparent; border:none; color:var(--primary); font-weight:700; font-size:1.15rem; cursor:pointer;" onclick="app.openReminderAttention()">
-              <span>🔍</span> Tap for Full-Screen View
+              <span>🔍</span> <span data-i18n="tap_fullscreen_btn">Tap for Full-Screen View</span>
             </button>
           </div>
         </article>
@@ -263,7 +263,7 @@
               <span class="secondary-card-icon">🌸</span>
               <div class="secondary-card-text">
                 <h3 data-i18n="action_play_game">Play a Game</h3>
-                <p>Gentle brain activities & memories at your pace</p>
+                <p data-i18n="action_game_sub">Gentle brain activities & memories at your pace</p>
               </div>
             </div>
             <button class="secondary-patient-btn game-btn" onclick="app.openGamesHub()">
@@ -277,11 +277,11 @@
               <span class="secondary-card-icon">💚</span>
               <div class="secondary-card-text">
                 <h3 data-i18n="action_how_feeling">How I am Feeling Today</h3>
-                <p>One-tap gentle mood check-in</p>
+                <p data-i18n="action_mood_sub">One-tap gentle mood check-in</p>
               </div>
             </div>
             <button class="secondary-patient-btn mood-btn-action" onclick="app.openMoodModal()">
-              <span>💚</span> Check In
+              <span>💚</span> <span data-i18n="mood_check_in_btn">Check In</span>
             </button>
           </article>
 
@@ -295,7 +295,7 @@
               </div>
             </div>
             <button class="secondary-patient-btn call-btn-action" onclick="app.callSarah()">
-              <span>📞</span> Call Sarah
+              <span>📞</span> <span data-i18n="call_sarah_btn">Call Sarah</span>
             </button>
           </article>
 
@@ -334,25 +334,25 @@
           <div class="patient-live-pill">
             <div class="patient-avatar-thumb">👵</div>
             <div class="patient-live-details">
-              <h3>Eleanor Vance (Mother)</h3>
-              <p>Active in Living Room • Bedside Tablet Paired</p>
+              <h3 data-i18n="cg_patient_title">Eleanor Vance (Mother)</h3>
+              <p data-i18n="cg_patient_status">Active in Living Room • Bedside Tablet Paired</p>
             </div>
           </div>
           
           <div class="caregiver-quick-actions">
             <!-- Staleness / Live Sync Badge (Architecture Section 5 & design.md Section 6.1) -->
             <span class="status-pill online" id="cgSyncBadge">
-              <span>🔄</span> <strong id="cgSyncText">Live Hub Sync: 9:02 AM</strong>
+              <span>🔄</span> <strong id="cgSyncText" data-i18n="cg_sync_text">Live Hub Sync: 9:02 AM</strong>
             </span>
             <button class="cg-btn" onclick="app.openNewReminderModal()">
-              <span>➕</span> Add Reminder
+              <span>➕</span> <span data-i18n="btn_add_reminder">Add Reminder</span>
             </button>
             <button class="cg-btn primary" onclick="app.callEleanor()">
-              <span>📞</span> Call Eleanor
+              <span>📞</span> <span data-i18n="cg_quick_call">Call Eleanor</span>
             </button>
             <!-- Persistent High-Contrast Emergency Quick-Access Button (Section 4.7) -->
-            <button class="emergency-trigger-btn" onclick="app.triggerCaregiverEmergency()" title="One tap emergency escalation">
-              <span>🚨</span> Emergency Quick Call
+            <button class="emergency-trigger-btn" onclick="app.triggerCaregiverEmergency()" title="One tap emergency escalation" data-i18n-title="btn_emergency_escalation">
+              <span>🚨</span> <span data-i18n="btn_emergency_escalation">Emergency Quick Call</span>
             </button>
           </div>
         </header>
@@ -360,40 +360,40 @@
         <!-- Caregiver Tabbed Navigation Bar -->
         <div class="caregiver-tabs-bar">
           <button class="cg-tab-btn active" id="cgTabBtnToday" onclick="app.setCaregiverTab('today')">
-            <span>🗓️</span> Today's Schedule
+            <span>🗓️</span> <span data-i18n="cg_tab_today">Today's Schedule</span>
           </button>
           <button class="cg-tab-btn" id="cgTabBtnTrends" onclick="app.setCaregiverTab('trends')">
-            <span>📈</span> Trends & Analytics
+            <span>📈</span> <span data-i18n="cg_tab_trends">Trends & Analytics</span>
           </button>
           <button class="cg-tab-btn" id="cgTabBtnJournal" onclick="app.setCaregiverTab('journal')">
-            <span>📝</span> Family Memory Journal
+            <span>📝</span> <span data-i18n="cg_tab_journal">Family Memory Journal</span>
           </button>
           <button class="cg-tab-btn" id="cgTabBtnCareTeam" onclick="app.setCaregiverTab('careteam')">
-            <span>👥</span> Care Team & Messages
+            <span>👥</span> <span data-i18n="cg_tab_careteam">Care Team & Messages</span>
           </button>
           <button class="cg-tab-btn" id="cgTabBtnAlerts" onclick="app.setCaregiverTab('alerts')">
-            <span>🔔</span> Alert Escalation Settings
+            <span>🔔</span> <span data-i18n="cg_tab_alerts">Alert Escalation Settings</span>
           </button>
         </div>
 
         <!-- Overdue Routine Alert Banner (Only place RED is used, design.md Section 2.2 & 4.8) -->
         <article class="overdue-alert-banner" id="cgOverdueBanner" style="display:none;">
           <div class="overdue-alert-header">
-            <h4><span>🚨</span> Critical Routine Reminder Overdue</h4>
-            <span class="overdue-time-badge" id="overdueDurationText">35m Overdue</span>
+            <h4><span>🚨</span> <span data-i18n="cg_overdue_title">Critical Routine Reminder Overdue</span></h4>
+            <span class="overdue-time-badge" id="overdueDurationText" data-i18n="overdue_time_badge">35m Overdue</span>
           </div>
-          <p style="font-size:1.1rem; color:#78350f;">
+          <p style="font-size:1.1rem; color:#78350f;" data-i18n="cg_overdue_desc">
             <strong>Morning Blood Pressure Pill (Lisinopril 10mg)</strong> has not been confirmed. 5-minute escalation target window active.
           </p>
           <div class="overdue-action-row">
             <button class="cg-btn primary" onclick="app.callEleanor()">
-              <span>📢</span> Call Eleanor's Tablet
+              <span>📢</span> <span data-i18n="cg_overdue_call">Call Eleanor's Tablet</span>
             </button>
             <button class="cg-btn" onclick="app.caregiverMarkTaken()">
-              <span>✓</span> Mark Taken by Caregiver
+              <span>✓</span> <span data-i18n="cg_overdue_mark">Mark Taken by Caregiver</span>
             </button>
             <button class="cg-btn" onclick="app.simulateSmsEscalation()">
-              <span>📱</span> Test SMS/USSD Fallback
+              <span>📱</span> <span data-i18n="cg_overdue_sms">Test SMS/USSD Fallback</span>
             </button>
           </div>
         </article>
@@ -402,10 +402,15 @@
         <div id="cgTabContentToday">
           <div class="cg-panel-card">
             <div class="cg-panel-header">
-              <h3><span>🗓️</span> Today's Visual Schedule Checklist</h3>
-              <button class="cg-btn" style="height:36px; padding:0 0.85rem; font-size:0.85rem;" onclick="app.refreshCaregiverTimeline()">
-                <span>🔄</span> Refresh
-              </button>
+              <h3><span>🗓️</span> <span data-i18n="cg_today_checklist_title">Today's Visual Schedule Checklist</span></h3>
+              <div style="display:flex; gap:0.5rem;">
+                <button class="cg-btn primary" style="height:36px; padding:0 0.85rem; font-size:0.85rem;" onclick="app.openNewReminderModal()">
+                  <span>➕</span> <span data-i18n="cg_btn_add_task">Add Task</span>
+                </button>
+                <button class="cg-btn" style="height:36px; padding:0 0.85rem; font-size:0.85rem;" onclick="app.refreshCaregiverTimeline()">
+                  <span>🔄</span> <span data-i18n="cg_btn_refresh">Refresh</span>
+                </button>
+              </div>
             </div>
             
             <div class="timeline-stream" id="cgTimelineStream">
@@ -419,24 +424,24 @@
           <div class="cg-panel-card">
             <div class="cg-panel-header">
               <div>
-                <h3><span>📈</span> Cognitive & Routine Adherence Trends</h3>
-                <p style="font-size:0.95rem; color:var(--on-surface-variant); margin-top:0.25rem;">
+                <h3><span>📈</span> <span data-i18n="cg_trends_title">Cognitive & Routine Adherence Trends</span></h3>
+                <p style="font-size:0.95rem; color:var(--on-surface-variant); margin-top:0.25rem;" data-i18n="cg_trends_subtitle">
                   Weekly adherence %, composite score, and mood plotted across time.
                 </p>
               </div>
               <div class="timeframe-pill-group">
-                <button class="timeframe-pill" onclick="app.setTimeframe('daily', this)">Daily</button>
-                <button class="timeframe-pill active" onclick="app.setTimeframe('weekly', this)">Weekly</button>
-                <button class="timeframe-pill" onclick="app.setTimeframe('monthly', this)">Monthly</button>
-                <button class="timeframe-pill" onclick="app.setTimeframe('quarterly', this)">Quarterly</button>
+                <button class="timeframe-pill" onclick="app.setTimeframe('daily', this)" data-i18n="timeframe_daily">Daily</button>
+                <button class="timeframe-pill active" onclick="app.setTimeframe('weekly', this)" data-i18n="timeframe_weekly">Weekly</button>
+                <button class="timeframe-pill" onclick="app.setTimeframe('monthly', this)" data-i18n="timeframe_monthly">Monthly</button>
+                <button class="timeframe-pill" onclick="app.setTimeframe('quarterly', this)" data-i18n="timeframe_quarterly">Quarterly</button>
               </div>
             </div>
 
             <!-- Adherence Trend SVG Chart -->
             <div class="trends-chart-container">
               <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
-                <strong>Routine Adherence & Composite Score Timeline</strong>
-                <span style="font-size:0.9rem; color:#059669; font-weight:700;">🟢 Baseline Stable (94% adherence)</span>
+                <strong data-i18n="chart_title">Routine Adherence & Composite Score Timeline</strong>
+                <span style="font-size:0.9rem; color:#059669; font-weight:700;" data-i18n="chart_baseline_stable">🟢 Baseline Stable (94% adherence)</span>
               </div>
               
               <!-- Responsive SVG Line/Bar Chart -->
@@ -474,24 +479,24 @@
                 <text x="350" y="180" font-size="12" fill="#64748b" text-anchor="middle">Oct 21</text>
                 <text x="440" y="180" font-size="12" fill="#64748b" text-anchor="middle">Oct 22</text>
                 <text x="530" y="180" font-size="12" fill="#64748b" text-anchor="middle">Oct 23</text>
-                <text x="620" y="180" font-size="12" fill="#0f172a" font-weight="bold" text-anchor="middle">Today</text>
+                <text x="620" y="180" font-size="12" fill="#0f172a" font-weight="bold" text-anchor="middle" data-i18n="chart_today_label">Today</text>
               </svg>
               <div style="display:flex; gap:1.5rem; justify-content:center; margin-top:0.5rem; font-size:0.85rem;">
-                <span>🟢 <strong>Adherence Rate</strong> (Avg 94%)</span>
-                <span>🔵 <strong>Composite Score</strong> (Avg 91/100)</span>
+                <span>🟢 <strong data-i18n="chart_adherence_label">Adherence Rate</strong> <span data-i18n="chart_adherence_avg">(Avg 94%)</span></span>
+                <span>🔵 <strong data-i18n="chart_composite_label">Composite Score</strong> <span data-i18n="chart_composite_avg">(Avg 91/100)</span></span>
               </div>
             </div>
 
             <!-- Notable-Change Flags with Expandable Evidence (design.md Section 4.2 & 6.3) -->
-            <h4 style="margin-top:1.5rem; font-size:1.15rem; color:var(--on-surface);">Notable Activity Observations (Expand for Evidence)</h4>
+            <h4 style="margin-top:1.5rem; font-size:1.15rem; color:var(--on-surface);" data-i18n="notable_observations_title">Notable Activity Observations (Expand for Evidence)</h4>
             <div class="flag-evidence-accordion">
               <div class="flag-accordion-summary" onclick="app.toggleFlagAccordion(this)">
-                <span>⚠️ Routine Latency: Morning pill delay observed on Oct 20 (+18 mins)</span>
+                <span data-i18n="flag_summary_1">⚠️ Routine Latency: Morning pill delay observed on Oct 20 (+18 mins)</span>
                 <span>▼</span>
               </div>
               <div class="flag-expanded-content" style="display:none;">
-                <p><strong>Underlying Raw Evidence:</strong> Tablet chime rang at 9:00 AM; response registered at 9:18 AM (1,080s latency). Caregiver note: <em>"Eleanor was listening to old gramophone records in the morning room."</em></p>
-                <p style="margin-top:0.4rem;"><strong>Recommendation:</strong> Stable variation, worth continuing observation.</p>
+                <p><strong data-i18n="flag_evidence_label">Underlying Raw Evidence:</strong> <span data-i18n="flag_evidence_content">Tablet chime rang at 9:00 AM; response registered at 9:18 AM (1,080s latency). Caregiver note: <em>"Eleanor was listening to old gramophone records in the morning room."</em></span></p>
+                <p style="margin-top:0.4rem;"><strong data-i18n="flag_recommendation_label">Recommendation:</strong> <span data-i18n="flag_recommendation_content">Stable variation, worth continuing observation.</span></p>
               </div>
             </div>
 
@@ -509,23 +514,23 @@
         <div id="cgTabContentJournal" style="display:none;">
           <div class="cg-panel-card">
             <div class="cg-panel-header">
-              <h3><span>📝</span> Family Memory Journal & Clinical Notes</h3>
+              <h3><span>📝</span> <span data-i18n="journal_title">Family Memory Journal & Clinical Notes</span></h3>
             </div>
-            <p style="font-size:0.95rem; color:var(--on-surface-variant);">
+            <p style="font-size:0.95rem; color:var(--on-surface-variant);" data-i18n="journal_subtitle">
               Add timestamped observations that appear alongside clinical scores for Dr. Thorne.
             </p>
 
             <div class="notes-input-box" style="margin-top:1rem;">
-              <textarea class="notes-textarea" id="caregiverNoteInput" placeholder="e.g., Eleanor had bright recall looking at seaside photos today..."></textarea>
+              <textarea class="notes-textarea" id="caregiverNoteInput" placeholder="e.g., Eleanor had bright recall looking at seaside photos today..." data-i18n-placeholder="journal_input_ph"></textarea>
               <div style="display:flex; gap:0.5rem; justify-content:space-between;">
                 <select class="note-tag-select" id="noteTagSelect">
-                  <option value="Cognitive Spark">✨ Cognitive Spark</option>
-                  <option value="Calm & Engaged">🌿 Calm & Engaged</option>
-                  <option value="A Bit Tired">🛋️ A Bit Tired</option>
-                  <option value="Mild Confusion">❓ Mild Confusion</option>
+                  <option value="Cognitive Spark" data-i18n="tag_spark">✨ Cognitive Spark</option>
+                  <option value="Calm & Engaged" data-i18n="tag_calm">🌿 Calm & Engaged</option>
+                  <option value="A Bit Tired" data-i18n="tag_tired">🛋️ A Bit Tired</option>
+                  <option value="Mild Confusion" data-i18n="tag_confusion">❓ Mild Confusion</option>
                 </select>
                 <button class="cg-btn primary" onclick="app.submitCaregiverNote()">
-                  <span>💾</span> Save Note
+                  <span>💾</span> <span data-i18n="btn_save_note">Save Note</span>
                 </button>
               </div>
             </div>
@@ -541,57 +546,64 @@
         <div id="cgTabContentCareTeam" style="display:none;">
           <div class="cg-panel-card">
             <div class="cg-panel-header">
-              <h3><span>👥</span> Linked Family Caregivers (FR-4.4)</h3>
+              <h3><span>👥</span> <span data-i18n="careteam_header">Multi-Disciplinary Care Circle & Contacts (FR-4.4)</span></h3>
+              <button class="cg-btn" style="height:36px; padding:0 0.85rem; font-size:0.85rem;" onclick="app.promptAddCareTeamMember()">
+                <span>➕</span> <span data-i18n="btn_add_member">Add Member</span>
+              </button>
             </div>
-            <div class="shared-caregiver-chips">
-              <div class="caregiver-chip">
-                <span>👩</span> <strong>Sarah Vance</strong> <span>(Primary Daughter)</span>
-              </div>
-              <div class="caregiver-chip">
-                <span>👧</span> <strong>Priya Vance</strong> <span>(Secondary Sibling)</span>
-              </div>
+            
+            <div class="care-team-grid" id="cgCareTeamGrid">
+              <!-- Dynamically rendered from app.js -->
             </div>
 
-            <h4 style="font-size:1.1rem; margin:1rem 0 0.5rem;">Caregiver Activity & Hand-off Log</h4>
+            <div class="cg-panel-header" style="margin-top:1.75rem;">
+              <h3><span>📋</span> <span data-i18n="handoff_log_title">Caregiver Activity & Hand-off Log</span></h3>
+            </div>
+            <div style="display:flex; gap:0.5rem; margin-bottom:1rem; flex-wrap:wrap;">
+              <select id="handoffAuthorSelect" class="form-select" style="width:180px;">
+                <option value="Sarah Vance (Daughter)" data-i18n="opt_author_sarah">Sarah Vance (Primary)</option>
+                <option value="Priya Vance (Sibling)" data-i18n="opt_author_priya">Priya Vance (Secondary)</option>
+                <option value="Anita Roy (ASHA)" data-i18n="opt_author_asha">Anita Roy (ASHA)</option>
+              </select>
+              <input type="text" id="handoffNoteInput" class="form-input" style="flex:1; min-width:240px;" placeholder="Add shift hand-off observation (e.g., Had lunch, rested well)..." data-i18n-placeholder="handoff_input_ph">
+              <button class="cg-btn primary" onclick="app.addHandoffNote()" data-i18n="btn_post_update">Post Update</button>
+            </div>
+
             <div class="notes-history-list" id="cgSharedActivityLog">
-              <div class="note-item-card">
-                <div class="note-meta-row">
-                  <strong>Priya Vance</strong>
-                  <span>Today 8:15 AM</span>
-                </div>
-                <p style="font-size:0.95rem;">Checked in for breakfast. Eleanor enjoyed warm berry tea and toast.</p>
-              </div>
-              <div class="note-item-card">
-                <div class="note-meta-row">
-                  <strong>Sarah Vance</strong>
-                  <span>Today 9:02 AM</span>
-                </div>
-                <p style="font-size:0.95rem;">Confirmed Lisinopril 10mg tablet was taken with water.</p>
-              </div>
+              <!-- Dynamically rendered from app.js -->
             </div>
 
-            <hr style="margin:1.5rem 0; border:none; border-top:1.5px solid var(--outline-variant);">
+            <hr style="margin:1.75rem 0; border:none; border-top:1.5px solid var(--outline-variant);">
 
-            <!-- Async Doctor Messaging Thread (design.md Section 4.6) -->
+            <!-- Multi-Channel Messaging Thread (Doctor & ASHA) -->
             <div class="cg-panel-header">
-              <h3><span>🩺</span> Dr. Thorne — Non-Emergency Clinical Channel (FR-4.5)</h3>
+              <div>
+                <h3 id="channelHeaderTitle"><span>💬</span> <span data-i18n="channel_title">Care Circle Channels</span></h3>
+                <p style="font-size:0.9rem; color:var(--on-surface-variant); margin-top:0.2rem;" data-i18n="channel_subtitle">
+                  Direct asynchronous channel with doctor and rural community health workers.
+                </p>
+              </div>
+              <div style="display:flex; gap:0.5rem;">
+                <button class="channel-tab-pill active" id="chanBtnDoctor" onclick="app.switchMessageChannel('doctor')" data-i18n="chan_doctor_tab">
+                  🩺 Dr. Thorne
+                </button>
+                <button class="channel-tab-pill" id="chanBtnAsha" onclick="app.switchMessageChannel('asha')" data-i18n="chan_asha_tab">
+                  🌾 Anita Roy (ASHA)
+                </button>
+              </div>
             </div>
-            <div class="doctor-msg-banner">
-              <span>💬 <strong>Non-Emergency Channel:</strong> Replies typically within 24–48 hours. For immediate medical needs, use Emergency Quick Call.</span>
+
+            <div class="doctor-msg-banner" id="channelNoticeBanner">
+              <span data-i18n="chan_notice_banner">💬 <strong>Non-Emergency Channel:</strong> Replies typically within 24–48 hours. For immediate medical needs, use Emergency Quick Call.</span>
             </div>
 
             <div class="doctor-messages-stream" id="doctorMessagesStream">
-              <div class="doctor-msg-bubble from-caregiver">
-                <strong>Sarah:</strong> Dr. Thorne, Eleanor was very energetic during the memory game today. Her accuracy is stable.
-              </div>
-              <div class="doctor-msg-bubble from-doctor">
-                <strong>Dr. Thorne:</strong> Excellent to hear. Keep observing the morning medication routine. The 94% weekly adherence is very reassuring.
-              </div>
+              <!-- Dynamically rendered based on active channel -->
             </div>
 
             <div style="display:flex; gap:0.5rem; margin-top:0.75rem;">
-              <input type="text" id="doctorMsgInput" class="form-input" style="flex:1;" placeholder="Write a non-emergency message to Dr. Thorne...">
-              <button class="cg-btn primary" onclick="app.sendDoctorMessage()">Send</button>
+              <input type="text" id="doctorMsgInput" class="form-input" style="flex:1;" placeholder="Type your message..." data-i18n-placeholder="msg_input_ph">
+              <button class="cg-btn primary" onclick="app.sendCareMessage()" data-i18n="btn_send_msg">Send</button>
             </div>
           </div>
         </div>
@@ -599,15 +611,15 @@
         <!-- CAREGIVER TAB 5: ALERT ESCALATION SETTINGS (design.md Section 4.8) -->
         <div id="cgTabContentAlerts" style="display:none;">
           <div class="cg-panel-card">
-            <h3><span>🔔</span> Alert Escalation & Notification Preferences (FR-1.4, FR-4.3)</h3>
-            <p style="font-size:0.95rem; color:var(--on-surface-variant); margin-top:0.25rem;">
+            <h3><span>🔔</span> <span data-i18n="alerts_header">Alert Escalation & Notification Preferences (FR-1.4, FR-4.3)</span></h3>
+            <p style="font-size:0.95rem; color:var(--on-surface-variant); margin-top:0.25rem;" data-i18n="alerts_sla_sub">
               Caregiver notification SLA: Critical alerts delivered within <strong>5 minutes</strong>.
             </p>
 
             <div class="settings-option-row">
               <div class="settings-option-label">
-                <strong>Instant Critical Push Notifications</strong>
-                <span>Direct notification on missed high-priority medications</span>
+                <strong data-i18n="opt_instant_push">Instant Critical Push Notifications</strong>
+                <span data-i18n="opt_instant_push_sub">Direct notification on missed high-priority medications</span>
               </div>
               <label class="toggle-switch">
                 <input type="checkbox" checked id="togglePushAlerts">
@@ -617,8 +629,8 @@
 
             <div class="settings-option-row">
               <div class="settings-option-label">
-                <strong>SMS / USSD Fallback (+91 98765 43210)</strong>
-                <span>Automatic fallback when mobile data or connectivity is unavailable</span>
+                <strong data-i18n="opt_sms_fallback">SMS / USSD Fallback (+91 98765 43210)</strong>
+                <span data-i18n="opt_sms_fallback_sub">Automatic fallback when mobile data or connectivity is unavailable</span>
               </div>
               <label class="toggle-switch">
                 <input type="checkbox" checked id="toggleSmsFallback">
@@ -628,20 +640,20 @@
 
             <div class="settings-option-row">
               <div class="settings-option-label">
-                <strong>Unacknowledged Alert Window</strong>
-                <span>Time before escalating to secondary contact</span>
+                <strong data-i18n="opt_unack_window">Unacknowledged Alert Window</strong>
+                <span data-i18n="opt_unack_window_sub">Time before escalating to secondary contact</span>
               </div>
               <select class="form-select" style="width:160px;">
-                <option value="30">30 Minutes (Default)</option>
-                <option value="45">45 Minutes</option>
-                <option value="60">60 Minutes</option>
+                <option value="30" data-i18n="opt_30min">30 Minutes (Default)</option>
+                <option value="45" data-i18n="opt_45min">45 Minutes</option>
+                <option value="60" data-i18n="opt_60min">60 Minutes</option>
               </select>
             </div>
 
             <div class="settings-option-row">
               <div class="settings-option-label">
-                <strong>Batch Routine Digest</strong>
-                <span>Group non-critical notifications to prevent alert fatigue</span>
+                <strong data-i18n="opt_batch_digest">Batch Routine Digest</strong>
+                <span data-i18n="opt_batch_digest_sub">Group non-critical notifications to prevent alert fatigue</span>
               </div>
               <label class="toggle-switch">
                 <input type="checkbox" checked id="toggleDigestAlerts">
@@ -664,20 +676,20 @@
         
         <header class="clinical-header-box">
           <div class="clinical-title-grp">
-            <h2>Clinical Telemetry & Health Team Hub</h2>
-            <p>Dr. Thorne (Neurology) • ASHA Lead / Community Health Worker View</p>
+            <h2 data-i18n="clin_header_title">Clinical Telemetry & Health Team Hub</h2>
+            <p data-i18n="clin_header_sub">Dr. Thorne (Neurology) • ASHA Lead / Community Health Worker View</p>
           </div>
           
           <div class="clinical-nav-pills">
-            <button class="clin-tab-btn active" id="clinViewStandard" onclick="app.setClinicalTab('standard')">Doctor Portal</button>
-            <button class="clin-tab-btn" id="clinViewAsha" onclick="app.setClinicalTab('asha')">ASHA / ANM Action View</button>
-            <button class="clin-tab-btn" id="clinViewReport" onclick="app.setClinicalTab('report')">Structured Weekly PDF</button>
+            <button class="clin-tab-btn active" id="clinViewStandard" onclick="app.setClinicalTab('standard')" data-i18n="clin_tab_doctor">Doctor Portal</button>
+            <button class="clin-tab-btn" id="clinViewAsha" onclick="app.setClinicalTab('asha')" data-i18n="clin_tab_asha">ASHA / ANM Action View</button>
+            <button class="clin-tab-btn" id="clinViewReport" onclick="app.setClinicalTab('report')" data-i18n="clin_tab_report">Structured Weekly PDF</button>
           </div>
         </header>
 
         <!-- Mandatory Non-Diagnostic Disclaimer Box (Rules Section 2 & 5) -->
-        <div class="clinical-disclaimer-box">
-          <strong>Mandatory Clinical Advisory:</strong> This platform is an assistive cognitive engagement and routine monitoring decision-support tool. It does <strong>not</strong> independently diagnose dementia, stage disease severity, or provide clinical treatments. All observations are based on logged activity timelines.
+        <div class="clinical-disclaimer-box" data-i18n="clin_advisory_box">
+          Mandatory Clinical Advisory: This platform is an assistive cognitive engagement and routine monitoring decision-support tool. It does not independently diagnose dementia, stage disease severity, or provide clinical treatments. All observations are based on logged activity timelines.
         </div>
 
         <!-- DOCTOR STANDARD TAB -->
@@ -685,36 +697,36 @@
           <!-- Composite Score & Telemetry Cards -->
           <div class="telemetry-cards-row">
             <div class="score-metric-card">
-              <span class="metric-label">Composite Weekly Score</span>
+              <span class="metric-label" data-i18n="metric_composite_label">Composite Weekly Score</span>
               <span class="metric-val" id="metricCompositeScore">91 / 100</span>
-              <span class="metric-trend">🟢 Stable Engagement (+2% vs baseline)</span>
+              <span class="metric-trend" data-i18n="metric_composite_trend">🟢 Stable Engagement (+2% vs baseline)</span>
             </div>
             <div class="score-metric-card">
-              <span class="metric-label">Routine Adherence</span>
+              <span class="metric-label" data-i18n="metric_adherence_label">Routine Adherence</span>
               <span class="metric-val" id="metricAdherence">94%</span>
-              <span class="metric-trend">16 of 17 reminders acknowledged</span>
+              <span class="metric-trend" data-i18n="metric_adherence_trend">16 of 17 reminders acknowledged</span>
             </div>
             <div class="score-metric-card">
-              <span class="metric-label">Memory Game Accuracy</span>
+              <span class="metric-label" data-i18n="metric_game_label">Memory Game Accuracy</span>
               <span class="metric-val" id="metricGameScore">88%</span>
-              <span class="metric-trend">Avg Hesitation: 1,320 ms</span>
+              <span class="metric-trend" data-i18n="metric_game_trend">Avg Hesitation: 1,320 ms</span>
             </div>
             <div class="score-metric-card">
-              <span class="metric-label">Active Flags for Review</span>
-              <span class="metric-val" id="metricFlagsCount" style="color:#d97706;">1 Watch</span>
-              <span class="metric-trend">Explainable rule triggers</span>
+              <span class="metric-label" data-i18n="metric_flags_label">Active Flags for Review</span>
+              <span class="metric-val" id="metricFlagsCount" style="color:#d97706;" data-i18n="metric_flags_val">1 Watch</span>
+              <span class="metric-trend" data-i18n="metric_flags_trend">Explainable rule triggers</span>
             </div>
           </div>
 
           <!-- Explainable AI Behavior Flags Section (PRD FR-8.7, FR-8.8 & Rules Section 2) -->
           <section class="cg-panel-card" style="margin-top:1.5rem;">
             <div class="cg-panel-header">
-              <h3><span>🔍</span> Explainable Behavior Flags & Telemetry Signals</h3>
+              <h3><span>🔍</span> <span data-i18n="flags_section_title">Explainable Behavior Flags & Telemetry Signals</span></h3>
               <button class="cg-btn" style="height:36px; font-size:0.85rem;" onclick="app.runRuleEngineCheck()">
-                <span>⚙️</span> Re-evaluate Rule Engine
+                <span>⚙️</span> <span data-i18n="btn_reevaluate_rules">Re-evaluate Rule Engine</span>
               </button>
             </div>
-            <p style="font-size:0.95rem; color:var(--on-surface-variant);">
+            <p style="font-size:0.95rem; color:var(--on-surface-variant);" data-i18n="flags_section_sub">
               Every flag carries transparent human-readable evidence traceable to specific raw logs. Clinicians can confirm, dismiss, or annotate each item.
             </p>
 
@@ -726,34 +738,34 @@
           <!-- Doctor-Facing Clinical Insight Panel (design.md Section 5.3) -->
           <section class="cg-panel-card" style="margin-top:1.5rem;">
             <div class="cg-panel-header">
-              <h3><span>🔬</span> Clinical Insight Observations (Phase 5)</h3>
+              <h3><span>🔬</span> <span data-i18n="insight_section_title">Clinical Insight Observations (Phase 5)</span></h3>
             </div>
-            <div class="insight-panel-disclaimer">
+            <div class="insight-panel-disclaimer" data-i18n="insight_notice">
               "This is an observation, not a diagnosis." — Panel Level Notice
             </div>
             <div class="note-item-card" style="background:#f8fafc;">
-              <div class="insight-panel-disclaimer" style="margin-bottom:0.4rem;">
-                This is an observation, not a diagnosis.
+              <div class="insight-panel-disclaimer" style="margin-bottom:0.4rem;" data-i18n="insight_notice">
+                "This is an observation, not a diagnosis." — Panel Level Notice
               </div>
-              <strong>Observation:</strong> Morning medication latency shows a mild, non-clinically-significant 3-minute elongation over 14 days.<br>
-              <strong>Supporting Telemetry:</strong> 14 data points evaluated, median latency 240s vs historical baseline 210s.
+              <strong data-i18n="insight_obs_label">Observation:</strong> <span data-i18n="insight_obs_text">Morning medication latency shows a mild, non-clinically-significant 3-minute elongation over 14 days.</span><br>
+              <strong data-i18n="insight_telemetry_label">Supporting Telemetry:</strong> <span data-i18n="insight_telemetry_text">14 data points evaluated, median latency 240s vs historical baseline 210s.</span>
             </div>
           </section>
 
           <!-- Telemedicine Referral & Handoff (PRD FR-9.14) -->
           <section class="cg-panel-card" style="margin-top:1.5rem; background:#f0fdf4; border-color:#86efac;">
             <div class="cg-panel-header">
-              <h3 style="color:#065f46;"><span>🏥</span> Telemedicine Handoff & District Referral</h3>
+              <h3 style="color:#065f46;"><span>🏥</span> <span data-i18n="telemed_section_title">Telemedicine Handoff & District Referral</span></h3>
             </div>
-            <p style="color:#065f46; font-size:1rem;">
+            <p style="color:#065f46; font-size:1rem;" data-i18n="telemed_section_sub">
               Initiate a direct case handoff to Ayushman Bharat Digital Health or district telemedicine specialist for Eleanor Vance.
             </p>
             <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
               <button class="cg-btn primary" onclick="app.initiateTelemedicineReferral()">
-                <span>📡</span> Send Telemedicine Referral Packet
+                <span>📡</span> <span data-i18n="btn_send_telemed">Send Telemedicine Referral Packet</span>
               </button>
               <button class="cg-btn" onclick="app.exportComplianceData()">
-                <span>📦</span> Export DPDP/GDPR Data Bundle
+                <span>📦</span> <span data-i18n="btn_export_compliance">Export DPDP/GDPR Data Bundle</span>
               </button>
             </div>
           </section>
@@ -762,17 +774,17 @@
         <!-- ASHA / COMMUNITY HEALTH WORKER SIMPLIFIED REPORT (design.md Section 5.2, FR-9.15) -->
         <div id="clinTabContentAsha" style="display:none;">
           <article class="asha-action-card">
-            <h3><span>🌾</span> ASHA & ANM Simplified Mobile Action Report</h3>
-            <p style="font-size:1.05rem; color:#1e40af; margin-top:0.25rem;">
+            <h3><span>🌾</span> <span data-i18n="asha_report_title">ASHA & ANM Simplified Mobile Action Report</span></h3>
+            <p style="font-size:1.05rem; color:#1e40af; margin-top:0.25rem;" data-i18n="asha_report_sub">
               Single-line action status formatted for basic mobile screens in rural districts:
             </p>
 
             <!-- Prominent Action Recommendation Cue (design.md Section 5.2) -->
             <div style="background:#eff6ff; border:2px solid #3b82f6; border-radius:12px; padding:1rem; margin:1rem 0;">
-              <div style="font-size:1.15rem; font-weight:800; color:#1e3a8a;">
+              <div style="font-size:1.15rem; font-weight:800; color:#1e3a8a;" data-i18n="asha_weekly_status">
                 Weekly Status: Adherence 94% • 0 missed critical medications
               </div>
-              <div style="font-size:1.2rem; font-weight:800; color:#059669; margin-top:0.5rem;">
+              <div style="font-size:1.2rem; font-weight:800; color:#059669; margin-top:0.5rem;" data-i18n="asha_action_rec">
                 Recommended action: Routine weekly check-in. No emergency home visit required.
               </div>
             </div>
@@ -780,31 +792,31 @@
             <div class="asha-priority-list">
               <div class="asha-priority-item">
                 <div>
-                  <strong style="font-size:1.15rem; color:#1e293b;">1. Medication Checkpoint (Lisinopril 10mg)</strong>
-                  <p style="color:#475569;">Pillbox confirmed at 9:02 AM today. Inspect tablet storage during weekly visit.</p>
+                  <strong style="font-size:1.15rem; color:#1e293b;" data-i18n="asha_item1_title">1. Medication Checkpoint (Lisinopril 10mg)</strong>
+                  <p style="color:#475569;" data-i18n="asha_item1_desc">Pillbox confirmed at 9:02 AM today. Inspect tablet storage during weekly visit.</p>
                 </div>
-                <span class="routine-status-pill done-badge">Normal</span>
+                <span class="routine-status-pill done-badge" data-i18n="asha_item1_badge">Normal</span>
               </div>
 
               <div class="asha-priority-item">
                 <div>
-                  <strong style="font-size:1.15rem; color:#1e293b;">2. Water & Hydration Check</strong>
-                  <p style="color:#475569;">Ensure clean boiled/filtered water pitcher is reachable at Eleanor's bedside.</p>
+                  <strong style="font-size:1.15rem; color:#1e293b;" data-i18n="asha_item2_title">2. Water & Hydration Check</strong>
+                  <p style="color:#475569;" data-i18n="asha_item2_desc">Ensure clean boiled/filtered water pitcher is reachable at Eleanor's bedside.</p>
                 </div>
-                <span class="routine-status-pill done-badge">Actioned</span>
+                <span class="routine-status-pill done-badge" data-i18n="asha_item2_badge">Actioned</span>
               </div>
 
               <div class="asha-priority-item">
                 <div>
-                  <strong style="font-size:1.15rem; color:#1e293b;">3. Family Language Comfort</strong>
-                  <p style="color:#475569;">High engagement during regional voice day narration.</p>
+                  <strong style="font-size:1.15rem; color:#1e293b;" data-i18n="asha_item3_title">3. Family Language Comfort</strong>
+                  <p style="color:#475569;" data-i18n="asha_item3_desc">High engagement during regional voice day narration.</p>
                 </div>
-                <span class="routine-status-pill done-badge">Positive</span>
+                <span class="routine-status-pill done-badge" data-i18n="asha_item3_badge">Positive</span>
               </div>
             </div>
 
             <button class="cg-btn primary" style="align-self:flex-start; margin-top:1rem;" onclick="app.logAshaHomeVisit()">
-              <span>✍️</span> Log Completed Home Visit Check
+              <span>✍️</span> <span data-i18n="btn_log_asha_visit">Log Completed Home Visit Check</span>
             </button>
           </article>
         </div>
@@ -816,75 +828,75 @@
             <!-- (1) Patient Name + Period Header -->
             <div class="report-header-grid">
               <div>
-                <h3 style="font-size:1.4rem; color:var(--primary); font-family:var(--font-heading);">Recollect — Structured Weekly Clinical Telemetry</h3>
-                <p><strong>Patient:</strong> Eleanor Vance (DOB: 1948-03-14, Age 78)</p>
-                <p><strong>Caregiver:</strong> Sarah Vance (Daughter, Primary)</p>
+                <h3 style="font-size:1.4rem; color:var(--primary); font-family:var(--font-heading);" data-i18n="report_doc_title">Recollect — Structured Weekly Clinical Telemetry</h3>
+                <p data-i18n="report_patient_info"><strong>Patient:</strong> Eleanor Vance (DOB: 1948-03-14, Age 78)</p>
+                <p data-i18n="report_caregiver_info"><strong>Caregiver:</strong> Sarah Vance (Daughter, Primary)</p>
               </div>
               <div style="text-align:right;">
-                <p><strong>Report Period:</strong> Oct 18, 2026 – Oct 24, 2026</p>
-                <p><strong>Physician:</strong> Dr. Thorne (Neurology)</p>
-                <p><strong>Status:</strong> <span style="color:#059669; font-weight:bold;">Adherence High (94%)</span></p>
+                <p data-i18n="report_period_info"><strong>Report Period:</strong> Oct 18, 2026 – Oct 24, 2026</p>
+                <p data-i18n="report_physician_info"><strong>Physician:</strong> Dr. Thorne (Neurology)</p>
+                <p data-i18n="report_status_info"><strong>Status:</strong> <span style="color:#059669; font-weight:bold;">Adherence High (94%)</span></p>
               </div>
             </div>
 
             <!-- (2) NON-DIAGNOSTIC DISCLAIMER PROMINENTLY AT TOP (design.md Section 5.1) -->
             <div class="report-top-disclaimer">
               <span>⚠️</span>
-              <div>
+              <div data-i18n="report_advisory_text">
                 <strong>Non-Diagnostic Advisory:</strong> This report reflects engagement and activity trends. It is not a medical diagnosis. Evaluated strictly for decision support.
               </div>
             </div>
 
             <!-- (3) Quantitative Routine Adherence & Task Latency -->
             <div class="report-section-block">
-              <h4>1. Quantitative Routine Adherence & Task Latency</h4>
-              <p>• Total Scheduled Reminders: 21 | Acknowledged on time: 19 (90.4%)</p>
-              <p>• Average Response Latency: 4.2 minutes from scheduled chime</p>
-              <p>• Missed Critical Medication Incidents: 0 in current 7-day reporting cycle</p>
+              <h4 data-i18n="report_sec1_title">1. Quantitative Routine Adherence & Task Latency</h4>
+              <p data-i18n="report_sec1_p1">• Total Scheduled Reminders: 21 | Acknowledged on time: 19 (90.4%)</p>
+              <p data-i18n="report_sec1_p2">• Average Response Latency: 4.2 minutes from scheduled chime</p>
+              <p data-i18n="report_sec1_p3">• Missed Critical Medication Incidents: 0 in current 7-day reporting cycle</p>
             </div>
 
             <!-- (4) Cognitive Activity & Engagement Trends -->
             <div class="report-section-block">
-              <h4>2. Cognitive Activity & Engagement Trends</h4>
-              <p>• Photo Memory Sessions Completed: 4 sessions (Total duration: 18.5 mins)</p>
-              <p>• Normalized Accuracy Score: 88 / 100 (Variance: -2% within stable baseline bounds)</p>
-              <p>• Average Decision Hesitation: 1,320 ms (No significant latency spikes detected)</p>
+              <h4 data-i18n="report_sec2_title">2. Cognitive Activity & Engagement Trends</h4>
+              <p data-i18n="report_sec2_p1">• Photo Memory Sessions Completed: 4 sessions (Total duration: 18.5 mins)</p>
+              <p data-i18n="report_sec2_p2">• Normalized Accuracy Score: 88 / 100 (Variance: -2% within stable baseline bounds)</p>
+              <p data-i18n="report_sec2_p3">• Average Decision Hesitation: 1,320 ms (No significant latency spikes detected)</p>
             </div>
 
             <!-- (5) Notable Flags with Explainable Evidence -->
             <div class="report-section-block">
-              <h4>3. Notable Activity Flags with Explainable Evidence</h4>
-              <p>• Rule Trigger: <code>routine_latency_streak</code> (Evaluated: 0 Alert Severity, 1 Watch)</p>
-              <p>• Evidence: Oct 20 morning routine delayed 18 mins due to audio engagement in living room.</p>
+              <h4 data-i18n="report_sec3_title">3. Notable Activity Flags with Explainable Evidence</h4>
+              <p data-i18n="report_sec3_p1">• Rule Trigger: <code>routine_latency_streak</code> (Evaluated: 0 Alert Severity, 1 Watch)</p>
+              <p data-i18n="report_sec3_p2">• Evidence: Oct 20 morning routine delayed 18 mins due to audio engagement in living room.</p>
             </div>
 
             <!-- (6) Qualitative Caregiver Observations -->
             <div class="report-section-block">
-              <h4>4. Qualitative Caregiver Observations (Sarah Vance)</h4>
-              <p>• <em>"Eleanor had bright recall looking at seaside trip photos. She smiled and remembered the salt water taffy shop."</em> [Tag: Cognitive Spark]</p>
-              <p>• <em>"Peaceful morning routine, completed medication with water smoothly."</em> [Tag: Calm & Engaged]</p>
+              <h4 data-i18n="report_sec4_title">4. Qualitative Caregiver Observations (Sarah Vance)</h4>
+              <p data-i18n="report_sec4_p1">• <em>"Eleanor had bright recall looking at seaside trip photos. She smiled and remembered the salt water taffy shop."</em> [Tag: Cognitive Spark]</p>
+              <p data-i18n="report_sec4_p2">• <em>"Peaceful morning routine, completed medication with water smoothly."</em> [Tag: Calm & Engaged]</p>
             </div>
 
             <!-- (7) Mood / Wellbeing Summary & Incident Log -->
             <div class="report-section-block">
-              <h4>5. Mood / Wellbeing Summary & Escalation Incident Log</h4>
-              <p>• Mood Self-Report: 85% Joyful or Peaceful; 15% A Bit Tired</p>
-              <p>• Missed Task / Escalation Incidents: 0 critical escalations</p>
+              <h4 data-i18n="report_sec5_title">5. Mood / Wellbeing Summary & Escalation Incident Log</h4>
+              <p data-i18n="report_sec5_p1">• Mood Self-Report: 85% Joyful or Peaceful; 15% A Bit Tired</p>
+              <p data-i18n="report_sec5_p2">• Missed Task / Escalation Incidents: 0 critical escalations</p>
             </div>
 
             <!-- Threaded Doctor Reply Mechanism (design.md Section 5.1, FR-5.5) -->
             <div class="doctor-reply-box">
-              <h4 style="font-size:1.1rem; color:#1e293b;">Physician Threaded Clinical Note / Reply to Caregiver (FR-5.5)</h4>
-              <textarea id="doctorReportReplyInput" class="notes-textarea" style="height:70px; margin-top:0.5rem;" placeholder="Enter physician feedback to be transmitted to Sarah's dashboard..."></textarea>
+              <h4 style="font-size:1.1rem; color:#1e293b;" data-i18n="doctor_reply_title">Physician Threaded Clinical Note / Reply to Caregiver (FR-5.5)</h4>
+              <textarea id="doctorReportReplyInput" class="notes-textarea" style="height:70px; margin-top:0.5rem;" placeholder="Enter physician feedback to be transmitted to Sarah's dashboard..." data-i18n-placeholder="doctor_reply_ph"></textarea>
               <div style="display:flex; justify-content:space-between; align-items:center; margin-top:0.5rem;">
-                <span style="font-size:0.85rem; color:#64748b;">Notifies Sarah Vance in Family Dashboard</span>
-                <button class="cg-btn primary" onclick="app.sendDoctorReportReply()">Send Reply to Caregiver</button>
+                <span style="font-size:0.85rem; color:#64748b;" data-i18n="doctor_reply_notice">Notifies Sarah Vance in Family Dashboard</span>
+                <button class="cg-btn primary" onclick="app.sendDoctorReportReply()" data-i18n="btn_send_doctor_reply">Send Reply to Caregiver</button>
               </div>
             </div>
 
             <div style="display:flex; gap:0.75rem; margin-top:1rem;">
               <button class="cg-btn primary" onclick="window.print()">
-                <span>🖨️</span> Print / Save PDF
+                <span>🖨️</span> <span data-i18n="btn_print_pdf">Print / Save PDF</span>
               </button>
             </div>
           </div>
@@ -903,8 +915,8 @@
     <div class="attention-card">
       <div class="attention-category-badge">💊</div>
       
-      <h2 class="attention-title" id="attentionTitle">Time for your morning medication</h2>
-      <p class="attention-instructions" id="attentionInstructions">Take 1 yellow oval tablet with a full glass of cool water</p>
+      <h2 class="attention-title" id="attentionTitle" data-i18n="attention_title">Time for your morning medication</h2>
+      <p class="attention-instructions" id="attentionInstructions" data-i18n="attention_instructions">Take 1 yellow oval tablet with a full glass of cool water</p>
 
       <!-- Centered Photo Visual of Pill & Glass -->
       <div class="attention-visual-box">
@@ -928,7 +940,7 @@
           <rect x="230" y="30" width="110" height="150" rx="14" fill="url(#attGlass)" stroke="#0284c7" stroke-width="2"/>
           <ellipse cx="285" cy="40" rx="50" ry="12" fill="#e0f2fe" opacity="0.6"/>
           <path d="M 245 65 Q 285 75 325 65 L 320 160 Q 285 170 250 160 Z" fill="#7dd3fc" opacity="0.75"/>
-          <text x="285" y="120" font-size="14" font-weight="700" fill="#0369a1" text-anchor="middle">Cool Water</text>
+          <text x="285" y="120" font-size="14" font-weight="700" fill="#0369a1" text-anchor="middle" data-i18n="cool_water_label">Cool Water</text>
           
           <!-- Yellow Tablet -->
           <ellipse cx="120" cy="120" rx="55" ry="32" fill="url(#attPill)" stroke="#ca8a04" stroke-width="3"/>
@@ -940,7 +952,7 @@
       <!-- Voice Mode Listening Indicator (design.md Section 3.2) -->
       <div class="voice-listening-indicator" id="voiceListeningBadge">
         <span class="listening-pulse-dot"></span>
-        <span id="voiceListeningText">Listening for "Done"...</span>
+        <span id="voiceListeningText" data-i18n="voice_listening_text">Listening for "Done"...</span>
       </div>
 
       <!-- Exactly Three Large Vertically-Stacked Actions (Done, Snooze, Need Help) -->
@@ -977,13 +989,13 @@
 
       <!-- Swappable Pack Bar (Family Photos vs Regional Northeast Pack) -->
       <div class="pack-switch-bar">
-        <span style="font-weight:700; font-size:1.05rem;">Card Theme Pack:</span>
+        <span style="font-weight:700; font-size:1.05rem;" data-i18n="card_theme_pack_label">Card Theme Pack:</span>
         <div style="display:flex; gap:0.5rem;">
           <button class="cg-btn primary" id="packBtnFamily" onclick="app.switchPhotoPack('family')">
-            <span>📷</span> Family Photos
+            <span>📷</span> <span data-i18n="pack_family_btn">Family Photos</span>
           </button>
           <button class="cg-btn" id="packBtnCultural" onclick="app.switchPhotoPack('cultural')">
-            <span>🌿</span> Northeast Cultural Pack
+            <span>🌿</span> <span data-i18n="pack_cultural_btn">Northeast Cultural Pack</span>
           </button>
         </div>
       </div>
@@ -996,10 +1008,10 @@
             <span class="category-tile-icon">🧩</span>
             <div class="category-tile-text">
               <h4 data-i18n="game_category_memory">Memory</h4>
-              <p id="packSubtitleLabel">Family Photo Match</p>
+              <p id="packSubtitleLabel" data-i18n="pack_family_sub">Family Photo Match</p>
             </div>
           </div>
-          <button class="tile-action-button play-btn">Play Memory Game</button>
+          <button class="tile-action-button play-btn" data-i18n="play_game_btn">Play Memory Game</button>
         </article>
 
         <!-- Category 2: Attention -->
@@ -1008,10 +1020,10 @@
             <span class="category-tile-icon">🔍</span>
             <div class="category-tile-text">
               <h4 data-i18n="game_category_attention">Attention</h4>
-              <p>Garden Flower Focus</p>
+              <p data-i18n="pack_attention_sub">Garden Flower Focus</p>
             </div>
           </div>
-          <button class="tile-action-button play-btn" style="background:#0284c7;">Play Attention Game</button>
+          <button class="tile-action-button play-btn" style="background:#0284c7;" data-i18n="play_attention_btn">Play Attention Game</button>
         </article>
 
         <!-- Category 3: Language -->
@@ -1020,10 +1032,10 @@
             <span class="category-tile-icon">🗣️</span>
             <div class="category-tile-text">
               <h4 data-i18n="game_category_language">Language</h4>
-              <p>Word & Object Recall</p>
+              <p data-i18n="pack_language_sub">Word & Object Recall</p>
             </div>
           </div>
-          <button class="tile-action-button play-btn" style="background:#059669;">Play Language Game</button>
+          <button class="tile-action-button play-btn" style="background:#059669;" data-i18n="play_language_btn">Play Language Game</button>
         </article>
 
         <!-- Category 4: Problem Solving -->
@@ -1032,10 +1044,10 @@
             <span class="category-tile-icon">🧩</span>
             <div class="category-tile-text">
               <h4 data-i18n="game_category_problem">Problem Solving</h4>
-              <p>Daily Routine Steps</p>
+              <p data-i18n="pack_problem_sub">Daily Routine Steps</p>
             </div>
           </div>
-          <button class="tile-action-button play-btn" style="background:#7c3aed;">Play Routine Game</button>
+          <button class="tile-action-button play-btn" style="background:#7c3aed;" data-i18n="play_routine_btn">Play Routine Game</button>
         </article>
       </div>
     </div>
@@ -1047,7 +1059,7 @@
   <div class="modal-overlay" id="gameModal" role="dialog" aria-modal="true" aria-labelledby="gameModalTitle">
     <div class="modal-window" style="max-width:720px;">
       <div class="modal-header">
-        <h3 id="gameModalTitle">🌸 Family Photo Memory Game</h3>
+        <h3 id="gameModalTitle" data-i18n="game_modal_title">🌸 Family Photo Memory Game</h3>
         <button class="modal-close-btn" onclick="app.closeMemoryGameModal()" aria-label="Close Game">✕</button>
       </div>
 
@@ -1056,12 +1068,12 @@
           <span>🌿</span> <span data-i18n="game_peace_tag">No Timers, Ever • Take all your time, Eleanor</span>
         </span>
         <button class="cg-btn" style="height:40px; font-size:0.9rem;" onclick="app.playGameAudioInstruction()">
-          <span>🔊</span> Read Instructions
+          <span>🔊</span> <span data-i18n="btn_read_instructions">Read Instructions</span>
         </button>
       </div>
 
       <!-- Encouraging Feedback Banner (Zero red/harsh buzzer per design.md Section 2.2) -->
-      <div class="game-feedback-banner" id="gameFeedbackBanner">
+      <div class="game-feedback-banner" id="gameFeedbackBanner" data-i18n="game_feedback_welcome">
         💚 Welcome to your garden memories! Touch two cards to peek.
       </div>
 
@@ -1077,7 +1089,7 @@
         </button>
 
         <div class="game-progress-indicators">
-          <span>Garden Progress:</span>
+          <span data-i18n="garden_progress_label">Garden Progress:</span>
           <span class="bloom-dot bloomed" id="bloomDot1">🌻</span>
           <span class="bloom-dot" id="bloomDot2">🌱</span>
           <span class="bloom-dot" id="bloomDot3">🌱</span>
@@ -1085,11 +1097,11 @@
         </div>
 
         <button class="cg-btn" onclick="app.closeMemoryGameModal()">
-          <span>⏸️</span> Pause & Rest Anytime
+          <span>⏸️</span> <span data-i18n="btn_pause_rest">Pause & Rest Anytime</span>
         </button>
       </div>
 
-      <p class="disclaimer-text">
+      <p class="disclaimer-text" data-i18n="disclaimer_patient">
         Supportive engagement tool, not a clinical treatment or diagnostic device.
       </p>
     </div>
@@ -1109,7 +1121,7 @@
         Your garden memories bloomed beautifully. Have a peaceful rest of your morning.
       </p>
       <button class="attention-action-btn btn-done" onclick="app.closeGameCompletionModal()">
-        <span>🌸</span> Return to Home Screen
+        <span>🌸</span> <span data-i18n="btn_return_home">Return to Home Screen</span>
       </button>
     </div>
   </div>
@@ -1123,35 +1135,35 @@
         <h3 id="moodModalTitle" data-i18n="mood_title">How are you feeling right now?</h3>
         <button class="modal-close-btn" onclick="app.closeMoodModal()" aria-label="Close Mood Modal">✕</button>
       </div>
-      <p style="font-size:1.25rem; color:var(--on-surface-variant);">
+      <p style="font-size:1.25rem; color:var(--on-surface-variant);" data-i18n="mood_header_prompt">
         Tap a joyful face to check in today:
       </p>
       
       <div class="mood-selector-row" style="margin:1.5rem 0;">
         <button class="mood-btn" onclick="app.logMood(5, 'Sunny & Joyful', this)">
-          <span style="font-size:2.5rem;">☀️</span> <span style="font-size:1rem;">Joyful</span>
+          <span style="font-size:2.5rem;">☀️</span> <span style="font-size:1rem;" data-i18n="mood_joyful">Joyful</span>
         </button>
         <button class="mood-btn selected" onclick="app.logMood(4, 'Calm & Peaceful', this)">
-          <span style="font-size:2.5rem;">🌸</span> <span style="font-size:1rem;">Peaceful</span>
+          <span style="font-size:2.5rem;">🌸</span> <span style="font-size:1rem;" data-i18n="mood_peaceful">Peaceful</span>
         </button>
         <button class="mood-btn" onclick="app.logMood(3, 'A Bit Tired', this)">
-          <span style="font-size:2.5rem;">🛋️</span> <span style="font-size:1rem;">Tired</span>
+          <span style="font-size:2.5rem;">🛋️</span> <span style="font-size:1rem;" data-i18n="mood_tired">Tired</span>
         </button>
         <button class="mood-btn" onclick="app.logMood(2, 'Need Gentle Support', this)">
-          <span style="font-size:2.5rem;">🤝</span> <span style="font-size:1rem;">Support</span>
+          <span style="font-size:2.5rem;">🤝</span> <span style="font-size:1rem;" data-i18n="mood_support">Support</span>
         </button>
       </div>
 
       <!-- Caregiver-Assisted Option (FR-6.2) -->
       <div style="background:#f8fafc; border:1.5px solid var(--outline-variant); border-radius:8px; padding:0.75rem 1rem; margin-bottom:1rem; display:flex; align-items:center; gap:0.5rem;">
         <input type="checkbox" id="moodCaregiverAssisted">
-        <label for="moodCaregiverAssisted" style="font-size:0.95rem; color:#475569; cursor:pointer;">
+        <label for="moodCaregiverAssisted" style="font-size:0.95rem; color:#475569; cursor:pointer;" data-i18n="mood_cg_assisted_label">
           Caregiver-assisted observation (recorded by Sarah on Eleanor's behalf)
         </label>
       </div>
 
       <div style="display:flex; justify-content:flex-end;">
-        <button class="cg-btn primary" onclick="app.closeMoodModal()">Done</button>
+        <button class="cg-btn primary" onclick="app.closeMoodModal()" data-i18n="btn_done_generic">Done</button>
       </div>
     </div>
   </div>
@@ -1163,21 +1175,21 @@
   <div class="modal-overlay" id="caregiverSettingsModal" role="dialog" aria-modal="true" aria-labelledby="cgSettingsTitle">
     <div class="modal-window settings-modal-window">
       <div class="modal-header">
-        <h3 id="cgSettingsTitle">⚙️ Caregiver Settings & Space Switch</h3>
+        <h3 id="cgSettingsTitle" data-i18n="cg_settings_title">⚙️ Caregiver Settings & Space Switch</h3>
         <button class="modal-close-btn" onclick="app.closeCaregiverSettings()" aria-label="Close Settings">✕</button>
       </div>
 
       <!-- PIN Lock Gate -->
       <div id="settingsPinGate">
-        <p style="font-size:1.1rem; color:var(--on-surface-variant); margin-bottom:1rem;">
-          To prevent accidental changes, enter the caregiver PIN (Default demo PIN: <strong>1234</strong>):
+        <p style="font-size:1.1rem; color:var(--on-surface-variant); margin-bottom:1rem;" data-i18n="cg_pin_gate_text">
+          To prevent accidental changes, enter the caregiver PIN (Default demo PIN: 1234):
         </p>
         <div class="pin-login-box">
           <input type="password" id="settingsPinInput" class="pin-input-field" maxlength="4" placeholder="••••" value="1234">
         </div>
         <div style="display:flex; justify-content:flex-end; gap:0.75rem; margin-top:1.5rem;">
-          <button type="button" class="cg-btn" onclick="app.closeCaregiverSettings()">Cancel</button>
-          <button type="button" class="cg-btn primary" onclick="app.verifySettingsPin()">Unlock Settings</button>
+          <button type="button" class="cg-btn" onclick="app.closeCaregiverSettings()" data-i18n="btn_cancel">Cancel</button>
+          <button type="button" class="cg-btn primary" onclick="app.verifySettingsPin()" data-i18n="btn_unlock_settings">Unlock Settings</button>
         </div>
       </div>
 
@@ -1188,7 +1200,7 @@
         <div class="settings-option-row">
           <div class="settings-option-label">
             <strong data-i18n="high_contrast">High-contrast theme (Black & White)</strong>
-            <span>WCAG AAA stark black-on-white theme with decorative colors removed</span>
+            <span data-i18n="high_contrast_desc">WCAG AAA stark black-on-white theme with decorative colors removed</span>
           </div>
           <label class="toggle-switch">
             <input type="checkbox" id="toggleHighContrast" onchange="app.toggleHighContrast(this.checked)">
@@ -1200,12 +1212,12 @@
         <div class="settings-option-row">
           <div class="settings-option-label">
             <strong data-i18n="font_size_label">Patient app text size</strong>
-            <span>Base size floor is 20pt; scales up to 28pt for low vision</span>
+            <span data-i18n="font_size_desc">Base size floor is 20pt; scales up to 28pt for low vision</span>
           </div>
           <select class="form-select" id="fontSizeSelector" onchange="app.setFontScale(this.value)" style="width:160px;">
-            <option value="normal">Normal (20pt)</option>
-            <option value="large">Large (24pt)</option>
-            <option value="xlarge">Extra Large (28pt)</option>
+            <option value="normal" data-i18n="font_opt_normal">Normal (20pt)</option>
+            <option value="large" data-i18n="font_opt_large">Large (24pt)</option>
+            <option value="xlarge" data-i18n="font_opt_xlarge">Extra Large (28pt)</option>
           </select>
         </div>
 
@@ -1213,7 +1225,7 @@
         <div class="settings-option-row">
           <div class="settings-option-label">
             <strong data-i18n="voice_mode_label">Voice narration & listening mode</strong>
-            <span>Spoken prompt reading and voice acknowledgment</span>
+            <span data-i18n="voice_mode_desc">Spoken prompt reading and voice acknowledgment</span>
           </div>
           <label class="toggle-switch">
             <input type="checkbox" checked id="toggleVoiceMode" onchange="app.toggleVoiceMode(this.checked)">
@@ -1225,7 +1237,7 @@
         <div class="settings-option-row">
           <div class="settings-option-label">
             <strong data-i18n="low_power_label">Low-power mode (Reduced animation)</strong>
-            <span>Disables non-essential motion and saves battery on regional devices</span>
+            <span data-i18n="low_power_desc">Disables non-essential motion and saves battery on regional devices</span>
           </div>
           <label class="toggle-switch">
             <input type="checkbox" id="toggleLowPowerSettings" onchange="app.togglePowerMode()">
@@ -1236,8 +1248,8 @@
         <!-- Language Selector -->
         <div class="settings-option-row">
           <div class="settings-option-label">
-            <strong>Language & Dialect (NE India)</strong>
-            <span>Regional scripts and audio voices</span>
+            <strong data-i18n="lang_settings_label">Language & Dialect (NE India)</strong>
+            <span data-i18n="lang_settings_desc">Regional scripts and audio voices</span>
           </div>
           <select class="form-select" id="settingsLangSelect" onchange="app.changeLanguage(this.value)" style="width:160px;">
             <option value="en">English</option>
@@ -1250,20 +1262,20 @@
 
         <!-- Shared Device / Profile Switcher (design.md Section 3.6) -->
         <div style="margin-top:1.5rem; background:#f8fafc; border:1.5px solid var(--outline-variant); border-radius:12px; padding:1.25rem;">
-          <h4 style="margin-bottom:0.5rem; font-size:1.15rem;">Shared Device Profile Switch (FR-9.11)</h4>
-          <p style="font-size:0.95rem; color:var(--on-surface-variant); margin-bottom:1rem;">
+          <h4 style="margin-bottom:0.5rem; font-size:1.15rem;" data-i18n="shared_device_title">Shared Device Profile Switch (FR-9.11)</h4>
+          <p style="font-size:0.95rem; color:var(--on-surface-variant); margin-bottom:1rem;" data-i18n="shared_device_desc">
             Switch between Eleanor's Bedside Tablet, Sarah's Caregiver Portal, or Dr. Thorne's Clinical Hub:
           </p>
           <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
-            <button class="cg-btn" onclick="app.switchSpaceFromSettings('patient')">👵 Patient Space</button>
-            <button class="cg-btn" onclick="app.switchSpaceFromSettings('caregiver')">👩 Caregiver Portal</button>
-            <button class="cg-btn" onclick="app.switchSpaceFromSettings('clinical')">🩺 Clinical Hub</button>
-            <button class="cg-btn" onclick="app.openConsentModal()">📋 Consent & Privacy</button>
+            <button class="cg-btn" onclick="app.switchSpaceFromSettings('patient')" data-i18n="btn_switch_patient">👵 Patient Space</button>
+            <button class="cg-btn" onclick="app.switchSpaceFromSettings('caregiver')" data-i18n="btn_switch_caregiver">👩 Caregiver Portal</button>
+            <button class="cg-btn" onclick="app.switchSpaceFromSettings('clinical')" data-i18n="btn_switch_clinical">🩺 Clinical Hub</button>
+            <button class="cg-btn" onclick="app.openConsentModal()" data-i18n="btn_open_consent">📋 Consent & Privacy</button>
           </div>
         </div>
 
         <div style="display:flex; justify-content:flex-end; margin-top:1.25rem;">
-          <button class="cg-btn primary" onclick="app.closeCaregiverSettings()">Close Settings</button>
+          <button class="cg-btn primary" onclick="app.closeCaregiverSettings()" data-i18n="btn_close_settings">Close Settings</button>
         </div>
       </div>
     </div>
@@ -1275,54 +1287,54 @@
   <div class="modal-overlay" id="consentModal" role="dialog" aria-modal="true" aria-labelledby="consentTitle">
     <div class="modal-window" style="max-width:680px;">
       <div class="modal-header">
-        <h3 id="consentTitle">📋 Consent & Privacy Framework</h3>
+        <h3 id="consentTitle" data-i18n="consent_title">📋 Consent & Privacy Framework</h3>
         <button class="modal-close-btn" onclick="app.closeConsentModal()" aria-label="Close Consent">✕</button>
       </div>
       
       <div id="consentStep1" class="consent-step">
-        <h4 style="font-size:1.2rem; color:var(--primary); margin-bottom:0.5rem;">Step 1: Patient & Caregiver Identity</h4>
-        <p style="font-size:1rem; color:var(--on-surface-variant); margin-bottom:1rem;">
+        <h4 style="font-size:1.2rem; color:var(--primary); margin-bottom:0.5rem;" data-i18n="consent_step1_title">Step 1: Patient & Caregiver Identity</h4>
+        <p style="font-size:1rem; color:var(--on-surface-variant); margin-bottom:1rem;" data-i18n="consent_step1_text">
           Confirmed relationship: <strong>Sarah Vance</strong> is authorized primary caregiver and power-of-attorney for <strong>Eleanor Vance</strong>.
         </p>
-        <button class="cg-btn primary" onclick="app.setConsentStep(2)">Next: Data Collection</button>
+        <button class="cg-btn primary" onclick="app.setConsentStep(2)" data-i18n="btn_next_data_coll">Next: Data Collection</button>
       </div>
 
       <div id="consentStep2" class="consent-step" style="display:none;">
-        <h4 style="font-size:1.2rem; color:var(--primary); margin-bottom:0.5rem;">Step 2: What Data is Stored Locally</h4>
-        <p style="font-size:1rem; color:var(--on-surface-variant); margin-bottom:1rem;">
+        <h4 style="font-size:1.2rem; color:var(--primary); margin-bottom:0.5rem;" data-i18n="consent_step2_title">Step 2: What Data is Stored Locally</h4>
+        <p style="font-size:1rem; color:var(--on-surface-variant); margin-bottom:1rem;" data-i18n="consent_step2_text">
           Routine timestamps, game interaction latency, and mood logs persist in local device storage first. No audio recordings leave the device.
         </p>
         <div style="display:flex; gap:0.5rem;">
-          <button class="cg-btn" onclick="app.setConsentStep(1)">Back</button>
-          <button class="cg-btn primary" onclick="app.setConsentStep(3)">Next: AI Monitoring Consent</button>
+          <button class="cg-btn" onclick="app.setConsentStep(1)" data-i18n="btn_back">Back</button>
+          <button class="cg-btn primary" onclick="app.setConsentStep(3)" data-i18n="btn_next_ai_consent">Next: AI Monitoring Consent</button>
         </div>
       </div>
 
       <!-- SEPARATE DISTINCT AI CONSENT STEP (design.md Section 6.4 & rules.md Section 8) -->
       <div id="consentStep3" class="consent-step" style="display:none;">
-        <h4 style="font-size:1.2rem; color:#b45309; margin-bottom:0.5rem;">Step 3: Separate Consent for AI Pattern Monitoring</h4>
+        <h4 style="font-size:1.2rem; color:#b45309; margin-bottom:0.5rem;" data-i18n="consent_step3_title">Step 3: Separate Consent for AI Pattern Monitoring</h4>
         <div style="background:#fefce8; border:2px solid #fde047; padding:1rem; border-radius:8px; margin-bottom:1rem;">
-          <p style="font-size:0.95rem; color:#713f12;">
+          <p style="font-size:0.95rem; color:#713f12;" data-i18n="consent_step3_notice">
             <strong>Important Notice:</strong> Consenting to rule-based trend monitoring is completely optional. <em>Declining this step does NOT disable Eleanor's reminders, games, or routine logging.</em>
           </p>
           <div style="margin-top:0.75rem;">
             <label style="font-weight:700; cursor:pointer;">
-              <input type="checkbox" id="consentAiMonitoring" checked> Allow explainable rule-engine trend monitoring for Dr. Thorne
+              <input type="checkbox" id="consentAiMonitoring" checked> <span data-i18n="consent_step3_checkbox">Allow explainable rule-engine trend monitoring for Dr. Thorne</span>
             </label>
           </div>
         </div>
         <div style="display:flex; gap:0.5rem;">
-          <button class="cg-btn" onclick="app.setConsentStep(2)">Back</button>
-          <button class="cg-btn primary" onclick="app.setConsentStep(4)">Next: Companion Explanation</button>
+          <button class="cg-btn" onclick="app.setConsentStep(2)" data-i18n="btn_back">Back</button>
+          <button class="cg-btn primary" onclick="app.setConsentStep(4)" data-i18n="btn_next_companion">Next: Companion Explanation</button>
         </div>
       </div>
 
       <div id="consentStep4" class="consent-step" style="display:none;">
-        <h4 style="font-size:1.2rem; color:var(--primary); margin-bottom:0.5rem;">Step 4: Plain-Language Companion Explanation for Eleanor</h4>
-        <p style="font-size:1.1rem; color:var(--on-surface); line-height:1.5; background:#f0fdf4; padding:1rem; border-radius:8px; margin-bottom:1rem;">
+        <h4 style="font-size:1.2rem; color:var(--primary); margin-bottom:0.5rem;" data-i18n="consent_step4_title">Step 4: Plain-Language Companion Explanation for Eleanor</h4>
+        <p style="font-size:1.1rem; color:var(--on-surface); line-height:1.5; background:#f0fdf4; padding:1rem; border-radius:8px; margin-bottom:1rem;" data-i18n="consent_step4_text">
           "This tablet is here to help you remember medicines, play sweet memory games with family pictures, and call Sarah anytime you need."
         </p>
-        <button class="cg-btn primary" onclick="app.finishConsent()">Confirm & Save Consent Record</button>
+        <button class="cg-btn primary" onclick="app.finishConsent()" data-i18n="btn_confirm_consent">Confirm & Save Consent Record</button>
       </div>
     </div>
   </div>
@@ -1333,56 +1345,124 @@
   <div class="modal-overlay" id="reminderModal" role="dialog" aria-modal="true" aria-labelledby="reminderModalTitle">
     <div class="modal-window">
       <div class="modal-header">
-        <h3 id="reminderModalTitle">➕ Add Scheduled Routine Reminder</h3>
+        <h3 id="reminderModalTitle" data-i18n="rem_modal_title">➕ Add Scheduled Routine Reminder</h3>
         <button class="modal-close-btn" onclick="app.closeNewReminderModal()" aria-label="Close Modal">✕</button>
       </div>
 
       <form id="reminderForm" onsubmit="app.saveNewReminder(event)">
         <div class="form-group">
-          <label for="remLabel">Routine / Medication Name</label>
-          <input type="text" id="remLabel" class="form-input" placeholder="e.g. Afternoon Hydration & Tea" required>
+          <label for="remLabel" data-i18n="rem_label_name">Routine / Medication Name</label>
+          <input type="text" id="remLabel" class="form-input" placeholder="e.g. Afternoon Hydration & Tea" data-i18n-placeholder="rem_ph_name" required>
         </div>
 
         <div class="form-group">
-          <label for="remType">Category</label>
+          <label for="remType" data-i18n="rem_label_category">Category</label>
           <select id="remType" class="form-select">
-            <option value="medication">💊 Medication</option>
-            <option value="hydration">🥤 Hydration</option>
-            <option value="meal">🍽️ Meal / Nutrition</option>
-            <option value="appointment">🚶 Activity / Walk</option>
+            <option value="medication" data-i18n="rem_cat_med">💊 Medication</option>
+            <option value="hydration" data-i18n="rem_cat_hyd">🥤 Hydration</option>
+            <option value="meal" data-i18n="rem_cat_meal">🍽️ Meal / Nutrition</option>
+            <option value="appointment" data-i18n="rem_cat_act">🚶 Activity / Walk</option>
           </select>
         </div>
 
         <div class="form-group">
-          <label for="remTime">Scheduled Time</label>
+          <label for="remTime" data-i18n="rem_label_time">Scheduled Time</label>
           <input type="time" id="remTime" class="form-input" value="14:00" required>
         </div>
 
         <div class="form-group">
-          <label for="remInstructions">Senior Instructions</label>
-          <input type="text" id="remInstructions" class="form-input" placeholder="e.g. Drink 1 full glass of warm berry tea">
+          <label for="remInstructions" data-i18n="rem_label_instructions">Senior Instructions</label>
+          <input type="text" id="remInstructions" class="form-input" placeholder="e.g. Drink 1 full glass of warm berry tea" data-i18n-placeholder="rem_ph_instructions">
         </div>
 
         <div class="form-group">
-          <label for="remPriority">Alert Priority</label>
+          <label for="remPriority" data-i18n="rem_label_priority">Alert Priority</label>
           <select id="remPriority" class="form-select">
-            <option value="normal">Normal (Routine Checkpoint)</option>
-            <option value="critical">Critical (5-minute escalation alert if missed)</option>
+            <option value="normal" data-i18n="rem_prio_normal">Normal (Routine Checkpoint)</option>
+            <option value="critical" data-i18n="rem_prio_critical">Critical (5-minute escalation alert if missed)</option>
           </select>
         </div>
 
         <div style="display:flex; justify-content:flex-end; gap:0.75rem; margin-top:1rem;">
-          <button type="button" class="cg-btn" onclick="app.closeNewReminderModal()">Cancel</button>
-          <button type="submit" class="cg-btn primary">Save & Sync to Device</button>
+          <button type="button" class="cg-btn" onclick="app.closeNewReminderModal()" data-i18n="btn_cancel">Cancel</button>
+          <button type="submit" class="cg-btn primary" data-i18n="btn_save_sync">Save & Sync to Device</button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL 9: AUDIO CALL SIMULATION (Patient <-> Caregiver)
+       ========================================================================== -->
+  <div class="modal-overlay" id="audioCallModal" role="dialog" aria-modal="true" aria-labelledby="callModalTitle">
+    <div class="modal-window" style="max-width:480px;">
+      <div class="call-simulation-box">
+        <div class="call-pulse-circle" id="callPulseIcon">📞</div>
+        <h3 id="callTargetName" style="font-size:1.8rem; margin-bottom:0.25rem;" data-i18n="call_target_name">Calling Sarah Vance...</h3>
+        <p id="callStatusDetail" style="font-size:1.2rem; color:var(--on-surface-variant); margin-bottom:1rem;" data-i18n="call_status_detail">Ringing Bedside Tablet...</p>
+        <div id="callTimerDisplay" style="font-size:1.4rem; font-weight:700; color:var(--primary); font-family:monospace; margin-bottom:1.5rem;">00:00</div>
+        
+        <div style="display:flex; justify-content:center; gap:1rem;">
+          <button class="call-end-btn" onclick="app.endAudioCall()">
+            <span>🔴</span> <span data-i18n="call_end_btn">End Call</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL 10: EMERGENCY ASSISTANCE & ESCALATION MODAL
+       ========================================================================== -->
+  <div class="modal-overlay" id="emergencyModal" role="dialog" aria-modal="true" aria-labelledby="emergModalTitle">
+    <div class="modal-window" style="max-width:540px;">
+      <div class="modal-header">
+        <h3 id="emergModalTitle" style="color:#b91c1c;" data-i18n="emerg_modal_title">🚨 Urgent Care Escalation</h3>
+        <button class="modal-close-btn" onclick="app.closeEmergencyModal()" aria-label="Close">✕</button>
+      </div>
+      <div style="padding:1rem 0;">
+        <p style="font-size:1.15rem; color:#7f1d1d; background:#fee2e2; padding:1rem; border-radius:8px; border:1px solid #fca5a5; margin-bottom:1rem;" data-i18n="emerg_modal_desc">
+          <strong>Direct Emergency Help Triggered:</strong> Primary contacts and community responders are being notified immediately.
+        </p>
+        
+        <div style="display:flex; flex-direction:column; gap:0.75rem;">
+          <div style="display:flex; justify-content:space-between; align-items:center; background:#f8fafc; padding:0.85rem 1rem; border-radius:8px; border:1px solid #cbd5e1;">
+            <div>
+              <strong data-i18n="emerg_contact1_title">1. Primary Daughter (Sarah Vance)</strong>
+              <div style="font-size:0.85rem; color:#64748b;" data-i18n="emerg_contact1_desc">Instant High-Priority Notification + SMS sent</div>
+            </div>
+            <span class="routine-status-pill done-badge" data-i18n="emerg_contact1_badge">Notified</span>
+          </div>
+
+          <div style="display:flex; justify-content:space-between; align-items:center; background:#f8fafc; padding:0.85rem 1rem; border-radius:8px; border:1px solid #cbd5e1;">
+            <div>
+              <strong data-i18n="emerg_contact2_title">2. Secondary Sibling (Priya Vance)</strong>
+              <div style="font-size:0.85rem; color:#64748b;" data-i18n="emerg_contact2_desc">Standby Escalation (+91 98765 43211)</div>
+            </div>
+            <span class="routine-status-pill done-badge" data-i18n="emerg_contact2_badge">Queued</span>
+          </div>
+
+          <div style="display:flex; justify-content:space-between; align-items:center; background:#f8fafc; padding:0.85rem 1rem; border-radius:8px; border:1px solid #cbd5e1;">
+            <div>
+              <strong data-i18n="emerg_contact3_title">3. Local Emergency Services (112)</strong>
+              <div style="font-size:0.85rem; color:#64748b;" data-i18n="emerg_contact3_desc">National Emergency Helpline Integration</div>
+            </div>
+            <a href="tel:112" class="cg-btn primary" style="text-decoration:none; padding:0.4rem 0.8rem; font-size:0.85rem;" data-i18n="btn_call_112">Call 112</a>
+          </div>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:0.75rem; margin-top:1.5rem;">
+          <button class="cg-btn" onclick="app.closeEmergencyModal()" data-i18n="btn_cancel_alert">Cancel Alert</button>
+          <button class="cg-btn primary" style="background:#b91c1c; border-color:#b91c1c;" onclick="app.acknowledgeEmergency()" data-i18n="btn_confirm_help">Confirm Help Arriving</button>
+        </div>
+      </div>
     </div>
   </div>
 
   <!-- Toast Notification -->
   <div class="toast-notification" id="appToast" role="status" aria-live="polite">
     <span id="toastIcon">🌿</span>
-    <span id="toastMsg">Action completed successfully.</span>
+    <span id="toastMsg" data-i18n="toast_default">Action completed successfully.</span>
   </div>
 
   <!-- Scripts -->

@@ -1,20 +1,26 @@
-const CACHE_NAME = 'recollect-cache-v1';
+const CACHE_NAME = 'recollect-cache-v2';
 const ASSETS_TO_CACHE = [
   './',
-  './index.html',
-  './css/styles.css',
-  './css/bundle.css',
-  './js/db.js',
-  './js/ruleEngine.js',
-  './js/i18n.js',
-  './js/app.js',
-  './manifest.json'
+  'index.html',
+  'css/styles.css',
+  'css/bundle.css',
+  'js/db.js',
+  'js/ruleEngine.js',
+  'js/i18n.js',
+  'js/app.js',
+  'manifest.json'
 ];
 
 self.addEventListener('install', (e) => {
   e.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS_TO_CACHE);
+    caches.open(CACHE_NAME).then(async (cache) => {
+      for (const asset of ASSETS_TO_CACHE) {
+        try {
+          await cache.add(asset);
+        } catch (err) {
+          console.warn('Pre-cache skip:', asset, err);
+        }
+      }
     }).then(() => self.skipWaiting())
   );
 });
@@ -32,12 +38,12 @@ self.addEventListener('activate', (e) => {
 });
 
 self.addEventListener('fetch', (e) => {
-  // Local-first network fallback
+  if (e.request.method !== 'GET') return;
   e.respondWith(
     caches.match(e.request).then((cachedResponse) => {
       if (cachedResponse) return cachedResponse;
       return fetch(e.request).then((networkResponse) => {
-        if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
+        if (!networkResponse || networkResponse.status !== 200) {
           return networkResponse;
         }
         const responseToCache = networkResponse.clone();
@@ -46,8 +52,7 @@ self.addEventListener('fetch', (e) => {
         });
         return networkResponse;
       }).catch(() => {
-        // Offline fallback
-        return caches.match('./index.html');
+        return caches.match('index.html') || caches.match('./index.html') || caches.match('./');
       });
     })
   );
