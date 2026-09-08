@@ -1236,14 +1236,20 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
-  background: rgba(234, 179, 8, 0.16);
-  border: 1.5px solid #ca8a04;
+  background: #fef08a;
+  border: 2px solid #ca8a04;
   border-radius: var(--radius-full);
-  padding: 0.25rem 0.85rem;
-  font-size: 1.05rem;
+  padding: 0.35rem 0.95rem;
+  font-size: 1.1rem;
   font-weight: 800;
-  color: #854d0e;
+  color: #1c1917;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
   transition: var(--transition-smooth);
+}
+
+.patient-score-pill strong {
+  color: #0f172a;
+  font-weight: 900;
 }
 
 .game-fullscreen-takeover {
@@ -1352,14 +1358,14 @@ body {
 }
 
 .patient-game-score-badge .score-text-group strong {
-  font-size: 1.05rem;
-  color: #854d0e;
-  font-weight: 800;
+  font-size: 1.15rem;
+  color: #1c1917;
+  font-weight: 900;
 }
 
 .patient-game-score-badge .score-text-group span {
-  font-size: 0.85rem;
-  color: #a16207;
+  font-size: 0.95rem;
+  color: #292524;
   font-weight: 700;
 }
 
@@ -3493,6 +3499,27 @@ body.high-contrast-mode .spec-badge {
   font-weight: 800 !important;
 }
 
+body.high-contrast-mode .patient-score-pill strong,
+body.high-contrast-mode .patient-game-score-badge .score-text-group strong,
+body.high-contrast-mode .patient-game-score-badge .score-text-group span {
+  color: #000000 !important;
+  font-weight: 900 !important;
+}
+
+body.high-contrast-mode.high-contrast-dark .patient-score-pill,
+body.high-contrast-mode.high-contrast-dark .patient-game-score-badge {
+  background: #000000 !important;
+  color: #ffffff !important;
+  border: 3px solid #ffffff !important;
+}
+
+body.high-contrast-mode.high-contrast-dark .patient-score-pill strong,
+body.high-contrast-mode.high-contrast-dark .patient-game-score-badge .score-text-group strong,
+body.high-contrast-mode.high-contrast-dark .patient-game-score-badge .score-text-group span {
+  color: #ffffff !important;
+  font-weight: 900 !important;
+}
+
 body.high-contrast-mode .routine-status-pill.done-badge,
 body.high-contrast-mode .schedule-status-badge.active,
 body.high-contrast-mode .cb-preview-chip.chip-completed {
@@ -4121,17 +4148,21 @@ body.dark-mode .game-fullscreen-takeover {
 
 body.dark-mode .patient-score-pill,
 body.dark-mode .patient-game-score-badge {
-  background: #1e1e38 !important;
-  border-color: #ca8a04 !important;
+  background: #0f172a !important;
+  border-color: #facc15 !important;
   color: #fef08a !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4) !important;
 }
 
+body.dark-mode .patient-score-pill strong,
 body.dark-mode .patient-game-score-badge .score-text-group strong {
-  color: #fef08a !important;
+  color: #fde047 !important;
+  font-weight: 900 !important;
 }
 
 body.dark-mode .patient-game-score-badge .score-text-group span {
-  color: #cbd5e1 !important;
+  color: #e2e8f0 !important;
+  font-weight: 700 !important;
 }
 
 body.dark-mode .attention-target-banner {
