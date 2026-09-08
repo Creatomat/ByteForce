@@ -117,8 +117,11 @@ The Senior Patient Space is optimized for 10-inch tablets placed on a bedside ta
 
 ### 3.2 Spoken Narration ("Listen to Your Day")
 * Tap the **"🔊 Listen to your day"** button at any time.
-* The tablet reads aloud a calm briefing in a warm, unhurried voice explaining the date, the current time, and what routine is scheduled next.
-* If your device does not have speech synthesis installed or is muted, a gentle pentatonic melodic chime plays instead.
+* The tablet plays a comforting, studio-recorded natural voice briefing in your chosen regional language:
+  * **When medicine is pending:** It gently reminds Eleanor of the date, time, and to take her yellow pill with a glass of cool water.
+  * **When medicine is completed:** It congratulates Eleanor on taking her medicine and encourages a peaceful day ahead.
+* Tap the button again (showing **"⏸️"**) to pause playback at any point.
+* If audio files cannot be loaded, the tablet automatically falls back to assistive voice synthesis or a gentle pentatonic chime.
 
 ### 3.3 Taking Scheduled Medications & Routines
 * When it is time for medicine, the large card displays:
@@ -126,7 +129,8 @@ The Senior Patient Space is optimized for 10-inch tablets placed on a bedside ta
   * The pill's exact visual description: *"Yellow Oval V 42 (Lisinopril 10mg)"*.
   * Water instructions: *"1 Full Glass of fresh cool water"*.
 * **Taking the Medicine:** Tap the green **"✓ I took my medicine"** button.
-* **Confirmation:** The card immediately updates with a green confirmation checkmark (*"Completed at 9:02 AM • Wonderful job, Eleanor!"*), plays audio feedback, and notifies Sarah's Caregiver dashboard.
+* **Acoustic Confirmation:** The tablet plays a soothing 3-note melodic harp chime and a warm voice congratulation (*"Wonderful job Eleanor, you took your morning medicine!"*).
+* **Cross-Role Sync:** The card updates with a green checkmark (*"Completed at 9:02 AM • Wonderful job, Eleanor!"*), and Sarah's caregiver dashboard is immediately synchronized.
 
 ### 3.4 Full-Screen Attention Reminder Takeover
 For critical routines, a full-screen card appears over the screen:

@@ -78,10 +78,30 @@ ByteForce/
 3. **Encouraging Patient Score & Silent Telemetry**:
    - Patient sees friendly Garden Stars ⭐ and Bloom Stages (🌱 *Sprout* $\rightarrow$ 🌿 *Budding Green* $\rightarrow$ 🌼 *Blooming Daisy* $\rightarrow$ 🌻 *Sunflower Champion*) with a minimum score floor of 75/100.
    - Silently streams clinical telemetry (`hesitation_avg_ms`, `accuracy`, `mistake_count`, `duration_seconds`) to `recollectDB`, caregiver activity logs, and doctor telemetry cards.
-4. **Complete Localization of Runtime Strings (Priority 1 from Audit)**:
-   - Added 73 new keys to `js/i18n.js` across all 5 languages (**591 keys total per language, 100% parity**).
-   - Eliminated all hardcoded English strings in `js/app.js`: all ~50 `showToast()` calls, dialog `prompt()` and `alert()` calls, `speakText()` prompts, game feedback banners, card peek labels, and routine instructions now dynamically resolve through `window.i18n.t()`.
-5. **Theming, Scaling & Accessibility**:
+4. **Complete Localization of Runtime Strings (594 Keys Total, 100% Parity)**:
+   - Added audio transcript keys across all 5 languages (**594 keys total per language, 100% parity**): `briefing_morning_pending`, `briefing_morning_completed`, `voice_preview_sample`.
+   - Eliminated all hardcoded English strings in `js/app.js`: all ~50 `showToast()` calls, dialog `prompt()` and `alert()` calls, `speakText()` prompts, game feedback banners, card peek labels, and routine instructions dynamically resolve through `window.i18n.t()`.
+5. **Studio Neural Audio & Biophilic Sound Effects Integration (`audio/tts/`, `js/i18n.js`, `js/app.js`)**:
+   - **45 Pre-recorded Studio MP3 Audio Files (`9 prompts` $\times$ `5 languages`)**: Replaced robotic speech synthesis with natural, calming regional studio voice recordings:
+     1. `briefing_morning_pending`: Bedside tablet morning briefing when medication is pending.
+     2. `briefing_morning_completed`: Bedside tablet morning briefing when medication has been taken.
+     3. `tts_med_morning_prompt`: Full Attention Takeover morning medicine reminder.
+     4. `tts_med_morning_congrat`: "I took my medicine" confirmation celebration voice.
+     5. `tts_instruction_memory`: Memory photo match game instructions audio.
+     6. `tts_instruction_attention`: Garden flower attention game instructions audio.
+     7. `tts_instruction_language`: Everyday object language game instructions audio.
+     8. `tts_instruction_problem`: Daily routine sequencing problem-solving game instructions audio.
+     9. `voice_preview_sample`: Soothing voice sample preview on language switch and voice mode toggle.
+   - **Biophilic Web Audio SFX (0 external bytes, zero latency, offline-first)**:
+     - `playPillConfirmSound()`: Gentle 3-note major triad chime (C5-E5-G5) on medicine acknowledgment.
+     - `playCardFlipSound()`: Organic acoustic woodblock/soft tap (~320Hz) on card peek and option selection.
+     - `playMatchSuccessSound()`: Warm harmonic sparkle bell (E5-B5-E6) on pair match, target flower find, and routine step placement.
+     - `playGameCompleteSound()`: Calm 4-note ascending chord progression (C5-G5-C6-E6) upon completing games.
+     - `playAttentionChime()`: Resonant singing bowl chime (~440Hz) when the reminder takeover appears.
+     - `playSoftTap()`: Tactile biophilic click for mood check-in and brand home navigation.
+   - **Zero UI Layout Changes**: Exact visual layout, button positions, and CSS styles preserved.
+   - **PWA Cache (`sw.js`)**: Bumped to `recollect-cache-v3` with automatic caching of audio assets.
+6. **Theming, Scaling & Accessibility**:
    - Triple Theme Support: Biophilic Light Theme, Dark Mode (`body.dark-mode`), High Contrast Mode (`body.high-contrast-mode`, WCAG AAA).
    - 3-Tier Font Scaling: Standard (20pt), Large (24pt), Extra Large (28pt).
    - 5 Regional Languages: English (`en`), Assamese (`as`), Bengali (`bn`), Khasi (`kha`), Hindi (`hi`).

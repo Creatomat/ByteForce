@@ -116,6 +116,21 @@ class RecollectApp {
 
     // 7. Initialize Patient Score Display
     this.updatePatientScoreDisplay();
+
+    // 8. Synchronize speaker icons with audio playback state
+    window.addEventListener('recollect:speakingchange', (e) => {
+      const btn = document.getElementById('listenDayBtn');
+      const icon = document.getElementById('speakerIcon');
+      if (e.detail && e.detail.isSpeaking) {
+        if (e.detail.key && e.detail.key.startsWith('briefing_morning')) {
+          btn?.classList.add('speaking');
+          if (icon) icon.textContent = '⏸️';
+        }
+      } else {
+        btn?.classList.remove('speaking');
+        if (icon) icon.textContent = '🔊';
+      }
+    });
   }
 
   // --- Dynamic Time, Greeting, and Date Engine ---
@@ -194,6 +209,7 @@ class RecollectApp {
 
   // --- Brand Home Navigation ---
   handleBrandClick() {
+    if (window.i18n) window.i18n.playSoftTap();
     this.showLoginScreen();
     this.showToast(window.i18n ? window.i18n.t('toast_nav_profile') : 'Navigated to profile and space selection.', '🌿');
   }
@@ -319,9 +335,12 @@ class RecollectApp {
       if (listeningText && window.i18n) {
         listeningText.textContent = window.i18n.getText('voice_listening');
       }
+      if (window.i18n) {
+        window.i18n.playAttentionChime();
+      }
       if (this.voiceModeEnabled && window.i18n) {
         const promptText = window.i18n ? window.i18n.t("tts_med_morning_prompt") : "Eleanor, it is time for your morning medicine. Take 1 yellow tablet with a full glass of cool water.";
-        window.i18n.speakText(promptText);
+        window.i18n.speakText(promptText, null, { audioKey: 'tts_med_morning_prompt' });
       }
     }
   }
@@ -369,7 +388,8 @@ class RecollectApp {
     this.showToast(confirmMsg, '🌸');
 
     if (window.i18n) {
-      window.i18n.speakText(window.i18n.t("tts_med_morning_congrat"));
+      window.i18n.playPillConfirmSound();
+      window.i18n.speakText(null, null, { audioKey: 'tts_med_morning_congrat' });
     }
   }
 
@@ -413,13 +433,17 @@ class RecollectApp {
       return;
     }
 
+    const logs = window.recollectDB ? window.recollectDB.getItem('ReminderLog') : [];
+    const isMedTaken = logs.some(l => l.reminder_id === 'rem_001' && l.patient_response === 'acknowledged');
+    const audioKey = isMedTaken ? 'briefing_morning_completed' : 'briefing_morning_pending';
+
     btn?.classList.add('speaking');
     if (icon) icon.textContent = '⏸️';
 
     window.i18n.speakText(null, () => {
       btn?.classList.remove('speaking');
       if (icon) icon.textContent = '🔊';
-    });
+    }, { audioKey });
   }
 
 
@@ -636,6 +660,7 @@ class RecollectApp {
     this.lastCardClickTime = now;
 
     card.isRevealed = true;
+    if (window.i18n) window.i18n.playCardFlipSound();
     this.selectedCards.push({ card, index });
     this.renderMemoryGrid();
 
@@ -652,6 +677,7 @@ class RecollectApp {
     if (first.card.id === second.card.id) {
       first.card.isMatched = true;
       second.card.isMatched = true;
+      if (window.i18n) window.i18n.playMatchSuccessSound();
       this.gameMatches++;
       this.updateBloomProgress(this.gameMatches);
 
@@ -801,6 +827,7 @@ class RecollectApp {
       tile.isFound = true;
       this.attentionFoundCount++;
       this.gameMatches++;
+      if (window.i18n) window.i18n.playMatchSuccessSound();
       this.updateBloomProgress(this.attentionFoundCount);
 
       const targetLabel = window.i18n ? window.i18n.t(this.attentionTarget.nameKey) : this.attentionTarget.defaultName;
@@ -819,6 +846,7 @@ class RecollectApp {
         setTimeout(() => this.handleGameCompletion(), 900);
       }
     } else {
+      if (window.i18n) window.i18n.playCardFlipSound();
       this.gameMistakes++;
       this.currentGameScore = Math.max(70, 100 - (this.gameMistakes * 5));
       this.updateInGameScoreDisplay();
@@ -915,6 +943,7 @@ class RecollectApp {
 
     if (choiceId === this.currentLanguageItem.id) {
       if (optEl) optEl.classList.add('correct');
+      if (window.i18n) window.i18n.playMatchSuccessSound();
       this.gameMatches++;
       this.updateBloomProgress(this.languageRoundIndex + 1);
 
@@ -937,6 +966,7 @@ class RecollectApp {
         }
       }, 1100);
     } else {
+      if (window.i18n) window.i18n.playCardFlipSound();
       this.gameMistakes++;
       this.currentGameScore = Math.max(70, 100 - (this.gameMistakes * 5));
       this.updateInGameScoreDisplay();
@@ -1069,6 +1099,7 @@ class RecollectApp {
     if (stepNumber === this.problemNextStep) {
       this.problemNextStep++;
       this.gameMatches++;
+      if (window.i18n) window.i18n.playMatchSuccessSound();
       this.updateBloomProgress(this.gameMatches);
 
       if (banner) {
@@ -1088,6 +1119,7 @@ class RecollectApp {
         setTimeout(() => this.handleGameCompletion(), 900);
       }
     } else {
+      if (window.i18n) window.i18n.playCardFlipSound();
       this.gameMistakes++;
       this.currentGameScore = Math.max(70, 100 - (this.gameMistakes * 5));
       this.updateInGameScoreDisplay();
@@ -1159,11 +1191,15 @@ class RecollectApp {
 
     const text = window.i18n ? window.i18n.t(key) : 'Take all your time and enjoy your gentle game.';
     if (window.i18n) {
-      window.i18n.speakText(text);
+      window.i18n.speakText(text, null, { audioKey: key });
     }
   }
 
   handleGameCompletion() {
+    if (window.i18n) {
+      window.i18n.playGameCompleteSound();
+    }
+
     const duration = Math.round((Date.now() - this.gameStartTime) / 1000);
     const avgHesitation = Math.round(this.hesitationSamples.reduce((a, b) => a + b, 0) / (this.hesitationSamples.length || 1));
     const score = Math.max(75, 100 - (this.gameMistakes * 5));
@@ -1254,6 +1290,7 @@ class RecollectApp {
   }
 
   logMood(score, label, btnElement) {
+    if (window.i18n) window.i18n.playSoftTap();
     document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('selected'));
     btnElement?.classList.add('selected');
 
@@ -1581,6 +1618,11 @@ class RecollectApp {
   toggleVoiceMode(enabled) {
     this.voiceModeEnabled = enabled;
     this.showToast(window.i18n ? (enabled ? window.i18n.t('toast_voice_enabled') : window.i18n.t('toast_voice_silenced')) : (enabled ? 'Voice narration enabled.' : 'Voice narration silenced.'), '🔊');
+    if (enabled && window.i18n) {
+      window.i18n.playAudioClip('voice_preview_sample');
+    } else if (!enabled && window.i18n) {
+      window.i18n.stopSpeaking();
+    }
   }
 
   switchSpaceFromSettings(role) {
@@ -2480,6 +2522,11 @@ class RecollectApp {
         'hi': 'हिन्दी (Hindi)'
       };
       this.showToast(window.i18n ? window.i18n.t('toast_lang_switched', { lang: langNameMap[lang] || lang.toUpperCase() }) : `Language switched to ${langNameMap[lang] || lang.toUpperCase()}`, '🌐');
+
+      // Play soothing voice sample preview in newly chosen language
+      if (this.voiceModeEnabled) {
+        window.i18n.playAudioClip('voice_preview_sample');
+      }
     }
   }
 

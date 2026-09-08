@@ -617,7 +617,10 @@ const RECOLLECT_I18N = {
     "tts_med_morning_congrat": "Wonderful job Eleanor, you took your morning medicine!",
     "badge_critical_pending": "Critical Pending",
     "rem_sensor_fallback": "Scheduled caregiver reminder",
-    "chart_title_timeline": "Routine Adherence & Composite Score Timeline ({tf})"
+    "chart_title_timeline": "Routine Adherence & Composite Score Timeline ({tf})",
+    "briefing_morning_pending": "Good morning Eleanor. Today is Thursday, October 24. Your morning medicine is scheduled for 9:00 AM. Remember to take your yellow pill with cool water.",
+    "briefing_morning_completed": "Good morning Eleanor. Today is Thursday, October 24. Wonderful job taking your morning medicine! You have a peaceful day ahead.",
+    "voice_preview_sample": "Hello, I am your gentle companion here to help you throughout the day."
   },
   "as": {
     "brand_title": "ৰিকলেক্‌ট",
@@ -1231,7 +1234,10 @@ const RECOLLECT_I18N = {
     "tts_med_morning_congrat": "বৰ ভাল কাম কৰিলে এলিনৰ, আপুনি ৰাতিপুৱাৰ ঔষধ খালে!",
     "badge_critical_pending": "জৰুৰী বাকী",
     "rem_sensor_fallback": "নিৰ্ধাৰিত অভিভাৱকৰ সোঁৱৰণী",
-    "chart_title_timeline": "নিয়মীয়া অভ্যাস আৰু সামগ্ৰিক নম্বৰৰ সময়ৰেখা ({tf})"
+    "chart_title_timeline": "নিয়মীয়া অভ্যাস আৰু সামগ্ৰিক নম্বৰৰ সময়ৰেখা ({tf})",
+    "briefing_morning_pending": "শুভ ৰাতিপুৱা এলিনৰ। আজি বৃহস্পতিবাৰ, ২৪ অক্টোবৰ। আপোনাৰ ৰাতিপুৱাৰ ঔষধ ৯:০০ বজাত আছে। পানীৰ সৈতে হালধীয়া টেবলেট খাবলৈ নাপাহৰিব।",
+    "briefing_morning_completed": "শুভ ৰাতিপুৱা এলিনৰ। আজি বৃহস্পতিবাৰ, ২৪ অক্টোবৰ। ৰাতিপুৱাৰ ঔষধ খোৱাৰ বাবে বৰ ভাল কাম কৰিলে! আপোনাৰ দিনটো শান্তিময় হওক।",
+    "voice_preview_sample": "নমস্কাৰ, আপোনাক দিনটোৰ সকলো সময়ত সহায় কৰিবলৈ মই আপোনাৰ লগতে আছো।"
   },
   "bn": {
     "brand_title": "রিকলেক্ট",
@@ -1845,7 +1851,10 @@ const RECOLLECT_I18N = {
     "tts_med_morning_congrat": "খুব সুন্দর কাজ করেছেন এলিনর, আপনি সকালের ওষুধ খেয়ে নিয়েছেন!",
     "badge_critical_pending": "জরুরি বাকি",
     "rem_sensor_fallback": "নির্ধারিত কেয়ারগিভার রিমাইন্ডার",
-    "chart_title_timeline": "নিয়মিত অভ্যাস ও সামগ্রিক স্কোরের টাইমলাইন ({tf})"
+    "chart_title_timeline": "নিয়মিত অভ্যাস ও সামগ্রিক স্কোরের টাইমলাইন ({tf})",
+    "briefing_morning_pending": "সুপ্রভাত এলিনর। আজ বৃহস্পতিবার, ২৪ অক্টোবর। আপনার সকালের ওষুধ সকাল ৯:০০ টায় নির্ধারিত। ঠান্ডা জলের সাথে হলুদ ট্যাবলেট নিতে ভুলবেন না।",
+    "briefing_morning_completed": "সুপ্রভাত এলিনর। আজ বৃহস্পতিবার, ২৪ অক্টোবর। সকালের ওষুধ খাওয়ার জন্য খুব সুন্দর কাজ করেছেন! আপনার দিনটি শান্তিময় হোক।",
+    "voice_preview_sample": "নমস্কার, সারাদিন আপনাকে সাহায্য করার জন্য আমি আপনার সাথে আছি।"
   },
   "kha": {
     "brand_title": "Recollect",
@@ -2459,7 +2468,10 @@ const RECOLLECT_I18N = {
     "tts_med_morning_congrat": "Bha shibun Eleanor, phi la dih ia ka dawai mynstep!",
     "badge_critical_pending": "Dang Sah Kyrkieh",
     "rem_sensor_fallback": "Ka jingkynmaw u nongsumar",
-    "chart_title_timeline": "Ka Jingiadei bad Score Timeline ({tf})"
+    "chart_title_timeline": "Ka Jingiadei bad Score Timeline ({tf})",
+    "briefing_morning_pending": "Khublei mynstep Eleanor. Ka sngi Palei, 24 u Risaw. Ka dawai mynstep ka dei ha ka 9:00 AM. Kynmaw ban dih ia ka dawai stem bad ka um.",
+    "briefing_morning_completed": "Khublei mynstep Eleanor. Ka sngi Palei, 24 u Risaw. Bha shibun ba phi la dih ia ka dawai mynstep! Ban long ka sngi ba shongsuk ia phi.",
+    "voice_preview_sample": "Khublei, nga don hangne ban iarap ia phi man ka por ha kane ka sngi."
   },
   "hi": {
     "brand_title": "रीकलेक्ट",
@@ -3073,8 +3085,23 @@ const RECOLLECT_I18N = {
     "tts_med_morning_congrat": "बहुत बढ़िया काम एलेनोर, आपने अपनी सुबह की दवा ले ली!",
     "badge_critical_pending": "अति आवश्यक लंबित",
     "rem_sensor_fallback": "निर्धारित देखभालकर्ता अनुस्मारक",
-    "chart_title_timeline": "नियमित आदत और समग्र स्कोर समयरेखा ({tf})"
+    "chart_title_timeline": "नियमित आदत और समग्र स्कोर समयरेखा ({tf})",
+    "briefing_morning_pending": "शुभ प्रभात एलेनोर। आज गुरुवार, 24 अक्टूबर है। आपकी सुबह की दवा सुबह 9:00 बजे निर्धारित है। ठंडे पानी के साथ पीली गोली लेना याद रखें।",
+    "briefing_morning_completed": "शुभ प्रभात एलेनोर। आज गुरुवार, 24 अक्टूबर है। सुबह की दवा लेने के लिए बहुत बढ़िया काम! आपका दिन सुखद और शांतिपूर्ण रहे।",
+    "voice_preview_sample": "नमस्ते, पूरे दिन आपकी सहायता के लिए मैं हमेशा आपके साथ हूँ।"
   }
+};
+
+const STUDIO_AUDIO_CLIPS = {
+  'briefing_morning_pending': 'briefing_morning_pending',
+  'briefing_morning_completed': 'briefing_morning_completed',
+  'tts_med_morning_prompt': 'tts_med_morning_prompt',
+  'tts_med_morning_congrat': 'tts_med_morning_congrat',
+  'tts_instruction_memory': 'tts_instruction_memory',
+  'tts_instruction_attention': 'tts_instruction_attention',
+  'tts_instruction_language': 'tts_instruction_language',
+  'tts_instruction_problem': 'tts_instruction_problem',
+  'voice_preview_sample': 'voice_preview_sample'
 };
 
 class I18nManager {
@@ -3082,9 +3109,19 @@ class I18nManager {
     this.currentLang = localStorage.getItem('recollect_lang') || 'en';
     this.isSpeaking = false;
     this.audioCtx = null;
+    this.activeAudio = null;
     
     if ('speechSynthesis' in window) {
       window.speechSynthesis.onvoiceschanged = () => {};
+    }
+
+    // Automatically stop speaking if tab/window is hidden
+    if (typeof document !== 'undefined') {
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+          this.stopSpeaking();
+        }
+      });
     }
   }
 
@@ -3190,46 +3227,367 @@ class I18nManager {
     });
   }
 
-  speakText(text, onComplete) {
+  // --- Biophilic Web Audio Sound Effects (Calm, Acoustic, Non-Startling) ---
+
+  getAudioContext() {
+    try {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtx) return null;
+      if (!this.audioCtx || this.audioCtx.state === 'closed') {
+        this.audioCtx = new AudioCtx();
+      }
+      if (this.audioCtx.state === 'suspended') {
+        this.audioCtx.resume();
+      }
+      return this.audioCtx;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  playPillConfirmSound() {
+    const ctx = this.getAudioContext();
+    if (!ctx) return;
+    try {
+      const now = ctx.currentTime;
+      // Gentle major triad chime (C5 = 523.25Hz, E5 = 659.25Hz, G5 = 783.99Hz)
+      const notes = [523.25, 659.25, 783.99];
+      notes.forEach((freq, i) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, now + i * 0.11);
+        
+        gain.gain.setValueAtTime(0.0001, now + i * 0.11);
+        gain.gain.linearRampToValueAtTime(0.12, now + i * 0.11 + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + i * 0.11 + 0.55);
+        
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        
+        osc.start(now + i * 0.11);
+        osc.stop(now + i * 0.11 + 0.6);
+      });
+    } catch (e) {
+      console.warn('[Recollect SFX] playPillConfirmSound error', e);
+    }
+  }
+
+  playCardFlipSound() {
+    const ctx = this.getAudioContext();
+    if (!ctx) return;
+    try {
+      const now = ctx.currentTime;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(320, now);
+      osc.frequency.exponentialRampToValueAtTime(160, now + 0.045);
+      
+      gain.gain.setValueAtTime(0.07, now);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.05);
+      
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      
+      osc.start(now);
+      osc.stop(now + 0.055);
+    } catch (e) {
+      console.warn('[Recollect SFX] playCardFlipSound error', e);
+    }
+  }
+
+  playMatchSuccessSound() {
+    const ctx = this.getAudioContext();
+    if (!ctx) return;
+    try {
+      const now = ctx.currentTime;
+      // Gentle harmonic sparkle bell (E5 = 659.25Hz, B5 = 987.77Hz, E6 = 1318.51Hz)
+      const freqs = [659.25, 987.77, 1318.51];
+      freqs.forEach((freq, idx) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, now + idx * 0.08);
+        
+        gain.gain.setValueAtTime(0.0001, now + idx * 0.08);
+        gain.gain.linearRampToValueAtTime(0.10, now + idx * 0.08 + 0.015);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + idx * 0.08 + 0.5);
+        
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        
+        osc.start(now + idx * 0.08);
+        osc.stop(now + idx * 0.08 + 0.55);
+      });
+    } catch (e) {
+      console.warn('[Recollect SFX] playMatchSuccessSound error', e);
+    }
+  }
+
+  playGameCompleteSound() {
+    const ctx = this.getAudioContext();
+    if (!ctx) return;
+    try {
+      const now = ctx.currentTime;
+      // Calm 4-note ascending biophilic chord progression (C5, G5, C6, E6)
+      const notes = [523.25, 783.99, 1046.50, 1318.51];
+      notes.forEach((freq, idx) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, now + idx * 0.15);
+        
+        gain.gain.setValueAtTime(0.0001, now + idx * 0.15);
+        gain.gain.linearRampToValueAtTime(0.12, now + idx * 0.15 + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + idx * 0.15 + 0.7);
+        
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        
+        osc.start(now + idx * 0.15);
+        osc.stop(now + idx * 0.15 + 0.75);
+      });
+    } catch (e) {
+      console.warn('[Recollect SFX] playGameCompleteSound error', e);
+    }
+  }
+
+  playAttentionChime() {
+    const ctx = this.getAudioContext();
+    if (!ctx) return;
+    try {
+      const now = ctx.currentTime;
+      // Warm resonant singing bowl tone (A4 = 440Hz with subtle harmonic)
+      [440, 880].forEach((freq, idx) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, now);
+        
+        const peakGain = idx === 0 ? 0.12 : 0.035;
+        gain.gain.setValueAtTime(0.0001, now);
+        gain.gain.linearRampToValueAtTime(peakGain, now + 0.04);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 1.2);
+        
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        
+        osc.start(now);
+        osc.stop(now + 1.25);
+      });
+    } catch (e) {
+      console.warn('[Recollect SFX] playAttentionChime error', e);
+    }
+  }
+
+  playSoftTap() {
+    const ctx = this.getAudioContext();
+    if (!ctx) return;
+    try {
+      const now = ctx.currentTime;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(480, now);
+      osc.frequency.exponentialRampToValueAtTime(240, now + 0.035);
+      
+      gain.gain.setValueAtTime(0.05, now);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.04);
+      
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      
+      osc.start(now);
+      osc.stop(now + 0.045);
+    } catch (e) {
+      console.warn('[Recollect SFX] playSoftTap error', e);
+    }
+  }
+
+  // --- Studio Neural Audio & Spoken Narration Engine ---
+
+  findAudioKeyForText(text) {
+    if (!text || typeof text !== 'string') return null;
+    const cleanText = text.trim();
+    const knownKeys = Object.keys(STUDIO_AUDIO_CLIPS);
+
+    // 1. Direct match with a registered key
+    if (STUDIO_AUDIO_CLIPS[cleanText]) return cleanText;
+
+    // 2. Exact match with any key in current language
+    for (const key of knownKeys) {
+      const localized = this.getText(key);
+      if (localized && localized.trim() === cleanText) {
+        return key;
+      }
+    }
+
+    // 3. Exact match with any key in any language dictionary
+    for (const lang of Object.keys(RECOLLECT_I18N)) {
+      const dict = RECOLLECT_I18N[lang];
+      if (!dict) continue;
+      for (const key of knownKeys) {
+        if (dict[key] && dict[key].trim() === cleanText) {
+          return key;
+        }
+      }
+    }
+
+    // 4. Substring / heuristic matching for regional scripts
+    if (cleanText.includes('morning medicine') || cleanText.includes('ঔষধ') || cleanText.includes('ওষুধ') || cleanText.includes('दवा') || cleanText.includes('dawai')) {
+      if (cleanText.includes('Wonderful') || cleanText.includes('ভাল') || cleanText.includes('সুন্দর') || cleanText.includes('बढ़िया') || cleanText.includes('Bha')) {
+        return 'tts_med_morning_congrat';
+      }
+      return 'tts_med_morning_prompt';
+    }
+    if (cleanText.includes('cards to peek') || cleanText.includes('কাৰ্ড') || cleanText.includes('কার্ড') || cleanText.includes('कार्ड') || cleanText.includes('dur ban peit')) {
+      return 'tts_instruction_memory';
+    }
+    if (cleanText.includes('flower bed') || cleanText.includes('ফুলনি') || cleanText.includes('বাগান') || cleanText.includes('बगीचे') || cleanText.includes('tiew kper')) {
+      return 'tts_instruction_attention';
+    }
+    if (cleanText.includes('everyday item') || cleanText.includes('বস্তু') || cleanText.includes('বস্তুটি') || cleanText.includes('दैनिक वस्तु') || cleanText.includes('tiar kaba dei')) {
+      return 'tts_instruction_language';
+    }
+    if (cleanText.includes('routine steps') || cleanText.includes('কামবোৰ') || cleanText.includes('কাজগুলো') || cleanText.includes('कार्यों को सही क्रम') || cleanText.includes('ki kam man ka sngi')) {
+      return 'tts_instruction_problem';
+    }
+
+    return null;
+  }
+
+  playAudioClip(audioKey, onComplete, fallbackText) {
+    this.stopSpeaking();
+
+    const lang = this.currentLang || 'en';
+    const filePath = `audio/tts/${audioKey}_${lang}.mp3`;
+
+    try {
+      const audio = new Audio(filePath);
+      this.activeAudio = audio;
+      this.isSpeaking = true;
+
+      window.dispatchEvent(new CustomEvent('recollect:speakingchange', { detail: { isSpeaking: true, key: audioKey, lang } }));
+
+      audio.onended = () => {
+        if (this.activeAudio === audio) {
+          this.activeAudio = null;
+          this.isSpeaking = false;
+        }
+        window.dispatchEvent(new CustomEvent('recollect:speakingchange', { detail: { isSpeaking: false, key: audioKey, lang } }));
+        if (typeof onComplete === 'function') onComplete();
+      };
+
+      audio.onerror = (e) => {
+        console.warn(`[Recollect Audio] Failed to load studio clip: ${filePath}, falling back.`, e);
+        if (this.activeAudio === audio) {
+          this.activeAudio = null;
+          this.isSpeaking = false;
+        }
+        window.dispatchEvent(new CustomEvent('recollect:speakingchange', { detail: { isSpeaking: false, key: audioKey, lang } }));
+        const fallback = fallbackText || this.getText(audioKey);
+        this.speakWithSpeechSynthesis(fallback, onComplete);
+      };
+
+      const playPromise = audio.play();
+      if (playPromise !== undefined) {
+        playPromise.catch((err) => {
+          console.warn(`[Recollect Audio] Play error on ${filePath}:`, err);
+          if (this.activeAudio === audio) {
+            this.activeAudio = null;
+            this.isSpeaking = false;
+          }
+          window.dispatchEvent(new CustomEvent('recollect:speakingchange', { detail: { isSpeaking: false, key: audioKey, lang } }));
+          const fallback = fallbackText || this.getText(audioKey);
+          this.speakWithSpeechSynthesis(fallback, onComplete);
+        });
+      }
+    } catch (err) {
+      console.warn(`[Recollect Audio] Exception playing ${filePath}:`, err);
+      this.activeAudio = null;
+      this.isSpeaking = false;
+      window.dispatchEvent(new CustomEvent('recollect:speakingchange', { detail: { isSpeaking: false, key: audioKey, lang } }));
+      const fallback = fallbackText || this.getText(audioKey);
+      this.speakWithSpeechSynthesis(fallback, onComplete);
+    }
+  }
+
+  speakText(text, onComplete, options = {}) {
+    this.stopSpeaking();
+
+    let audioKey = null;
+    if (typeof options === 'string' && STUDIO_AUDIO_CLIPS[options]) {
+      audioKey = options;
+    } else if (options && options.audioKey && STUDIO_AUDIO_CLIPS[options.audioKey]) {
+      audioKey = options.audioKey;
+    } else if (text && STUDIO_AUDIO_CLIPS[text]) {
+      audioKey = text;
+    } else if (!text || text === 'day_narration' || text === 'briefing_morning') {
+      const logs = window.recollectDB ? window.recollectDB.getItem('ReminderLog') : [];
+      const isTaken = logs.some(l => l.reminder_id === 'rem_001' && l.patient_response === 'acknowledged');
+      audioKey = isTaken ? 'briefing_morning_completed' : 'briefing_morning_pending';
+    } else if (typeof text === 'string') {
+      audioKey = this.findAudioKeyForText(text);
+    }
+
+    if (audioKey && STUDIO_AUDIO_CLIPS[audioKey]) {
+      this.playAudioClip(audioKey, onComplete, text);
+    } else {
+      this.speakWithSpeechSynthesis(text, onComplete);
+    }
+  }
+
+  speakWithSpeechSynthesis(text, onComplete) {
+    if (!text) {
+      this.playMelodicChime(onComplete);
+      return;
+    }
     if (!('speechSynthesis' in window)) {
       this.playMelodicChime(onComplete);
       return;
     }
 
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    
-    const langVoiceMap = {
-      'en': 'en-IN',
-      'hi': 'hi-IN',
-      'bn': 'bn-IN',
-      'as': 'as-IN',
-      'kha': 'en-IN'
-    };
-    
-    utterance.lang = langVoiceMap[this.currentLang] || 'en-IN';
-    utterance.rate = 0.85;
-    utterance.pitch = 1.05;
-
-    const voices = window.speechSynthesis.getVoices();
-    const targetVoice = voices.find(v => v.lang.startsWith(utterance.lang) || v.lang.includes(utterance.lang.split('-')[0]));
-    if (targetVoice) {
-      utterance.voice = targetVoice;
-    }
-
-    this.isSpeaking = true;
-    utterance.onend = () => {
-      this.isSpeaking = false;
-      if (onComplete) onComplete();
-    };
-    utterance.onerror = () => {
-      this.isSpeaking = false;
-      this.playMelodicChime(onComplete);
-    };
-
     try {
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      
+      const langVoiceMap = {
+        'en': 'en-IN',
+        'hi': 'hi-IN',
+        'bn': 'bn-IN',
+        'as': 'as-IN',
+        'kha': 'en-IN'
+      };
+      
+      utterance.lang = langVoiceMap[this.currentLang] || 'en-IN';
+      utterance.rate = 0.85;
+      utterance.pitch = 1.05;
+
+      const voices = window.speechSynthesis.getVoices();
+      const targetVoice = voices.find(v => v.lang.startsWith(utterance.lang) || v.lang.includes(utterance.lang.split('-')[0]));
+      if (targetVoice) {
+        utterance.voice = targetVoice;
+      }
+
+      this.isSpeaking = true;
+      window.dispatchEvent(new CustomEvent('recollect:speakingchange', { detail: { isSpeaking: true } }));
+
+      utterance.onend = () => {
+        this.isSpeaking = false;
+        window.dispatchEvent(new CustomEvent('recollect:speakingchange', { detail: { isSpeaking: false } }));
+        if (onComplete) onComplete();
+      };
+      utterance.onerror = () => {
+        this.isSpeaking = false;
+        window.dispatchEvent(new CustomEvent('recollect:speakingchange', { detail: { isSpeaking: false } }));
+        this.playMelodicChime(onComplete);
+      };
+
       window.speechSynthesis.speak(utterance);
     } catch (err) {
+      this.isSpeaking = false;
       this.playMelodicChime(onComplete);
     }
   }
@@ -3266,21 +3624,38 @@ class I18nManager {
       });
 
       this.isSpeaking = true;
+      window.dispatchEvent(new CustomEvent('recollect:speakingchange', { detail: { isSpeaking: true } }));
+
       setTimeout(() => {
         this.isSpeaking = false;
+        window.dispatchEvent(new CustomEvent('recollect:speakingchange', { detail: { isSpeaking: false } }));
         if (onComplete) onComplete();
       }, (notes.length * 0.22 + 0.6) * 1000);
     } catch (err) {
       this.isSpeaking = false;
+      window.dispatchEvent(new CustomEvent('recollect:speakingchange', { detail: { isSpeaking: false } }));
       if (onComplete) onComplete();
     }
   }
 
   stopSpeaking() {
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
+    if (this.activeAudio) {
+      try {
+        this.activeAudio.pause();
+        this.activeAudio.currentTime = 0;
+      } catch (err) {}
+      this.activeAudio = null;
     }
+    if ('speechSynthesis' in window) {
+      try {
+        window.speechSynthesis.cancel();
+      } catch (err) {}
+    }
+    const wasSpeaking = this.isSpeaking;
     this.isSpeaking = false;
+    if (wasSpeaking) {
+      window.dispatchEvent(new CustomEvent('recollect:speakingchange', { detail: { isSpeaking: false } }));
+    }
   }
 }
 

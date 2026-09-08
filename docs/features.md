@@ -94,10 +94,25 @@ Designed specifically for bedside tablets (e.g., 10-inch landscape mounts), the 
 * **Localized Regional Date Bar:** Dynamically renders the current date with regional month and day names formatted for the active locale.
 * **Contextual Weather Bar:** Automatically reflects current time conditions (Morning sunshine 24°C, Afternoon breeze 27°C, Peaceful twilight 22°C, Quiet night 19°C).
 
-### 3.2 Spoken Audio Narration & Synthesis Engine
-* **One-Tap Voice Briefing:** The *"Listen to your day"* button activates a warm, conversational spoken briefing informing the senior of the current time, scheduled routine, and reassuring guidance.
-* **Web Speech API Pacing:** Speech synthesis uses calibrated senior-friendly parameters (`rate = 0.85`, `pitch = 1.05`) mapped to appropriate regional BCP-47 voices (`en-IN`, `as-IN`, `bn-IN`, `hi-IN`).
-* **Web Audio API Melodic Chime Fallback:** If speech synthesis is unsupported, disabled, or offline voices are unavailable, an integrated pentatonic chime progression (C4–E4–G4–A4–C5) plays automatically via `AudioContext`.
+### 3.2 Natural Studio Voice & Biophilic Audio System
+* **Pre-Recorded Studio Neural Voice Clips (45 Files across 5 Languages):** Recollect eliminates cold robotic TTS by integrating studio-recorded natural regional voice audio across 9 core interaction contexts in English (`en`), Assamese (`as`), Bengali (`bn`), Khasi (`kha`), and Hindi (`hi`):
+  1. *Morning Day Briefing (Pending):* Personalized morning audio briefing informing Eleanor of her scheduled 9:00 AM medicine.
+  2. *Morning Day Briefing (Completed):* Congratulatory morning audio briefing affirming her medicine was completed and encouraging a peaceful day.
+  3. *Medicine Prompt Takeover:* Gentle, soothing prompt guiding Eleanor to take 1 yellow tablet with a full glass of cool water.
+  4. *Medicine Congratulation:* Warm verbal affirmation upon medicine confirmation (*"Wonderful job Eleanor, you took your morning medicine!"*).
+  5. *Memory Game Instructions:* Spoken directions for peeking and finding matching photo pairs at an unhurried pace.
+  6. *Attention Game Instructions:* Spoken directions for observing the garden bed and spotting matching blooming flowers.
+  7. *Language Game Instructions:* Spoken directions for reading clues and recalling everyday household objects.
+  8. *Problem Solving Game Instructions:* Spoken directions for arranging daily routine steps in chronological order.
+  9. *Voice Preview Sample:* Reassuring voice sample played when previewing regional voices or switching languages.
+* **Biophilic Web Audio Sound Effects (SFX):** Synthesized dynamically with zero external bandwidth:
+  * *Pill Confirmation Chime:* Gentle 3-note major triad chime (C5–E5–G5, sine wave) upon medicine acknowledgment.
+  * *Card Peek Acoustic Tap:* Soft organic woodblock pop (~320Hz) on card flip or option selection.
+  * *Match Celebration Bell:* Delicate harmonic sparkle chime (E5–B5–E6) on pair match, target flower find, or routine step placement.
+  * *Activity Completion Fanfare:* Calm 4-note ascending chord progression (C5–G5–C6–E6) upon completing games.
+  * *Attention Singing Bowl:* Warm resonant singing bowl tone (~440Hz) when the reminder takeover appears.
+  * *Tactile Soft Tap:* Subtle biophilic click for mood check-ins and navigation.
+* **Resilient Multi-Tier Fallback:** If audio media is blocked or unavailable, the system automatically falls back to calibrated `window.speechSynthesis` (`rate = 0.85`, `pitch = 1.05`) or an integrated pentatonic melodic chime progression.
 
 ### 3.3 Single-Decision Routine Card
 * **Clear Current Anchor:** Displays the active scheduled routine (e.g., *Morning Blood Pressure Pill*).
