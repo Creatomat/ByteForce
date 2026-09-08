@@ -41,12 +41,39 @@ Engineered for reduced glare, minimal blue-light disruption, and high legibility
 * **Primary Accent:** `#10b981` (Vibrant Mint Emerald)
 * **Secondary Accent:** `#60a5fa` (Soft Sky Blue)
 * **Border Outlines:** `#1e3164`
+* **Comprehensive Component Overrides:** Telemedicine handoff cards (`#064e3b`), ASHA cue boxes (`#0d1e3d`), AI consent warnings (`#451a03`), emergency alert overlays (`#3f1212`), and dynamic SVG chart grids (`#1e293b`).
 
-#### High-Contrast Stark Theme (WCAG AAA)
-Engineered for severe presbyopia and low vision:
-* **Background Surface:** `#ffffff` (Pure White)
-* **Typography & Borders:** `#000000` (Pure Black, 3px solid borders)
-* **Decorative Styling:** Strips all shadows, gradients, and secondary colors.
+#### High-Contrast Dual-Variant Theme (WCAG AAA)
+Engineered for severe presbyopia, cataracts, and photophobia:
+* **Stark White Variant (Default):**
+  * **Background Surface:** `#ffffff` (Pure White)
+  * **Typography & Borders:** `#000000` (Pure Black, 3px solid borders, 21:1 contrast ratio)
+  * **Active Selection / Highlights:** `#ffff00` (Pure Canary Yellow with 4px solid black border)
+  * **Focus Ring:** 4px solid `#000000` with 3px offset
+* **Midnight Dark Variant (Low-Glare WCAG AAA):**
+  * **Background Surface:** `#000000` (Pure Black)
+  * **Typography & Borders:** `#ffffff` (Pure White, 3px solid borders)
+  * **Active Selection / Highlights:** `#ffff00` (Canary Yellow with white border)
+  * **Focus Ring:** 4px solid `#ffff00` with 3px offset
+* **Decorative Styling:** Strips all shadows, gradients, and secondary colors across both variants.
+
+#### Colourblind Accessibility System (WCAG 2.2 Compliant)
+Guarantees that color is never the sole indicator of health status, urgency, or routine completion:
+* **Deuteranopia & Protanopia (Red-Green Deficient Safe):**
+  * **Completed / Normal:** Cobalt Blue (`#1d4ed8`, chip `#dbeafe`, text `#1e40af`)
+  * **Pending / In-Progress:** Amber (`#f59e0b`, chip `#fef3c7`, text `#92400e`)
+  * **Critical Alert / Overdue:** Vivid Magenta (`#c026d3`, chip `#fae8ff`, text `#701a75`)
+* **Tritanopia (Blue-Yellow Deficient Safe):**
+  * **Completed / Normal:** Deep Teal (`#0d9488`, chip `#ccfbf1`, text `#0f766e`)
+  * **Pending / In-Progress:** Regal Purple (`#9333ea`, chip `#f3e8ff`, text `#6b21a8`)
+  * **Critical Alert / Overdue:** Crimson Rose (`#e11d48`, chip `#ffe4e6`, text `#9f1239`)
+* **Achromatopsia (High-Luminance Monochrome):**
+  * Grayscale contrast normalization with double-border indicators (`3px double #000000`) for critical alerts.
+* **Enhanced Geometric Pattern Markers (`body.cb-patterns`):**
+  * **Completed Actions:** Prefixed with `✓ ` checkmark icon.
+  * **Pending Routines:** Prefixed with `⏱ ` stopwatch icon.
+  * **Critical Alerts & Overdue Reminders:** Prefixed with `⚠️ ` warning triangle and 8px left indicator bar.
+  * **Matched Mind Game Pairs:** Stamped with `★ ` star insignia.
 
 ### 2.2 Typography & Legibility Baselines
 * **Heading Typography:** *Plus Jakarta Sans* / *Atkinson Hyperlegible*
@@ -60,6 +87,12 @@ Engineered for severe presbyopia and low vision:
 ### 2.3 Touch Hitboxes & Ergonomics
 * **Minimum Hitbox:** `56px × 56px` across all interactive elements.
 * **Primary Patient Actions:** `64px–72px` vertical height with high-contrast text and prominent leading icons.
+
+### 2.4 Mobile & Phone Screen Responsiveness
+* **Fluid Layout Containers:** Automatic padding and width normalization (`width: 100%; box-sizing: border-box`) preventing horizontal overflow on phone viewports (360px–430px).
+* **Vertical Stacking of Patient Action Cards:** Secondary action cards (Games, Mood, Calls) and attention takeover actions smoothly transition to vertical column layouts with full-width action buttons for thumb ergonomics.
+* **Scrollable Caregiver & Clinical Tab Bars:** Horizontal touch scrolling (`overflow-x: auto; -webkit-overflow-scrolling: touch`) for role navigation and panel tabs on compact phone viewports.
+* **Responsive Modals:** Centered dialogs with max 94vh height and adaptive padding to fit comfortably within phone dimensions.
 
 ---
 
@@ -124,18 +157,20 @@ Engineered for severe presbyopia and low vision:
 #### Full-Screen Cognitive Game Takeover (`#gameModal`)
 * **Full-Screen Canvas (`100vw` × `100vh`):** Replaces cramped dialog overlays with an edge-to-edge calming environment optimized for senior tablet ergonomics ($\ge 64\text{px}$ targets).
 * **Top Navigation & Live Score Header:**
-  * Category Icon Badge (`🌸`, `🔍`, `🗣️`, `🧩`) and localized Game Title.
+  * Category Icon Badge (`🌸`, `🔍`, `🗣️`, `🧩`, `🧺`, `🍃`) and localized Game Title.
   * Peace banner: *"🌿 No Timers, Ever • Take all your time, Eleanor"*.
   * **Live Patient Score Badge:** Shows persistent Garden Stars (⭐) and session points (e.g., `⭐ Garden Stars: 12 | Score: 95 pts • 🌻 Blooming`).
   * Localized TTS Instruction button (*"🔊 Read Instructions"*).
   * Prominent Senior Exit button (*"✕ Pause & Rest"*).
-* **Four Distinct Game Canvas Architectures:**
+* **Six Distinct Game Canvas Architectures:**
   1. **Memory (Photo Match):** 2×4 responsive grid with card-flip physics and pair matching across Family Photos or Northeast Cultural Heritage packs.
   2. **Attention (Garden Flower Focus):** Spotlight target banner (*"Spot and tap all 3 blooming Sunflowers 🌻"*) above a 10-flower garden bed grid. Target flowers lock with glowing green halos upon touch; non-targets receive gentle reassurance.
   3. **Language (Word & Object Recall):** Object clue card with everyday prompts (e.g., *"What do we use to enjoy our warm morning tea?"*) and 4 large illustrated option cards across 3 progressive rounds.
   4. **Problem Solving (Daily Routine Steps):** 4 numbered sequence slots (Steps 1 to 4) paired with 4 shuffled daily routine cards. Senior taps cards in chronological order to lock them into their routine slots.
+  5. **Harvest Count (Numeracy & Visual Discrimination):** Wicker garden basket holding 3–5 items (apples, marigolds, teacups, strawberries, oranges) across 3 progressive rounds, paired with 3 large tactile number choice buttons. Hint reveals item counting numbers and pulses the matching choice.
+  6. **Nature Harmony (Odd-One-Out / Semantic Classification):** 4 tactile cards with 3 matching theme items and 1 distinct odd-one-out item (flowers vs teapot, fruits vs lantern, birds vs hat) across 3 progressive rounds. Hint illuminates the odd item with a warm golden pulse.
 * **Bottom Controls & Blooming Progress:**
-  * Context-aware **"💡 Give Me a Gentle Hint"** button (reveals pairs, pulses target blooms, or highlights correct cards without penalties).
+  * Context-aware **"💡 Give Me a Gentle Hint"** button (reveals pairs, pulses target blooms, highlights correct cards, numbers basket items, or pulses odd-one-out without penalties).
   * Garden Progress Dots: Visual blooming progression (🌱 -> 🌻).
   * **"⏸️ Pause & Rest Anytime"** exit button.
 * **Celebratory Completion Screen (`#gameCompleteModal`):**

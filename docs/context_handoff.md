@@ -68,44 +68,41 @@ ByteForce/
 
 ## 5. Completed Work & Current State
 
-1. **Four Distinct Cognitive Game Engines (`js/app.js`)**:
+1. **Six Distinct Cognitive Game Engines (`js/app.js`)**:
    - **Memory (`memory`)**: Photo Match (6 cards / 3 pairs) with swappable *Family Photo Pack* and *Northeast Cultural Heritage Pack*.
    - **Attention (`attention`)**: Garden Flower Focus (visual search for 3 target flowers in a 10-flower bed).
    - **Language (`language`)**: Word & Everyday Object Recall (3 rounds of functional object clues and illustrated options).
    - **Problem Solving (`problem`)**: Daily Routine Steps (arranging 4 chronological steps into sequential slots).
+   - **Harvest Count (`harvest`) [NEW Medium Difficulty]**: Numeracy & Visual Discrimination (counting 3–5 items in Eleanor's garden basket with 3 large tactile number choices; non-punitive hints pulse item counts).
+   - **Nature Harmony (`harmony`) [NEW Medium Difficulty]**: Semantic Association & Classification (spotting the odd-one-out among 4 cards across 3 curated biophilic rounds; non-punitive hints pulse the special item).
 2. **Full-Screen Immersion**:
    - Fixed edge-to-edge takeover (`100vw` $\times$ `100vh`, `z-index: 2100`) with no distracting navigation and prominent "Pause & Rest" exit controls.
 3. **Encouraging Patient Score & Silent Telemetry**:
    - Patient sees friendly Garden Stars ⭐ and Bloom Stages (🌱 *Sprout* $\rightarrow$ 🌿 *Budding Green* $\rightarrow$ 🌼 *Blooming Daisy* $\rightarrow$ 🌻 *Sunflower Champion*) with a minimum score floor of 75/100.
    - Silently streams clinical telemetry (`hesitation_avg_ms`, `accuracy`, `mistake_count`, `duration_seconds`) to `recollectDB`, caregiver activity logs, and doctor telemetry cards.
-4. **Complete Localization of Runtime Strings (594 Keys Total, 100% Parity)**:
-   - Added audio transcript keys across all 5 languages (**594 keys total per language, 100% parity**): `briefing_morning_pending`, `briefing_morning_completed`, `voice_preview_sample`.
+4. **Complete Localization of Runtime Strings (649 Keys Total, 100% Parity)**:
+   - Added audio transcript keys, category headers, in-game prompts, item names, and feedback strings across all 5 languages (**649 keys total per language, 100% parity**).
    - Eliminated all hardcoded English strings in `js/app.js`: all ~50 `showToast()` calls, dialog `prompt()` and `alert()` calls, `speakText()` prompts, game feedback banners, card peek labels, and routine instructions dynamically resolve through `window.i18n.t()`.
 5. **Studio Neural Audio & Biophilic Sound Effects Integration (`audio/tts/`, `js/i18n.js`, `js/app.js`)**:
-   - **45 Pre-recorded Studio MP3 Audio Files (`9 prompts` $\times$ `5 languages`)**: Replaced robotic speech synthesis with natural, calming regional studio voice recordings:
-     1. `briefing_morning_pending`: Bedside tablet morning briefing when medication is pending.
-     2. `briefing_morning_completed`: Bedside tablet morning briefing when medication has been taken.
-     3. `tts_med_morning_prompt`: Full Attention Takeover morning medicine reminder.
-     4. `tts_med_morning_congrat`: "I took my medicine" confirmation celebration voice.
-     5. `tts_instruction_memory`: Memory photo match game instructions audio.
-     6. `tts_instruction_attention`: Garden flower attention game instructions audio.
-     7. `tts_instruction_language`: Everyday object language game instructions audio.
-     8. `tts_instruction_problem`: Daily routine sequencing problem-solving game instructions audio.
-     9. `voice_preview_sample`: Soothing voice sample preview on language switch and voice mode toggle.
+   - **45 Pre-recorded Studio MP3 Audio Files (`9 prompts` $\times$ `5 languages`)**: Calm studio voice files utilized across routine reminders, briefings, and cognitive games (`tts_instruction_problem` utilized for harvest numeracy; `tts_instruction_attention` utilized for nature harmony observation).
    - **Biophilic Web Audio SFX (0 external bytes, zero latency, offline-first)**:
      - `playPillConfirmSound()`: Gentle 3-note major triad chime (C5-E5-G5) on medicine acknowledgment.
      - `playCardFlipSound()`: Organic acoustic woodblock/soft tap (~320Hz) on card peek and option selection.
-     - `playMatchSuccessSound()`: Warm harmonic sparkle bell (E5-B5-E6) on pair match, target flower find, and routine step placement.
+     - `playMatchSuccessSound()`: Warm harmonic sparkle bell (E5-B5-E6) on pair match, target flower find, harvest count confirmation, and odd-one-out spot.
      - `playGameCompleteSound()`: Calm 4-note ascending chord progression (C5-G5-C6-E6) upon completing games.
      - `playAttentionChime()`: Resonant singing bowl chime (~440Hz) when the reminder takeover appears.
      - `playSoftTap()`: Tactile biophilic click for mood check-in and brand home navigation.
    - **Zero UI Layout Changes**: Exact visual layout, button positions, and CSS styles preserved.
    - **PWA Cache (`sw.js`)**: Bumped to `recollect-cache-v3` with automatic caching of audio assets.
-6. **Theming, Scaling & Accessibility**:
-   - Triple Theme Support: Biophilic Light Theme, Dark Mode (`body.dark-mode`), High Contrast Mode (`body.high-contrast-mode`, WCAG AAA).
-   - 3-Tier Font Scaling: Standard (20pt), Large (24pt), Extra Large (28pt).
-   - 5 Regional Languages: English (`en`), Assamese (`as`), Bengali (`bn`), Khasi (`kha`), Hindi (`hi`).
-   - Password-gated theme scheduler evaluating every 30 seconds.
+6. **Theming, Scaling & Accessibility Overhaul (Completed 2026-09-08)**:
+   - **Multi-Theme Support**: Default Biophilic Light, Comprehensive Dark Mode (`body.dark-mode`), and WCAG AAA High Contrast Mode (`body.high-contrast-mode`).
+   - **High Contrast Dual Variants**: Stark White (21:1 pure black-on-white) and Midnight Dark (low-glare pure white-on-black) with 3px solid borders, zero decorative noise, and 4px yellow focus rings.
+   - **Full Colourblind Accessibility Suite**: Deuteranopia/Protanopia (Cobalt Blue `#1d4ed8`, Amber `#f59e0b`, Magenta `#c026d3`), Tritanopia (Teal `#0d9488`, Purple `#9333ea`, Crimson `#e11d48`), and Achromatopsia (Monochrome high-luminance grayscale with double borders).
+   - **Enhanced Geometric Pattern Markers**: Geometric prefixes (`✓`, `⏱`, `⚠️`, `★`) and 8px left indicator borders ensuring color is never the sole signal of state.
+   - **Live Palette Status Preview**: Dynamic preview box in Caregiver Settings reflecting active chip colors across Completed, Pending, and Alert states.
+   - **3-Tier Font Scaling**: Standard (20pt), Large (24pt), Extra Large (28pt).
+   - **5 Regional Languages**: 100% key parity across English (`en`), Assamese (`as`), Bengali (`bn`), Khasi (`kha`), and Hindi (`hi`) (649 verified keys per dictionary).
+   - **Password-Gated Settings & Automated Schedulers**: PIN `1234` protects all visual controls; reactive clock engine auto-shifts themes every 30 seconds based on configured dusk/dawn and high-contrast windows.
 
 ---
 

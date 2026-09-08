@@ -67,6 +67,9 @@ class RecollectApp {
     // 1. Restore persistent accessibility & appearance preferences
     this.isDarkMode = localStorage.getItem('recollect_dark_mode') === 'true';
     this.isHighContrast = localStorage.getItem('recollect_high_contrast') === 'true';
+    this.hcVariant = localStorage.getItem('recollect_hc_variant') || 'light';
+    this.colorblindMode = localStorage.getItem('recollect_colorblind_mode') || 'off';
+    this.cbPatterns = localStorage.getItem('recollect_cb_patterns') !== 'false';
 
     this.darkScheduleEnabled = localStorage.getItem('recollect_dark_schedule_enabled') === 'true';
     this.darkScheduleStart = localStorage.getItem('recollect_dark_schedule_start') || '20:00';
@@ -76,6 +79,7 @@ class RecollectApp {
     this.hcScheduleStart = localStorage.getItem('recollect_hc_schedule_start') || '18:00';
     this.hcScheduleEnd = localStorage.getItem('recollect_hc_schedule_end') || '21:00';
 
+    this.applyColorblindMode();
     this.syncThemeControls();
     this.evaluateThemeSchedules();
 
@@ -84,6 +88,7 @@ class RecollectApp {
     document.body.classList.add(`font-scale-${this.fontScale}`);
     const fontSelect = document.getElementById('fontSizeSelector');
     if (fontSelect) fontSelect.value = this.fontScale;
+    this.updateFontScaleIndicator();
 
     // 2. Initialize i18n
     if (window.i18n) {
@@ -499,13 +504,17 @@ class RecollectApp {
       memory: '🌸',
       attention: '🔍',
       language: '🗣️',
-      problem: '🧩'
+      problem: '🧩',
+      harvest: '🧺',
+      harmony: '🍃'
     };
     const titles = {
       memory: window.i18n ? window.i18n.t('game_modal_title_memory') : '🌸 Family Photo Memory Game',
       attention: window.i18n ? window.i18n.t('game_modal_title_attention') : '🔍 Garden Flower Focus Game',
       language: window.i18n ? window.i18n.t('game_modal_title_language') : '🗣️ Word & Everyday Object Recall Game',
-      problem: window.i18n ? window.i18n.t('game_modal_title_problem') : '🧩 Daily Routine Step Game'
+      problem: window.i18n ? window.i18n.t('game_modal_title_problem') : '🧩 Daily Routine Step Game',
+      harvest: window.i18n ? window.i18n.t('game_modal_title_harvest') : '🧺 Garden Harvest Counting Game',
+      harmony: window.i18n ? window.i18n.t('game_modal_title_harmony') : '🍃 Nature Harmony & Odd-One-Out'
     };
 
     if (badge) badge.textContent = icons[category] || '🌸';
@@ -523,6 +532,10 @@ class RecollectApp {
       this.setupLanguageGame();
     } else if (category === 'problem') {
       this.setupProblemSolvingGame();
+    } else if (category === 'harvest') {
+      this.setupHarvestGame();
+    } else if (category === 'harmony') {
+      this.setupHarmonyGame();
     }
 
     const modal = document.getElementById('gameModal');
@@ -1133,6 +1146,341 @@ class RecollectApp {
   }
 
   // --------------------------------------------------------------------------
+  // ENGINE 5: HARVEST COUNT GAME (Numeracy & Visual Discrimination - Medium)
+  // --------------------------------------------------------------------------
+  setupHarvestGame() {
+    const harvestCatalog = [
+      { id: 'apples', nameKey: 'harvest_item_apples', defaultName: 'Crisp Apples', icon: '🍎' },
+      { id: 'marigolds', nameKey: 'harvest_item_marigolds', defaultName: 'Golden Marigolds', icon: '🌼' },
+      { id: 'teacups', nameKey: 'harvest_item_teacups', defaultName: 'Morning Teacups', icon: '🍵' },
+      { id: 'strawberries', nameKey: 'harvest_item_strawberries', defaultName: 'Sweet Strawberries', icon: '🍓' },
+      { id: 'oranges', nameKey: 'harvest_item_oranges', defaultName: 'Juicy Oranges', icon: '🍊' }
+    ];
+
+    this.harvestCatalog = harvestCatalog;
+    this.harvestRounds = harvestCatalog.sort(() => 0.5 - Math.random()).slice(0, 3);
+    this.harvestTotalRounds = 3;
+    this.harvestRoundIndex = 0;
+
+    const banner = document.getElementById('gameFeedbackBanner');
+    if (banner) {
+      banner.textContent = window.i18n ? window.i18n.t('game_modal_title_harvest') : '🧺 Count the garden items in Eleanor\'s harvest basket!';
+    }
+
+    this.loadCurrentHarvestRound();
+  }
+
+  loadCurrentHarvestRound() {
+    this.harvestTargetItem = this.harvestRounds[this.harvestRoundIndex];
+    // Progressive gentle item count: Round 1 has 3, Round 2 has 4, Round 3 has 5 items
+    this.harvestTargetCount = 3 + this.harvestRoundIndex;
+
+    // Distractors for 3-choice layout: e.g. [count - 1, count, count + 1]
+    const c1 = this.harvestTargetCount - 1;
+    const c2 = this.harvestTargetCount;
+    const c3 = this.harvestTargetCount + 1;
+    this.harvestChoices = [c1, c2, c3].sort(() => 0.5 - Math.random());
+
+    const itemLabel = window.i18n ? window.i18n.t(this.harvestTargetItem.nameKey) : this.harvestTargetItem.defaultName;
+    const banner = document.getElementById('gameFeedbackBanner');
+    if (banner) {
+      banner.textContent = window.i18n ? 
+        window.i18n.t('harvest_prompt_round', { item: itemLabel }) : 
+        `How many ${itemLabel} are in Eleanor's garden basket?`;
+    }
+
+    this.renderHarvestBoard();
+  }
+
+  renderHarvestBoard() {
+    const area = document.getElementById('memoryGameGrid');
+    if (!area) return;
+
+    area.className = 'game-harvest-canvas';
+    const itemLabel = window.i18n ? window.i18n.t(this.harvestTargetItem.nameKey) : this.harvestTargetItem.defaultName;
+    const roundIndicator = window.i18n ? 
+      window.i18n.t('lang_round_indicator', { current: this.harvestRoundIndex + 1, total: this.harvestTotalRounds }) : 
+      ('Round ' + (this.harvestRoundIndex + 1) + ' of ' + this.harvestTotalRounds);
+    const promptQuestion = window.i18n ? 
+      window.i18n.t('harvest_prompt_round', { item: itemLabel }) : 
+      ('How many ' + itemLabel + " are in Eleanor's garden basket?");
+
+    let itemsHtml = '';
+    for (let i = 0; i < this.harvestTargetCount; i++) {
+      itemsHtml += `
+        <div class="harvest-basket-item" id="harvestItem_${i}">
+          <span class="harvest-item-icon">${this.harvestTargetItem.icon}</span>
+          <span class="harvest-item-number-badge">${i + 1}</span>
+        </div>
+      `;
+    }
+
+    let choicesHtml = '';
+    this.harvestChoices.forEach(choiceNum => {
+      choicesHtml += `
+        <button class="harvest-choice-card" id="harvestChoice_${choiceNum}" onclick="app.handleHarvestChoiceClick(${choiceNum})">
+          <span class="choice-num-val">${choiceNum}</span>
+          <span class="choice-num-sub">${itemLabel}</span>
+        </button>
+      `;
+    });
+
+    area.innerHTML = `
+      <div class="harvest-board">
+        <div class="harvest-round-pill">
+          ${roundIndicator}
+        </div>
+        
+        <div class="harvest-basket-box">
+          <div class="harvest-basket-rim">🧺 Eleanor's Garden Basket</div>
+          <div class="harvest-items-basket" id="harvestItemsBasket">
+            ${itemsHtml}
+          </div>
+        </div>
+
+        <div class="harvest-prompt-card">
+          <h3 class="harvest-prompt-question">
+            ${promptQuestion}
+          </h3>
+        </div>
+
+        <div class="harvest-choices-grid">
+          ${choicesHtml}
+        </div>
+      </div>
+    `;
+  }
+
+  handleHarvestChoiceClick(chosenNum) {
+    const banner = document.getElementById('gameFeedbackBanner');
+    const now = Date.now();
+    const hesitation = now - this.lastCardClickTime;
+    this.hesitationSamples.push(hesitation);
+    this.lastCardClickTime = now;
+
+    const itemLabel = window.i18n ? window.i18n.t(this.harvestTargetItem.nameKey) : this.harvestTargetItem.defaultName;
+    const choiceBtn = document.getElementById(`harvestChoice_${chosenNum}`);
+
+    if (chosenNum === this.harvestTargetCount) {
+      if (choiceBtn) choiceBtn.classList.add('correct');
+      if (window.i18n) window.i18n.playMatchSuccessSound();
+      this.gameMatches++;
+      this.updateBloomProgress(this.harvestRoundIndex + 1);
+
+      if (banner) {
+        banner.textContent = window.i18n ? 
+          window.i18n.t('harvest_correct_praise', { count: this.harvestTargetCount, item: itemLabel }) : 
+          `Wonderful counting, Eleanor! There are exactly ${this.harvestTargetCount} ${itemLabel}!`;
+      }
+
+      const items = document.querySelectorAll('.harvest-basket-item');
+      items.forEach(el => el.classList.add('celebrating'));
+
+      setTimeout(() => {
+        this.harvestRoundIndex++;
+        if (this.harvestRoundIndex < this.harvestTotalRounds) {
+          this.loadCurrentHarvestRound();
+        } else {
+          if (banner) {
+            banner.textContent = window.i18n ? window.i18n.t('harvest_complete_praise') : '🌾 Splendid harvest! All garden items counted with love.';
+          }
+          this.handleGameCompletion();
+        }
+      }, 1200);
+    } else {
+      if (window.i18n) window.i18n.playCardFlipSound();
+      this.gameMistakes++;
+      this.currentGameScore = Math.max(70, 100 - (this.gameMistakes * 5));
+      this.updateInGameScoreDisplay();
+
+      if (banner) {
+        banner.textContent = window.i18n ? 
+          window.i18n.t('harvest_try_again') : 
+          'Count gently one more time! How many do you see?';
+      }
+    }
+  }
+
+  giveHarvestHint() {
+    const items = document.querySelectorAll('.harvest-basket-item');
+    items.forEach((item) => {
+      item.classList.add('hint-pulse');
+      item.classList.add('show-badge');
+      setTimeout(() => item.classList.remove('hint-pulse'), 2000);
+    });
+
+    const correctChoice = document.getElementById(`harvestChoice_${this.harvestTargetCount}`);
+    if (correctChoice) {
+      correctChoice.classList.add('hint-highlight');
+      setTimeout(() => correctChoice.classList.remove('hint-highlight'), 2000);
+    }
+
+    this.showToast(window.i18n ? window.i18n.t('hint_harvest_count') : 'Gentle hint: Count the glowing items in the basket!', '💡');
+  }
+
+  // --------------------------------------------------------------------------
+  // ENGINE 6: NATURE HARMONY / ODD-ONE-OUT (Semantic Association - Medium)
+  // --------------------------------------------------------------------------
+  setupHarmonyGame() {
+    const harmonyRounds = [
+      {
+        theme: 'flowers_tea',
+        items: [
+          { id: 'rose', nameKey: 'harmony_item_rose', defaultName: 'Terrace Rose', icon: '🌹', isOdd: false },
+          { id: 'sunflower', nameKey: 'harmony_item_sunflower', defaultName: 'Sunflower', icon: '🌻', isOdd: false },
+          { id: 'teapot', nameKey: 'harmony_item_teapot', defaultName: 'Warm Teapot', icon: '🫖', isOdd: true },
+          { id: 'daisy', nameKey: 'harmony_item_daisy', defaultName: 'Garden Daisy', icon: '🌼', isOdd: false }
+        ]
+      },
+      {
+        theme: 'fruits_lantern',
+        items: [
+          { id: 'apple', nameKey: 'harmony_item_apple', defaultName: 'Fresh Apple', icon: '🍎', isOdd: false },
+          { id: 'strawberry', nameKey: 'harmony_item_strawberry', defaultName: 'Sweet Strawberry', icon: '🍓', isOdd: false },
+          { id: 'lantern', nameKey: 'harmony_item_lantern', defaultName: 'Garden Lantern', icon: '🏮', isOdd: true },
+          { id: 'orange', nameKey: 'harmony_item_orange', defaultName: 'Sweet Orange', icon: '🍊', isOdd: false }
+        ]
+      },
+      {
+        theme: 'birds_hat',
+        items: [
+          { id: 'bird', nameKey: 'harmony_item_bird', defaultName: 'Songbird', icon: '🐦', isOdd: false },
+          { id: 'robin', nameKey: 'harmony_item_robin', defaultName: 'Garden Robin', icon: '🦜', isOdd: false },
+          { id: 'hat', nameKey: 'harmony_item_hat', defaultName: 'Sun Hat', icon: '👒', isOdd: true },
+          { id: 'sparrow', nameKey: 'harmony_item_sparrow', defaultName: 'Little Sparrow', icon: '🐥', isOdd: false }
+        ]
+      }
+    ];
+
+    this.harmonyRounds = harmonyRounds.sort(() => 0.5 - Math.random());
+    this.harmonyTotalRounds = 3;
+    this.harmonyRoundIndex = 0;
+
+    const banner = document.getElementById('gameFeedbackBanner');
+    if (banner) {
+      banner.textContent = window.i18n ? window.i18n.t('harmony_prompt_round') : 'Look closely at the 4 items. Which one is different from the others?';
+    }
+
+    this.loadCurrentHarmonyRound();
+  }
+
+  loadCurrentHarmonyRound() {
+    this.currentHarmonyData = this.harmonyRounds[this.harmonyRoundIndex];
+    this.harmonyCards = [...this.currentHarmonyData.items].sort(() => 0.5 - Math.random());
+
+    const banner = document.getElementById('gameFeedbackBanner');
+    if (banner) {
+      banner.textContent = window.i18n ? 
+        window.i18n.t('harmony_prompt_round') : 
+        'Look closely at the 4 items. Which one is different from the others?';
+    }
+
+    this.renderHarmonyBoard();
+  }
+
+  renderHarmonyBoard() {
+    const area = document.getElementById('memoryGameGrid');
+    if (!area) return;
+
+    area.className = 'game-harmony-canvas';
+    const roundIndicator = window.i18n ? 
+      window.i18n.t('lang_round_indicator', { current: this.harmonyRoundIndex + 1, total: this.harmonyTotalRounds }) : 
+      ('Round ' + (this.harmonyRoundIndex + 1) + ' of ' + this.harmonyTotalRounds);
+    const promptQuestion = window.i18n ? 
+      window.i18n.t('harmony_prompt_round') : 
+      'Look closely at the 4 items. Which one is different from the others?';
+
+    let cardsHtml = '';
+    this.harmonyCards.forEach(card => {
+      const label = window.i18n ? window.i18n.t(card.nameKey) : card.defaultName;
+      cardsHtml += `
+        <div class="harmony-card" id="harmonyCard_${card.id}" onclick="app.handleHarmonyChoiceClick('${card.id}')">
+          <div class="harmony-card-icon">${card.icon}</div>
+          <strong class="harmony-card-label">${label}</strong>
+        </div>
+      `;
+    });
+
+    area.innerHTML = `
+      <div class="harmony-board">
+        <div class="harmony-round-pill">
+          ${roundIndicator}
+        </div>
+        <div class="harmony-prompt-card">
+          <h3 class="harmony-prompt-question">
+            ${promptQuestion}
+          </h3>
+        </div>
+        <div class="harmony-options-grid" id="harmonyOptionsGrid">
+          ${cardsHtml}
+        </div>
+      </div>
+    `;
+  }
+
+  handleHarmonyChoiceClick(cardId) {
+    const banner = document.getElementById('gameFeedbackBanner');
+    const now = Date.now();
+    const hesitation = now - this.lastCardClickTime;
+    this.hesitationSamples.push(hesitation);
+    this.lastCardClickTime = now;
+
+    const selectedCard = this.harmonyCards.find(c => c.id === cardId);
+    if (!selectedCard) return;
+
+    const cardEl = document.getElementById(`harmonyCard_${cardId}`);
+    const itemLabel = window.i18n ? window.i18n.t(selectedCard.nameKey) : selectedCard.defaultName;
+
+    if (selectedCard.isOdd) {
+      if (cardEl) cardEl.classList.add('correct');
+      if (window.i18n) window.i18n.playMatchSuccessSound();
+      this.gameMatches++;
+      this.updateBloomProgress(this.harmonyRoundIndex + 1);
+
+      if (banner) {
+        banner.textContent = window.i18n ? 
+          window.i18n.t('harmony_correct_praise', { item: itemLabel }) : 
+          `Spot on, Eleanor! The ${itemLabel} is the special one!`;
+      }
+
+      setTimeout(() => {
+        this.harmonyRoundIndex++;
+        if (this.harmonyRoundIndex < this.harmonyTotalRounds) {
+          this.loadCurrentHarmonyRound();
+        } else {
+          if (banner) {
+            banner.textContent = window.i18n ? window.i18n.t('harmony_complete_praise') : '🍃 Wonderful harmony! You found every special garden item.';
+          }
+          this.handleGameCompletion();
+        }
+      }, 1200);
+    } else {
+      if (window.i18n) window.i18n.playCardFlipSound();
+      this.gameMistakes++;
+      this.currentGameScore = Math.max(70, 100 - (this.gameMistakes * 5));
+      this.updateInGameScoreDisplay();
+
+      if (banner) {
+        banner.textContent = window.i18n ? 
+          window.i18n.t('harmony_try_again') : 
+          'Good peek! Look at what kind of items they are. Try another one!';
+      }
+    }
+  }
+
+  giveHarmonyHint() {
+    const oddCard = this.harmonyCards.find(c => c.isOdd);
+    if (oddCard) {
+      const el = document.getElementById(`harmonyCard_${oddCard.id}`);
+      if (el) {
+        el.classList.add('hint-highlight');
+        setTimeout(() => el.classList.remove('hint-highlight'), 2000);
+      }
+    }
+    this.showToast(window.i18n ? window.i18n.t('hint_harmony_choice') : 'Gentle hint: Notice the glowing item that stands apart!', '💡');
+  }
+
+  // --------------------------------------------------------------------------
   // GAME CONTROLS, HINTS, AUDIO & COMPLETION
   // --------------------------------------------------------------------------
   giveGameHint() {
@@ -1180,6 +1528,10 @@ class RecollectApp {
         setTimeout(() => nextChoiceEl.classList.remove('hint-highlight'), 1800);
         this.showToast(window.i18n ? window.i18n.t('hint_problem_step', { step: this.problemNextStep }) : `Gentle hint: Look for Step ${this.problemNextStep}`, '💡');
       }
+    } else if (this.activeGameEngine === 'harvest') {
+      this.giveHarvestHint();
+    } else if (this.activeGameEngine === 'harmony') {
+      this.giveHarmonyHint();
     }
   }
 
@@ -1188,8 +1540,12 @@ class RecollectApp {
     if (this.activeGameEngine === 'attention') key = 'tts_instruction_attention';
     else if (this.activeGameEngine === 'language') key = 'tts_instruction_language';
     else if (this.activeGameEngine === 'problem') key = 'tts_instruction_problem';
+    else if (this.activeGameEngine === 'harvest') key = 'tts_instruction_problem'; // problem solving / numeracy
+    else if (this.activeGameEngine === 'harmony') key = 'tts_instruction_attention'; // attention / observation
 
-    const text = window.i18n ? window.i18n.t(key) : 'Take all your time and enjoy your gentle game.';
+    const textKey = (this.activeGameEngine === 'harvest' || this.activeGameEngine === 'harmony') ?
+      `tts_instruction_${this.activeGameEngine}` : key;
+    const text = window.i18n ? window.i18n.t(textKey) : 'Take all your time and enjoy your gentle game.';
     if (window.i18n) {
       window.i18n.speakText(text, null, { audioKey: key });
     }
@@ -1439,12 +1795,29 @@ class RecollectApp {
     }
   }
 
+  applyColorblindMode() {
+    document.body.classList.remove('cb-deuteranopia', 'cb-tritanopia', 'cb-achromatopsia');
+    if (this.colorblindMode && this.colorblindMode !== 'off') {
+      document.body.classList.add(`cb-${this.colorblindMode}`);
+    }
+    document.body.classList.toggle('cb-patterns', !!this.cbPatterns);
+  }
+
   syncThemeControls() {
     const dmToggle = document.getElementById('toggleDarkMode');
     if (dmToggle) dmToggle.checked = this.isDarkMode;
 
     const hcToggle = document.getElementById('toggleHighContrast');
     if (hcToggle) hcToggle.checked = this.isHighContrast;
+
+    const hcVariantSelect = document.getElementById('hcVariantSelector');
+    if (hcVariantSelect) hcVariantSelect.value = this.hcVariant || 'light';
+
+    const cbSelect = document.getElementById('colorblindSelector');
+    if (cbSelect) cbSelect.value = this.colorblindMode || 'off';
+
+    const cbPatternsToggle = document.getElementById('toggleCbPatterns');
+    if (cbPatternsToggle) cbPatternsToggle.checked = this.cbPatterns !== false;
 
     const dsToggle = document.getElementById('toggleDarkSchedule');
     if (dsToggle) dsToggle.checked = this.darkScheduleEnabled;
@@ -1534,7 +1907,41 @@ class RecollectApp {
     }
 
     document.body.classList.toggle('high-contrast-mode', hcActive);
+    document.body.classList.toggle('high-contrast-dark', hcActive && this.hcVariant === 'dark');
     document.body.classList.toggle('dark-mode', darkActive && !hcActive);
+    this.applyColorblindMode();
+  }
+
+  setHcVariant(variant) {
+    this.hcVariant = variant;
+    localStorage.setItem('recollect_hc_variant', variant);
+    this.evaluateThemeSchedules();
+    const variantName = variant === 'dark' 
+      ? (window.i18n ? window.i18n.t('hc_variant_dark') : 'Midnight Dark (White & Yellow on Black)') 
+      : (window.i18n ? window.i18n.t('hc_variant_light') : 'Stark White (Black on White)');
+    this.showToast(window.i18n ? window.i18n.t('toast_hc_variant_set', { variant: variantName }) : `High-contrast palette set to ${variantName}`, '🎨');
+  }
+
+  setColorblindMode(mode) {
+    this.colorblindMode = mode;
+    localStorage.setItem('recollect_colorblind_mode', mode);
+    this.applyColorblindMode();
+    const modeNames = {
+      off: window.i18n ? window.i18n.t('cb_opt_off') : 'Standard (Biophilic Emerald)',
+      deuteranopia: window.i18n ? window.i18n.t('cb_opt_deuteranopia') : 'Red-Green Safe (Deuteranopia / Protanopia)',
+      tritanopia: window.i18n ? window.i18n.t('cb_opt_tritanopia') : 'Blue-Yellow Safe (Tritanopia)',
+      achromatopsia: window.i18n ? window.i18n.t('cb_opt_achromatopsia') : 'High-Luminance Monochrome (Achromatopsia)'
+    };
+    const selectedName = modeNames[mode] || mode;
+    this.showToast(window.i18n ? window.i18n.t('toast_cb_mode_set', { mode: selectedName }) : `Colorblind mode set to ${selectedName}`, '👁️');
+  }
+
+  toggleCbPatterns(enabled) {
+    this.cbPatterns = enabled;
+    localStorage.setItem('recollect_cb_patterns', enabled);
+    this.applyColorblindMode();
+    const statusText = enabled ? 'Enabled' : 'Disabled';
+    this.showToast(window.i18n ? window.i18n.t('toast_cb_patterns_toggled', { status: statusText }) : `Enhanced shape markers ${statusText}`, '🔣');
   }
 
   toggleDarkMode(enabled) {
@@ -1611,8 +2018,28 @@ class RecollectApp {
     
     const selector = document.getElementById('fontSizeSelector');
     if (selector) selector.value = scale;
+    this.updateFontScaleIndicator();
     
     this.showToast(window.i18n ? window.i18n.t('toast_text_size_set', { scale: scale.toUpperCase() }) : `Patient app text size set to ${scale.toUpperCase()}`, '🔤');
+  }
+
+  cycleFontScale() {
+    const scales = ['normal', 'large', 'xlarge'];
+    const currentIndex = scales.indexOf(this.fontScale);
+    const nextScale = scales[(currentIndex + 1) % scales.length];
+    this.setFontScale(nextScale);
+  }
+
+  updateFontScaleIndicator() {
+    const indicator = document.getElementById('patientFontScaleIndicator');
+    if (indicator) {
+      const labels = {
+        normal: '20pt',
+        large: '24pt',
+        xlarge: '28pt'
+      };
+      indicator.textContent = labels[this.fontScale] || '20pt';
+    }
   }
 
   toggleVoiceMode(enabled) {
@@ -1749,14 +2176,47 @@ class RecollectApp {
 
     const d = datasets[tf] || datasets.weekly;
 
+    // Determine colors & stroke patterns based on active theme & colorblind mode
+    let adhColor = '#059669';
+    let scoreColor = '#2563eb';
+    let scoreDash = '6,4';
+    let summaryColor = '#059669';
+
+    if (document.body.classList.contains('high-contrast-mode')) {
+      const isDarkHc = document.body.classList.contains('high-contrast-dark');
+      adhColor = isDarkHc ? '#ffffff' : '#000000';
+      scoreColor = isDarkHc ? '#ffff00' : '#000000';
+      scoreDash = '8,6';
+      summaryColor = isDarkHc ? '#ffff00' : '#000000';
+    } else if (this.colorblindMode === 'deuteranopia') {
+      adhColor = '#1d4ed8'; // Cobalt Blue
+      scoreColor = '#d97706'; // Vivid Amber
+      summaryColor = '#1d4ed8';
+      scoreDash = '6,4';
+    } else if (this.colorblindMode === 'tritanopia') {
+      adhColor = '#0d9488'; // Teal
+      scoreColor = '#9333ea'; // Purple
+      summaryColor = '#0d9488';
+      scoreDash = '6,4';
+    } else if (this.colorblindMode === 'achromatopsia') {
+      adhColor = '#000000';
+      scoreColor = '#64748b';
+      summaryColor = '#000000';
+      scoreDash = '4,4';
+    } else if (document.body.classList.contains('dark-mode')) {
+      adhColor = '#10b981';
+      scoreColor = '#60a5fa';
+      summaryColor = '#34d399';
+    }
+
     // Render SVG
     const svgContent = `
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
         <strong>${window.i18n ? window.i18n.t('chart_title_timeline', { tf: tf.toUpperCase() }) : `Routine Adherence & Composite Score Timeline (${tf.toUpperCase()})`}</strong>
-        <span style="font-size:0.9rem; color:#059669; font-weight:700;">${d.summary}</span>
+        <span style="font-size:0.9rem; color:${summaryColor}; font-weight:700;">${d.summary}</span>
       </div>
       
-      <svg viewBox="0 0 700 200" width="100%" height="180" style="background:#f8fafc; border-radius:12px; border:1px solid #e2e8f0;">
+      <svg viewBox="0 0 700 200" width="100%" height="180" class="trends-svg-canvas">
         <line x1="50" y1="30" x2="680" y2="30" stroke="#e2e8f0" stroke-dasharray="4"/>
         <line x1="50" y1="80" x2="680" y2="80" stroke="#e2e8f0" stroke-dasharray="4"/>
         <line x1="50" y1="130" x2="680" y2="130" stroke="#e2e8f0" stroke-dasharray="4"/>
@@ -1765,10 +2225,10 @@ class RecollectApp {
         <text x="15" y="85" font-size="12" fill="#64748b">80%</text>
         <text x="15" y="135" font-size="12" fill="#64748b">60%</text>
         
-        <polyline fill="none" stroke="#059669" stroke-width="3.5" points="${d.adherencePoints}"/>
-        <polyline fill="none" stroke="#2563eb" stroke-width="2.5" stroke-dasharray="6,4" points="${d.scorePoints}"/>
+        <polyline fill="none" stroke="${adhColor}" stroke-width="3.5" points="${d.adherencePoints}"/>
+        <polyline fill="none" stroke="${scoreColor}" stroke-width="2.5" stroke-dasharray="${scoreDash}" points="${d.scorePoints}"/>
         
-        ${d.dots.map(dot => `<circle cx="${dot.cx}" cy="${dot.cy}" r="5" fill="#059669"/>`).join('')}
+        ${d.dots.map(dot => `<circle cx="${dot.cx}" cy="${dot.cy}" r="5" fill="${adhColor}"/>`).join('')}
 
         ${d.labels.map((lbl, idx) => {
           const step = (680 - 80) / (d.labels.length - 1 || 1);
@@ -1777,8 +2237,8 @@ class RecollectApp {
         }).join('')}
       </svg>
       <div style="display:flex; gap:1.5rem; justify-content:center; margin-top:0.5rem; font-size:0.85rem;">
-        <span>🟢 <strong>${window.i18n ? window.i18n.t('chart_adherence_label') : 'Adherence Rate'}</strong> (${d.avgAdh})</span>
-        <span>🔵 <strong>${window.i18n ? window.i18n.t('chart_composite_label') : 'Composite Score'}</strong> (${d.avgScore})</span>
+        <span><strong style="color:${adhColor}">● ${window.i18n ? window.i18n.t('chart_adherence_label') : 'Adherence Rate'}</strong> (${d.avgAdh})</span>
+        <span><strong style="color:${scoreColor}">■ ${window.i18n ? window.i18n.t('chart_composite_label') : 'Composite Score'}</strong> (${d.avgScore})</span>
       </div>
     `;
 

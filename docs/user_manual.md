@@ -141,13 +141,13 @@ For critical routines, a full-screen card appears over the screen:
   3. **"🤝 Need help from Sarah"**: Sends a notification to Sarah asking her to come assist.
 
 ### 3.5 Playing Stress-Free Cognitive Mind Games (Full-Screen Experience)
-Tap **"🌸 Play a Game"** to open the Mind Games Hub, then choose any of the 4 cognitive activities. Games launch immediately into **Full-Screen Immersion** (`100vw` × `100vh`), providing large touch targets and zero distractions:
+Tap **"🌸 Play a Game"** to open the Mind Games Hub, then choose any of the 6 cognitive activities. Games launch immediately into **Full-Screen Immersion** (`100vw` × `100vh`), providing large touch targets and zero distractions:
 
 * **Zero Timers, Ever:** Take all the time you need. There are no countdown clocks, pressure, or penalties.
 * **Patient-Side Garden Score Tracker:**
   * View your daily **Garden Stars (⭐)** in Eleanor's top orientation bar and inside the in-game header bar.
   * Your garden advances from **Sprout (🌱)** to **Budding Green (🌿)**, **Blooming Daisy (🌼)**, and **Sunflower Champion (🌻)** as you complete gentle games.
-* **Playing the 4 Distinct Games:**
+* **Playing the 6 Distinct Games:**
   1. **🌸 Memory Game (Photo Match):**
      * Switch between **Family Photos** (Lily, Buddy, Garden Rose, Tea) and **Northeast Cultural Pack** (Assam Tea, Bihu Drum, Brahmaputra Sunset, Rhino).
      * Touch two cards to peek. Find all matching pairs.
@@ -160,9 +160,17 @@ Tap **"🌸 Play a Game"** to open the Mind Games Hub, then choose any of the 4 
   4. **🧩 Problem Solving Game (Daily Routine Steps):**
      * Look at the 4 routine slots at the top (Steps 1 to 4).
      * Tap the shuffled routine cards below in the order you do them (e.g., 🌅 Wake up -> 🥤 Drink water -> 💊 Take medicine -> 🥣 Breakfast).
+  5. **🧺 Harvest Count Game (Numeracy & Visual Discrimination — Medium Difficulty):**
+     * Look at Eleanor's garden basket filled with garden harvest items (crisp apples 🍎, golden marigolds 🌼, sweet strawberries 🍓, morning teacups 🍵, or juicy oranges 🍊).
+     * Count the items and tap the matching number button below (e.g., 3, 4, 5).
+     * Tap *"Give Me a Gentle Hint"* to see numbered badges pulse on every item in the basket and highlight the correct number.
+  6. **🍃 Nature Harmony / Odd-One-Out (Semantic Classification — Medium Difficulty):**
+     * Look at the 4 large cards shown on the screen (3 matching garden items + 1 special item that stands apart, such as 3 flowers with 1 teapot, or 3 fruits with 1 lantern).
+     * Spot and tap the special odd-one-out item across 3 gentle progressive rounds.
+     * Tap *"Give Me a Gentle Hint"* to illuminate the special item with a warm golden pulse.
 * **In-Game Assistance & Controls:**
   * **"💡 Give Me a Gentle Hint":** Provides a gentle hint tailored to the active game without penalty.
-  * **"🔊 Read Instructions":** Reads spoken rules aloud in your chosen regional language.
+  * **"🔊 Read Instructions":** Reads spoken rules aloud in your chosen regional language or plays calm acoustic instruction audio.
   * **"✕ Pause & Rest":** Touch anytime in the top corner or bottom bar to pause and return safely to your home screen.
 * **Warm Celebration Screen:**
   * Celebrates your achievement with awarded Garden Stars (e.g., `⭐ +5 Garden Stars Bloomed!`) and session points, followed by a warm greeting before returning to your garden home.
@@ -365,14 +373,27 @@ Recollect is fully translated into five regional languages with a focus on North
 ### 6.3 Dark Mode (Calm Night Theme)
 * Toggle **"Dark Mode (Calm Night Theme)"** in Caregiver Settings (PIN `1234`).
 * Applies a soothing deep slate background (`#0b1329` / `#111e3e`) with high-contrast soft text (`#f1f5f9`), engineered to eliminate glare and eye fatigue for seniors in dim or evening lighting.
+* Extends comprehensive dark overrides to all modals, clinical telemed handoff boxes, ASHA checklists, physician threaded notes, AI consent dialogs, overdue banners, and emergency escalation overlays.
 * When enabled, Dark Mode automatically deactivates High-Contrast mode to ensure clean visual styling.
 
-### 6.4 High-Contrast Stark Theme (WCAG AAA)
-* Toggle **"High-contrast theme (Black & White)"** in Caregiver Settings (PIN `1234`).
-* Transforms the entire interface into stark black text on pure white backgrounds, with solid 3px borders and no decorative colors, gradients, or shadows.
-* Specifically engineered for seniors with low vision or advanced presbyopia, exceeding WCAG 2.1 Level AAA requirements.
+### 6.4 High-Contrast Dual-Variant Theme (WCAG AAA)
+* Toggle **"High-contrast theme"** in Caregiver Settings (PIN `1234`).
+* Select your preferred high-contrast palette variant:
+  * **Stark White (21:1 Contrast):** Pure black text and 3px solid borders on crisp white backgrounds with bright yellow (`#ffff00`) focus highlights.
+  * **Midnight Dark (Low Glare):** Pure white text and 3px solid borders on pure black backgrounds with bright yellow focus indicators. Ideal for seniors with photophobia or light glare sensitivity.
+* Strips all shadows, gradients, and decorative noise for unambiguous visual clarity.
 
-### 6.5 Automated Theme & Contrast Scheduling
+### 6.5 Colourblind Accessibility Suite & Geometric Pattern Markers
+* In Caregiver Settings, configure the **Colourblind Palette Mode**:
+  * **Off (Standard Biophilic):** Default nature-inspired palette.
+  * **Deuteranopia / Protanopia (Red-Green Deficient Safe):** Replaces red and green indicators with cobalt blue (`#1d4ed8`), amber (`#f59e0b`), and vibrant magenta (`#c026d3`).
+  * **Tritanopia (Blue-Yellow Deficient Safe):** Replaces blue and yellow ambiguities with deep teal (`#0d9488`), regal purple (`#9333ea`), and crimson rose (`#e11d48`).
+  * **Achromatopsia (Monochrome Grayscale):** Full grayscale contrast normalization with double borders (`3px double`) for warnings.
+* Toggle **"Enhanced Shape & Pattern Indicators"**:
+  * Adds geometric prefix symbols so that color is never the only signal: `✓ ` checkmarks for completed routines, `⏱ ` stopwatches for pending doses, `⚠️ ` warning triangles for alerts, and `★ ` stars for matched memory pairs.
+* **Live Interactive Palette Preview:** Displays real-time preview chips in settings showing the active appearance for Completed, Pending, and Alert states.
+
+### 6.6 Automated Theme & Contrast Scheduling
 Caregivers can automate visual modes based on time of day:
 1. **Schedule Dark Mode Automatically:**
    * In Caregiver Settings, enable the **"Schedule Dark Mode Automatically"** toggle.
@@ -383,7 +404,7 @@ Caregivers can automate visual modes based on time of day:
    * Set the active daily time window (default `18:00` to `21:00`).
    * During this window, maximum contrast is automatically activated to assist seniors during evening routine checkpoints.
 3. **Password Protection:**
-   * Because theme and scheduling controls are secured behind the Caregiver PIN (`1234`), seniors living with memory loss cannot accidentally disrupt their visual environment from the bedside tablet.
+   * Because theme, palette, and scheduling controls are secured behind the Caregiver PIN (`1234`), seniors living with memory loss cannot accidentally disrupt their visual environment from the bedside tablet.
 
 ### 6.6 Low-Power & Reduced Animation Mode
 * Toggle **"Low-power mode (Reduced animation)"** in Settings or click the power pill in the header.

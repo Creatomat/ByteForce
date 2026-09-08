@@ -151,6 +151,16 @@ Designed specifically for bedside tablets (e.g., 10-inch landscape mounts), the 
      * **Gameplay:** Presents 4 sequential slots (Steps 1 to 4) and 4 shuffled daily routine cards (e.g., Morning: 🌅 Wake up -> 🥤 Drink cool water -> 💊 Take morning medicine -> 🥣 Enjoy warm breakfast).
      * **Interaction:** Senior taps steps in chronological order. Correct taps lock into their numbered slots with green checkmarks.
      * **Feedback:** Out-of-order taps provide gentle guidance (*"We usually wake up before breakfast! Let's find what comes first"*).
+  5. **Harvest Count (Numeracy & Visual Discrimination — Medium Difficulty):**
+     * **Mechanics:** Gentle numeracy and item grouping within Eleanor's garden basket across 3 progressive rounds (3 to 5 items).
+     * **Gameplay:** Displays Eleanor's rustic garden basket brimming with crisp apples 🍎, golden marigolds 🌼, sweet strawberries 🍓, morning teacups 🍵, or juicy oranges 🍊.
+     * **Choices:** 3 large tactile number choice buttons (e.g. 3, 4, 5).
+     * **Assistance & Sound:** Non-punitive hint pulses each basket item and displays numbers 1, 2, 3... while highlighting the matching choice card. Calming wooden clicks on selection, uplifting major chimes on round progression, and existing voice instruction narration (`tts_instruction_problem`).
+  6. **Nature Harmony / Odd-One-Out (Semantic Association & Classification — Medium Difficulty):**
+     * **Mechanics:** Semantic discrimination and categorization across 3 progressive rounds with curated biophilic themes.
+     * **Gameplay:** Presents 4 large, tactile cards—3 belonging to a harmonious set and 1 distinct odd-one-out item (e.g., 3 garden flowers + 1 warm teapot, 3 fresh fruits + 1 garden lantern, 3 songbirds + 1 sun hat).
+     * **Prompt:** *"Look closely at the 4 items. Which one is different from the others?"*
+     * **Assistance & Sound:** Hint highlights and pulses the odd item with a warm golden outline. Non-punitive retry with warm encouragement (*"Good peek! Look at what kind of items they are. Try another one!"*), uplifting chimes on success, and existing voice instruction narration (`tts_instruction_attention`).
 * **Patient-Side Score Tracker:**
   * **Uplifting Progression:** Features non-punitive, senior-friendly metrics displayed in the senior orientation bar, the full-screen game header, and completion screens:
     * ⭐ **Garden Stars:** Earned on game completion (+3 to +5 stars per session) and stored persistently in `localStorage`.
@@ -159,8 +169,8 @@ Designed specifically for bedside tablets (e.g., 10-inch landscape mounts), the 
 * **Dual-Track Clinical Telemetry:**
   * While the senior experiences positive reinforcement, raw behavioral metrics (`hesitation_avg_ms`, `accuracy`, `mistake_count`, `duration_seconds`) are silently dispatched to `RecollectDB.insertGameSession` and `CaregiverActivityLog`, updating the Clinical Hub and Caregiver Trends polylines.
 * **Gentle Assistance & Localized Audio:**
-  * Context-aware *"Give Me a Gentle Hint"* button tailored to each engine (peeks card pairs in Memory, pulses target blooms in Attention, glows correct options in Language and Problem Solving).
-  * *"Read Instructions"* button plays synthesized text-to-speech instructions localized across all 5 regional languages.
+  * Context-aware *"Give Me a Gentle Hint"* button tailored to each engine (peeks card pairs in Memory, pulses target blooms in Attention, glows correct options in Language and Problem Solving, numbers basket items in Harvest Count, glows odd-one-out in Nature Harmony).
+  * *"Read Instructions"* button plays synthesized text-to-speech or localized audio files across all 5 regional languages.
 * **Triple Theme & Font Scale Compatibility:**
   * Fully styled across Light Biophilic, Dark Mode (`body.dark-mode`), High Contrast Mode (`body.high-contrast-mode`), and 3 font scales (20pt, 24pt, 28pt).
 
@@ -338,23 +348,38 @@ Implemented in `js/ruleEngine.js`, the deterministic rule engine evaluates patie
 * **Extra Large (28pt / +40%):** Maximum contrast and size for low vision.
 * **Quick Cycle Button:** Seniors can cycle through font sizes directly from the tablet orientation bar without entering settings.
 
-### 6.3 Dark Mode (Calm Night Theme)
-* **Low-Glare Deep Slate Palette:** Replaces bright sandstone backgrounds with deep slate tones (`#0b1329` / `#111e3e`) to minimize eye fatigue and light glare for seniors during nighttime hours.
+### 6.3 Comprehensive Dark Mode (Calm Night Theme)
+* **Low-Glare Deep Slate Palette:** Replaces bright sandstone and white backgrounds with deep slate tones (`#0b1329` / `#111e3e`) to eliminate eye fatigue and light glare for seniors during nighttime hours.
+* **Universal Component Conformance:** Comprehensive dark theme overrides covering all modals, cards, clinical telemed handoff boxes, ASHA checklists, physician threaded notes, AI consent dialogs, overdue banners, and emergency escalation overlays.
 * **Calm Aesthetic Preservation:** Maintains high text contrast (`#f1f5f9`) and warm accents (`#10b981` emerald, `#60a5fa` soothing blue) across cards, visual schedules, memory games, and checklists without harsh neon glare.
+* **Dynamic Canvas SVGs:** Inverts trends chart gridlines (`#1e293b`), axis typography (`#94a3b8`), and pill visualizers seamlessly.
 
-### 6.4 WCAG AAA High-Contrast Stark Theme
-* **Pure Black-on-White:** Replaces all warm pastels and decorative gradients with sharp, high-contrast monochrome borders and typography.
-* **Zero Decorative Noise:** Removes shadows, transparent overlays, and non-essential icons for maximum visual acuity.
+### 6.4 WCAG AAA High-Contrast Dual-Variant Theme
+* **Dual Palette Selection:**
+  * **Stark White Variant (Default):** Pure black `#000000` text and 3px solid borders on pure white `#ffffff` surfaces providing maximum 21:1 contrast ratio. Interactive elements feature high-visibility yellow `#ffff00` active highlights and 4px solid black focus rings.
+  * **Midnight Dark Variant:** Pure white `#ffffff` text and 3px solid borders on pure black `#000000` surfaces. Ideal for seniors with photophobia or light glare sensitivity, paired with 4px yellow `#ffff00` focus indicators.
+* **Zero Decorative Noise:** Completely removes box shadows, gradients, and transparent overlays for unambiguous visual edge detection across buttons, cards, tiles, and modal windows.
+* **Dynamic Chart Adaptation:** Converts SVG trend lines into thick dashed patterns (`stroke-dasharray: 8,6`) and high-contrast monochrome markers.
 
-### 6.5 Password-Gated Management & Automated Mode Scheduling
-* **Caregiver PIN Gate:** All appearance themes and schedules are locked behind the Caregiver PIN (`1234`), ensuring that seniors cannot accidentally alter visual contrast or theme settings from the bedside tablet.
+### 6.5 Colourblind Accessibility Suite & Geometric Pattern Markers
+* **CVD-Safe Color Palettes (WCAG 2.2 Compliant):**
+  * **Deuteranopia & Protanopia (Red-Green Deficient):** Replaces problematic reds and greens with distinct Cobalt Blue (`#1d4ed8`) for completed/safe states, Warm Amber (`#f59e0b`) for pending items, and Vivid Magenta (`#c026d3`) for critical alerts.
+  * **Tritanopia (Blue-Yellow Deficient):** Replaces cyan/yellow ambiguities with Deep Teal (`#0d9488`) for completed actions, Regal Purple (`#9333ea`) for pending items, and Crimson Rose (`#e11d48`) for warnings.
+  * **Achromatopsia (Monochrome / Complete Color Agnosia):** High-luminance grayscale contrast filter with distinctive double borders (`3px double #000000`) on warnings.
+* **Enhanced Shape & Pattern Indicators ("Color is Never the Sole Signal"):**
+  * Toggling the pattern markers adds unambiguous geometric prefixes to all status items: `✓ ` checkmarks for completed routines, `⏱ ` stopwatches for pending doses, and `⚠️ ` warning triangles for alerts.
+  * Matched memory cards and blooming attention tiles display distinct star icons (`★`), while alert cards receive prominent 8px solid left indicator borders.
+* **Live Interactive Palette Status Preview:** Displays an immediate visual feedback box within Caregiver Settings showing the exact chips for Completed, Pending, and Alert under the selected theme and pattern mode.
+
+### 6.6 Password-Gated Management & Automated Mode Scheduling
+* **Caregiver PIN Gate:** All appearance themes, contrast variants, colourblind palettes, and automated schedules are secured behind the Caregiver PIN (`1234`), keeping Eleanor's bedside tablet peaceful, uncluttered, and free of confusing configuration toggles.
 * **Independent Automated Schedulers:**
-  * **Dark Mode Scheduler:** Allows caregivers to configure custom start (default `20:00`) and end (default `07:00`) times. Automatically activates Dark Mode at dusk and restores day mode at dawn.
-  * **High-Contrast Scheduler:** Allows setting dedicated daily high-contrast windows (default `18:00` to `21:00`) for medication administration or evening routines.
+  * **Dark Mode Scheduler:** Configurable start (default `20:00`) and end (default `07:00`) times; automatically engages Dark Mode at dusk and restores day mode at dawn.
+  * **High-Contrast Scheduler:** Dedicated daily high-contrast windows (default `18:00` to `21:00`) for medication administration or evening routines.
 * **Reactive Clock Engine:** The system evaluates active time windows every 30 seconds, automatically transitioning themes with zero page reload required.
-* **Persistent State:** Manual overrides, schedule toggles, and time inputs persist in `localStorage` across offline reboots.
+* **Persistent State:** Manual overrides, palette selections, colourblind modes, pattern toggles, and schedule times persist reliably in `localStorage`.
 
-### 6.6 Four-Step Consent & Privacy Framework
+### 6.7 Four-Step Consent & Privacy Framework
 Accessible via Caregiver Settings, the interactive onboarding modal walks families through a transparent 4-step framework:
 1. **Step 1: Patient & Caregiver Identity:** Confirms Sarah Vance's power-of-attorney authority.
 2. **Step 2: Local Data Storage Disclosure:** Explains what data is stored locally on the tablet.
@@ -385,6 +410,9 @@ Accessible via Caregiver Settings, the interactive onboarding modal walks famili
 | **Font Scaling (20pt–28pt)** | Yes | Follows Base CSS | Standard Web |
 | **Dark Mode (Calm Night)** | Follows Settings/Schedule | Configured via PIN 1234 | Follows Settings/Schedule |
 | **WCAG AAA High Contrast** | Follows Settings/Schedule | Configured via PIN 1234 | Follows Settings/Schedule |
+| **High Contrast Variants** | Stark White / Midnight Dark | Selected via PIN 1234 | Stark White / Midnight Dark |
+| **Colourblind CVD Modes** | Deut / Trit / Achromatopsia | Configured via PIN 1234 | Deut / Trit / Achromatopsia |
+| **Geometric Pattern Markers** | `✓`, `⏱`, `⚠️`, `★` | Toggled via PIN 1234 | `✓`, `⏱`, `⚠️`, `★` |
 | **Automated Theme Scheduling** | Yes (Passive) | Configured via PIN 1234 | Yes (Passive) |
 | **5-Language Regional i18n** | Full UI | Full UI | Full UI |
 

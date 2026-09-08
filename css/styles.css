@@ -1698,6 +1698,287 @@ body {
 }
 
 /* --------------------------------------------------------------------------
+   ENGINE 5: HARVEST COUNT GAME (Numeracy & Visual Discrimination)
+   -------------------------------------------------------------------------- */
+.game-harvest-canvas {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.5rem 0;
+}
+
+.harvest-board {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.harvest-round-pill {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--primary);
+  background: var(--surface-container-high);
+  padding: 0.35rem 1.25rem;
+  border-radius: var(--radius-full);
+  border: 1.5px solid var(--outline-variant);
+}
+
+.harvest-basket-box {
+  width: 100%;
+  background: linear-gradient(180deg, var(--surface-container-lowest) 0%, var(--surface-container-low) 100%);
+  border: 3px solid #d97706;
+  border-radius: var(--radius-2xl, 24px);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-level-2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.harvest-basket-rim {
+  font-family: var(--font-heading);
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #92400e;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.harvest-items-basket {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 1.5rem;
+  min-height: 110px;
+  padding: 0.75rem;
+}
+
+.harvest-basket-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 84px;
+  height: 84px;
+  background: var(--surface-container);
+  border: 2.5px solid var(--outline-variant);
+  border-radius: var(--radius-xl);
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.harvest-basket-item:hover {
+  transform: scale(1.08);
+}
+
+.harvest-item-icon {
+  font-size: 3.2rem;
+  line-height: 1;
+}
+
+.harvest-item-number-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #d97706;
+  color: #ffffff;
+  font-size: 0.95rem;
+  font-weight: 800;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-sm);
+  border: 2px solid #ffffff;
+}
+
+.harvest-basket-item.show-badge .harvest-item-number-badge {
+  display: flex;
+}
+
+.harvest-basket-item.celebrating {
+  animation: bloomPop 0.5s ease forwards;
+}
+
+.harvest-prompt-card {
+  text-align: center;
+  width: 100%;
+}
+
+.harvest-prompt-question {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--on-surface);
+  margin: 0;
+}
+
+.harvest-choices-grid {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+.harvest-choice-card {
+  background: var(--surface-container-lowest);
+  border: 3px solid var(--outline-variant);
+  border-radius: var(--radius-xl);
+  padding: 1rem 2rem;
+  min-width: 140px;
+  min-height: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.harvest-choice-card:hover {
+  border-color: var(--primary);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-level-2);
+}
+
+.harvest-choice-card .choice-num-val {
+  font-size: 2.8rem;
+  font-weight: 900;
+  color: var(--primary);
+  line-height: 1;
+}
+
+.harvest-choice-card .choice-num-sub {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--on-surface-variant);
+  margin-top: 0.25rem;
+}
+
+.harvest-choice-card.correct {
+  background: #f0fdf4 !important;
+  border-color: #16a34a !important;
+  box-shadow: 0 0 20px rgba(22, 163, 74, 0.45) !important;
+  pointer-events: none;
+  animation: bloomPop 0.4s ease forwards;
+}
+
+.harvest-choice-card.hint-highlight {
+  border-color: #eab308 !important;
+  animation: gentlePulse 0.9s ease-in-out infinite alternate;
+}
+
+/* --------------------------------------------------------------------------
+   ENGINE 6: NATURE HARMONY / ODD-ONE-OUT (Semantic Association)
+   -------------------------------------------------------------------------- */
+.game-harmony-canvas {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.5rem 0;
+}
+
+.harmony-board {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  width: 100%;
+  max-width: 850px;
+  margin: 0 auto;
+}
+
+.harmony-round-pill {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--primary);
+  background: var(--surface-container-high);
+  padding: 0.35rem 1.25rem;
+  border-radius: var(--radius-full);
+  border: 1.5px solid var(--outline-variant);
+}
+
+.harmony-prompt-card {
+  text-align: center;
+  width: 100%;
+}
+
+.harmony-prompt-question {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--on-surface);
+  margin: 0;
+}
+
+.harmony-options-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1.25rem;
+  width: 100%;
+}
+
+.harmony-card {
+  background: var(--surface-container-lowest);
+  border: 3px solid var(--outline-variant);
+  border-radius: var(--radius-xl);
+  padding: 1.5rem 1rem;
+  min-height: 150px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+  text-align: center;
+}
+
+.harmony-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--primary);
+  box-shadow: var(--shadow-level-2);
+}
+
+.harmony-card .harmony-card-icon {
+  font-size: 3.5rem;
+  line-height: 1;
+}
+
+.harmony-card .harmony-card-label {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--on-surface);
+}
+
+.harmony-card.correct {
+  background: #f0fdf4 !important;
+  border-color: #16a34a !important;
+  box-shadow: 0 0 20px rgba(22, 163, 74, 0.45) !important;
+  pointer-events: none;
+  animation: bloomPop 0.4s ease forwards;
+}
+
+.harmony-card.hint-highlight {
+  border-color: #eab308 !important;
+  animation: gentlePulse 0.9s ease-in-out infinite alternate;
+}
+
+/* --------------------------------------------------------------------------
    COMPLETION SCORE CARD
    -------------------------------------------------------------------------- */
 .completion-score-card {
@@ -2418,23 +2699,327 @@ body {
   border: 1.5px solid rgba(255, 255, 255, 0.2);
 }
 
-/* Responsive adjustments */
+/* Responsive adjustments for Tablets, Mobile & Phone Screens */
 @media (max-width: 680px) {
+  /* Layout containers */
+  .patient-container,
+  .caregiver-container,
+  .clinical-container,
+  .login-container {
+    padding: 0.85rem;
+    gap: 1rem;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Header & Navigation */
   .global-header {
     flex-direction: column;
     align-items: stretch;
+    padding: 0.65rem 0.85rem;
+    gap: 0.65rem;
   }
+
+  .system-status-pills {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .lang-selector {
+    max-width: 130px;
+    font-size: 0.8rem;
+    padding: 0.35rem 0.5rem;
+  }
+
   .role-switcher-nav {
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
-  .routine-visual-grid {
-    grid-template-columns: 1fr;
+
+  /* Gateway / Login Screen */
+  .gateway-hero {
+    margin: 1rem 0 1.5rem;
   }
-  .orientation-greeting {
+
+  .gateway-hero h1 {
     font-size: 1.75rem;
   }
-  .gateway-hero h1 {
-    font-size: 1.95rem;
+
+  .gateway-hero p {
+    font-size: 1rem;
+  }
+
+  .gateway-cards-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .gateway-profile-card {
+    padding: 1.25rem 1rem;
+  }
+
+  /* Orientation Anchor Bar */
+  .orientation-anchor-bar {
+    padding: 1.15rem 1rem;
+    border-radius: var(--radius-lg);
+    gap: 0.65rem;
+  }
+
+  .orientation-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .orientation-greeting {
+    font-size: 1.55rem;
+    line-height: 1.25;
+  }
+
+  .orientation-date {
+    font-size: 1.15rem;
+  }
+
+  .listen-day-btn {
+    height: 52px;
+    font-size: 1.1rem;
+    padding: 0 1rem;
+    text-align: center;
+  }
+
+  /* Senior Reminder Card */
+  .single-routine-prominent-card {
+    padding: 1.25rem 1rem;
+    border-radius: var(--radius-lg);
+    gap: 1rem;
+  }
+
+  .routine-visual-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .routine-title-box h2 {
+    font-size: 1.6rem;
+  }
+
+  .routine-title-box p {
+    font-size: 1.15rem;
+  }
+
+  .pill-spec-cards-row {
+    grid-template-columns: 1fr;
+    gap: 0.65rem;
+  }
+
+  .take-med-big-btn {
+    height: auto;
+    min-height: 56px;
+    padding: 0.85rem 1rem;
+    font-size: 1.2rem;
+    white-space: normal;
+    text-align: center;
+    justify-content: center;
+    width: 100%;
+  }
+
+  /* Secondary Patient Action Cards (Games, Mood, Calls) */
+  .secondary-patient-card {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 1.15rem 1rem;
+    border-radius: var(--radius-lg);
+    gap: 0.85rem;
+  }
+
+  .secondary-card-info {
+    gap: 0.85rem;
+  }
+
+  .secondary-card-icon {
+    font-size: 2.2rem;
+  }
+
+  .secondary-card-text h3 {
+    font-size: 1.35rem;
+  }
+
+  .secondary-card-text p {
+    font-size: 1.05rem;
+  }
+
+  .secondary-patient-btn {
+    width: 100%;
+    justify-content: center;
+    height: 52px;
+    font-size: 1.15rem;
+  }
+
+  /* Modals & Full-Screen Takeovers */
+  .modal-window {
+    padding: 1.25rem 1rem;
+    border-radius: var(--radius-lg);
+    width: 95%;
+    max-width: 100%;
+    margin: auto;
+    max-height: 94vh;
+    gap: 1rem;
+  }
+
+  .attention-card {
+    padding: 1.5rem 1rem;
+    border-radius: var(--radius-lg);
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .attention-actions-row {
+    flex-direction: column;
+    gap: 0.65rem;
+    width: 100%;
+  }
+
+  .attention-action-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .game-fullscreen-takeover {
+    padding: 0.85rem;
+  }
+
+  .memory-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.65rem;
+  }
+
+  .attention-garden-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+  }
+
+  .routine-slots-grid,
+  .routine-choices-row {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+  }
+
+  .harvest-basket-box {
+    padding: 1rem 0.75rem;
+  }
+
+  .harvest-items-basket {
+    gap: 0.75rem;
+  }
+
+  .harvest-basket-item {
+    width: 68px;
+    height: 68px;
+  }
+
+  .harvest-item-icon {
+    font-size: 2.5rem;
+  }
+
+  .harvest-choices-grid {
+    gap: 0.75rem;
+  }
+
+  .harvest-choice-card {
+    min-width: 90px;
+    padding: 0.75rem 1.25rem;
+    flex: 1;
+  }
+
+  .harvest-choice-card .choice-num-val {
+    font-size: 2.2rem;
+  }
+
+  .harmony-options-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+
+  .harmony-card {
+    min-height: 120px;
+    padding: 1rem 0.5rem;
+  }
+
+  .harmony-card .harmony-card-icon {
+    font-size: 2.8rem;
+  }
+
+  .harmony-card .harmony-card-label {
+    font-size: 1.05rem;
+  }
+
+  /* Caregiver & Clinical Dashboard Mobile */
+  .cg-tabs-bar,
+  .clin-tabs-bar {
+    display: flex;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    gap: 0.4rem;
+    padding-bottom: 4px;
+  }
+
+  .cg-tab-btn,
+  .clin-tab-btn {
+    white-space: nowrap;
+    flex-shrink: 0;
+    padding: 0.5rem 0.85rem;
+    font-size: 0.85rem;
+  }
+
+  .caregiver-dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .trends-chart-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+  }
+
+  .trends-svg-canvas {
+    width: 100%;
+    min-width: 280px;
+    height: auto;
+  }
+
+  .overdue-action-row {
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+  }
+
+  .overdue-action-row button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .settings-option-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .settings-option-row .form-select,
+  .settings-option-row input[type="time"] {
+    width: 100% !important;
+  }
+
+  .telemed-handoff-card {
+    padding: 1.25rem 1rem;
+  }
+
+  .doctor-report-paper {
+    padding: 1.25rem 1rem;
   }
 }
 
@@ -2461,91 +3046,270 @@ body {
   min-width: 48px;
 }
 
-/* Font Scaling Utilities (PRD Section 7, design.md Section 2.1 & 7) */
-body.font-scale-normal {
-  --patient-font-mult: 1;
-}
-body.font-scale-normal .patient-container {
-  font-size: 20pt;
+/* ==========================================================================
+   FONT SCALING SYSTEM (PRD FR-9.7, design.md Section 2.1 & 6.2)
+   3-Tier Proportional Scaling for Senior Patient Space & Senior Modals:
+   - Normal: 100% (20pt base floor)
+   - Large:  120% (+20% / 24pt base floor)
+   - Extra Large: 140% (+40% / 28pt base floor)
+   ========================================================================== */
+
+/* Quick Cycle Pill in Orientation Bar */
+.patient-font-pill {
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  border: 1.5px solid rgba(255, 255, 255, 0.4);
+  border-radius: var(--radius-full);
+  padding: 0.35rem 0.85rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  transition: var(--transition-smooth);
 }
 
-body.font-scale-large {
-  --patient-font-mult: 1.2;
-}
-body.font-scale-large .patient-container {
-  font-size: 24pt;
-}
-body.font-scale-large .patient-container h1,
-body.font-scale-large .patient-container h2,
-body.font-scale-large .patient-container h3,
-body.font-scale-large .patient-container p,
-body.font-scale-large .patient-container span,
-body.font-scale-large .patient-container button,
-body.font-scale-large .attention-card h2,
-body.font-scale-large .attention-card p,
-body.font-scale-large .attention-card button,
-body.font-scale-large #gamesHubModal h3,
-body.font-scale-large #gamesHubModal h4,
-body.font-scale-large #gamesHubModal p,
-body.font-scale-large #gameModal h2,
-body.font-scale-large #gameModal h3,
-body.font-scale-large #gameModal p,
-body.font-scale-large #gameModal span,
-body.font-scale-large #gameModal button,
-body.font-scale-large #gameModal strong,
-body.font-scale-large .flower-tile-label,
-body.font-scale-large .language-prompt-question,
-body.font-scale-large .language-option-card .option-label,
-body.font-scale-large .routine-choice-card .choice-label,
-body.font-scale-large .routine-slot-txt,
-body.font-scale-large #moodModal h3,
-body.font-scale-large #moodModal p,
-body.font-scale-large #moodModal button {
-  font-size: calc(100% * 1.2) !important;
+.patient-font-pill:hover {
+  background: rgba(255, 255, 255, 0.35);
+  transform: translateY(-1px);
 }
 
-body.font-scale-xlarge {
-  --patient-font-mult: 1.4;
-}
-body.font-scale-xlarge .patient-container {
-  font-size: 28pt;
-}
-body.font-scale-xlarge .patient-container h1,
-body.font-scale-xlarge .patient-container h2,
-body.font-scale-xlarge .patient-container h3,
-body.font-scale-xlarge .patient-container p,
-body.font-scale-xlarge .patient-container span,
-body.font-scale-xlarge .patient-container button,
-body.font-scale-xlarge .attention-card h2,
-body.font-scale-xlarge .attention-card p,
-body.font-scale-xlarge .attention-card button,
-body.font-scale-xlarge #gamesHubModal h3,
-body.font-scale-xlarge #gamesHubModal h4,
-body.font-scale-xlarge #gamesHubModal p,
-body.font-scale-xlarge #gamesHubModal button,
-body.font-scale-xlarge #gameModal h2,
-body.font-scale-xlarge #gameModal h3,
-body.font-scale-xlarge #gameModal p,
-body.font-scale-xlarge #gameModal span,
-body.font-scale-xlarge #gameModal button,
-body.font-scale-xlarge #gameModal strong,
-body.font-scale-xlarge .flower-tile-label,
-body.font-scale-xlarge .language-prompt-question,
-body.font-scale-xlarge .language-option-card .option-label,
-body.font-scale-xlarge .routine-choice-card .choice-label,
-body.font-scale-xlarge .routine-slot-txt,
-body.font-scale-xlarge #moodModal h3,
-body.font-scale-xlarge #moodModal p,
-body.font-scale-xlarge #moodModal button {
-  font-size: calc(100% * 1.4) !important;
+body.dark-mode .patient-font-pill {
+  background: #1e293b;
+  border-color: #334155;
+  color: #f1f5f9;
 }
 
-/* 2.2 & 7 High Contrast Alternate Theme (WCAG AAA) */
+body.high-contrast-mode .patient-font-pill {
+  background: #ffffff !important;
+  color: #000000 !important;
+  border: 3px solid #000000 !important;
+  font-weight: 800 !important;
+}
+
+body.high-contrast-mode.high-contrast-dark .patient-font-pill {
+  background: #000000 !important;
+  color: #ffffff !important;
+  border: 3px solid #ffffff !important;
+}
+
+/* Scaling Rules: Proportional scaling across Senior Space & Senior Modals */
+body.font-scale-normal .patient-container,
+body.font-scale-normal .reminder-attention-takeover .attention-card,
+body.font-scale-normal #gamesHubModal .modal-window,
+body.font-scale-normal #gameModal .game-fullscreen-takeover,
+body.font-scale-normal #moodModal .modal-window,
+body.font-scale-normal #callModal .modal-window {
+  zoom: 1;
+}
+
+body.font-scale-large .patient-container,
+body.font-scale-large .reminder-attention-takeover .attention-card,
+body.font-scale-large #gamesHubModal .modal-window,
+body.font-scale-large #gameModal .game-fullscreen-takeover,
+body.font-scale-large #moodModal .modal-window,
+body.font-scale-large #callModal .modal-window {
+  zoom: 1.2;
+}
+
+body.font-scale-xlarge .patient-container,
+body.font-scale-xlarge .reminder-attention-takeover .attention-card,
+body.font-scale-xlarge #gamesHubModal .modal-window,
+body.font-scale-xlarge #gameModal .game-fullscreen-takeover,
+body.font-scale-xlarge #moodModal .modal-window,
+body.font-scale-xlarge #callModal .modal-window {
+  zoom: 1.4;
+}
+
+/* ==========================================================================
+   SEMANTIC HELPER CLASSES FOR THEME ADAPTATION
+   ========================================================================== */
+.profile-avatar-circle.avatar-caregiver {
+  background: #dbeafe;
+  border-color: #3b82f6;
+}
+
+.profile-avatar-circle.avatar-clinical {
+  background: #e2e8f0;
+  border-color: #64748b;
+}
+
+.pill-illustration-svg {
+  background: #e8dfd8;
+  border-radius: 16px;
+}
+
+.reminder-pill-svg {
+  background: #e8dfd8;
+  border-radius: 12px;
+}
+
+.trends-svg-canvas {
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+}
+
+.telemed-handoff-card {
+  background: #f0fdf4;
+  border-color: #86efac;
+}
+
+.asha-status-cue-box {
+  background: #eff6ff;
+  border: 2px solid #3b82f6;
+  border-radius: 12px;
+  padding: 1rem;
+  margin: 1rem 0;
+}
+
+.play-btn-attention {
+  background: #0284c7 !important;
+}
+
+.play-btn-language {
+  background: #059669 !important;
+}
+
+.play-btn-routine {
+  background: #7c3aed !important;
+}
+
+.play-btn-harvest {
+  background: #d97706 !important;
+}
+
+.play-btn-harmony {
+  background: #15803d !important;
+}
+
+.mood-cg-assisted-box {
+  background: #f8fafc;
+  border: 1.5px solid var(--outline-variant);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.shared-device-switch-box {
+  margin-top: 1.5rem;
+  background: #f8fafc;
+  border: 1.5px solid var(--outline-variant);
+  border-radius: 12px;
+  padding: 1.25rem;
+}
+
+.consent-warning-box {
+  background: #fefce8;
+  border: 2px solid #fde047;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.consent-explanation-box {
+  font-size: 1.1rem;
+  color: var(--on-surface);
+  line-height: 1.5;
+  background: #f0fdf4;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.emergency-confirm-btn {
+  background: #b91c1c !important;
+  border-color: #b91c1c !important;
+  color: #ffffff !important;
+}
+
+.colorblind-preview-box {
+  background: #f8fafc;
+  border: 1.5px solid var(--outline-variant);
+  border-radius: 10px;
+  padding: 0.85rem 1.15rem;
+  margin-bottom: 1.25rem;
+  transition: var(--transition-smooth);
+}
+
+.cb-preview-chip {
+  padding: 0.35rem 0.85rem;
+  border-radius: var(--radius-full);
+  font-size: 0.85rem;
+  font-weight: 700;
+  border: 1.5px solid transparent;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.cb-preview-chip.chip-completed {
+  background: var(--mint-badge);
+  color: var(--mint-badge-text);
+  border-color: #6ee7b7;
+}
+
+.cb-preview-chip.chip-pending {
+  background: var(--secondary-fixed);
+  color: var(--on-secondary-fixed);
+  border-color: #93c5fd;
+}
+
+.cb-preview-chip.chip-alert {
+  background: #fee2e2;
+  color: #991b1b;
+  border-color: #fca5a5;
+}
+
+.emerg-notice-box {
+  color: #7f1d1d;
+  background: #fee2e2;
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid #fca5a5;
+}
+
+.emerg-contact-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f8fafc;
+  padding: 0.85rem 1rem;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+}
+
+.emerg-contact-sub {
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+.overdue-desc {
+  color: #78350f;
+}
+
+.consent-step3-title {
+  color: #b45309;
+}
+
+.consent-step3-notice {
+  color: #713f12;
+}
+
+/* ==========================================================================
+   HIGH CONTRAST THEME (WCAG AAA Compliant — Stark Light & Midnight Dark)
+   Principle: Pure black & white (21:1 contrast ratio), 3px solid borders,
+   zero blur, zero gradients, distinct shape & line patterns.
+   ========================================================================== */
 body.high-contrast-mode,
 body.high-contrast {
   --surface: #ffffff !important;
   --on-surface: #000000 !important;
-  --surface-dim: #f0f0f0 !important;
+  --surface-dim: #ffffff !important;
   --surface-bright: #ffffff !important;
   --surface-container-lowest: #ffffff !important;
   --surface-container-low: #ffffff !important;
@@ -2558,6 +3322,7 @@ body.high-contrast {
   --primary: #000000 !important;
   --on-primary: #ffffff !important;
   --primary-container: #000000 !important;
+  --on-primary-container: #ffffff !important;
   --secondary: #000000 !important;
   --on-secondary: #ffffff !important;
   --tertiary: #000000 !important;
@@ -2579,7 +3344,12 @@ body.high-contrast * {
   text-shadow: none !important;
 }
 
+/* Stark Light Borders & Surfaces */
 body.high-contrast-mode .patient-container,
+body.high-contrast-mode .caregiver-container,
+body.high-contrast-mode .clinical-container,
+body.high-contrast-mode .login-container,
+body.high-contrast-mode .login-screen-wrapper,
 body.high-contrast-mode .modal-window,
 body.high-contrast-mode .attention-card,
 body.high-contrast-mode .current-routine-card,
@@ -2587,45 +3357,203 @@ body.high-contrast-mode .cg-panel-card,
 body.high-contrast-mode .role-login-card,
 body.high-contrast-mode .game-category-tile,
 body.high-contrast-mode .photo-card,
+body.high-contrast-mode .harvest-basket-box,
+body.high-contrast-mode .harvest-basket-item,
+body.high-contrast-mode .harvest-choice-card,
+body.high-contrast-mode .harmony-card,
 body.high-contrast-mode .patient-action-tile,
 body.high-contrast-mode .single-routine-prominent-card,
 body.high-contrast-mode .secondary-patient-card,
-body.high-contrast-mode .global-header {
+body.high-contrast-mode .global-header,
+body.high-contrast-mode .doctor-report-paper,
+body.high-contrast-mode .asha-action-card,
+body.high-contrast-mode .score-metric-card,
+body.high-contrast-mode .behavior-flag-card,
+body.high-contrast-mode .flag-evidence-box,
+body.high-contrast-mode .timeline-node,
+body.high-contrast-mode .note-item-card,
+body.high-contrast-mode .care-team-card,
+body.high-contrast-mode .pack-switch-bar,
+body.high-contrast-mode .schedule-config-box,
+body.high-contrast-mode .colorblind-preview-box,
+body.high-contrast-mode .mood-cg-assisted-box,
+body.high-contrast-mode .shared-device-switch-box,
+body.high-contrast-mode .consent-warning-box,
+body.high-contrast-mode .consent-explanation-box,
+body.high-contrast-mode .asha-status-cue-box,
+body.high-contrast-mode .telemed-handoff-card,
+body.high-contrast-mode .overdue-alert-banner,
+body.high-contrast-mode .pill-illustration-svg,
+body.high-contrast-mode .reminder-pill-svg,
+body.high-contrast-mode .trends-svg-canvas,
+body.high-contrast-mode .authenticated-role-badge,
+body.high-contrast-mode .brand-badge,
+body.high-contrast-mode .emerg-notice-box,
+body.high-contrast-mode .emerg-contact-row {
   border: 3px solid #000000 !important;
   background: #ffffff !important;
   color: #000000 !important;
 }
 
+body.high-contrast-mode .emerg-contact-sub,
+body.high-contrast-mode .overdue-desc,
+body.high-contrast-mode .consent-step3-title,
+body.high-contrast-mode .consent-step3-notice {
+  color: #000000 !important;
+}
+
+/* Contrast Focus Indicator */
+body.high-contrast-mode :focus,
+body.high-contrast :focus {
+  outline: 4px solid #000000 !important;
+  outline-offset: 3px !important;
+}
+
+/* Interactive Buttons */
 body.high-contrast-mode button,
 body.high-contrast-mode .take-med-big-btn,
 body.high-contrast-mode .attention-action-btn.btn-done,
-body.high-contrast-mode .profile-action-btn.primary-btn {
+body.high-contrast-mode .profile-action-btn.primary-btn,
+body.high-contrast-mode .cg-btn.primary,
+body.high-contrast-mode .tile-action-button.play-btn,
+body.high-contrast-mode .emergency-confirm-btn {
   background: #000000 !important;
   color: #ffffff !important;
   border: 3px solid #000000 !important;
+  font-weight: 800 !important;
 }
 
 body.high-contrast-mode .attention-action-btn.btn-snooze,
 body.high-contrast-mode .attention-action-btn.btn-help,
 body.high-contrast-mode .cg-btn,
-body.high-contrast-mode .secondary-patient-btn {
+body.high-contrast-mode .secondary-patient-btn,
+body.high-contrast-mode .profile-action-btn.secondary-btn,
+body.high-contrast-mode .review-action-btn,
+body.high-contrast-mode .checklist-action-btn,
+body.high-contrast-mode .status-pill,
+body.high-contrast-mode .emergency-trigger-btn,
+body.high-contrast-mode .caregiver-gate-subtle-btn,
+body.high-contrast-mode .logout-action-btn {
   background: #ffffff !important;
+  color: #000000 !important;
+  border: 3px solid #000000 !important;
+  font-weight: 700 !important;
+}
+
+body.high-contrast-mode button:hover,
+body.high-contrast-mode .cg-btn:hover,
+body.high-contrast-mode .review-action-btn:hover,
+body.high-contrast-mode .checklist-action-btn:hover {
+  background: #000000 !important;
+  color: #ffffff !important;
+}
+
+body.high-contrast-mode .cg-btn.primary:hover,
+body.high-contrast-mode .take-med-big-btn:hover {
+  background: #ffff00 !important;
+  color: #000000 !important;
+  border-color: #000000 !important;
+}
+
+/* Tabs & Highlighted Selectors */
+body.high-contrast-mode .cg-tab-btn,
+body.high-contrast-mode .clin-tab-btn,
+body.high-contrast-mode .timeframe-pill,
+body.high-contrast-mode .channel-tab-pill {
+  background: #ffffff !important;
+  color: #000000 !important;
+  border: 3px solid #000000 !important;
+  font-weight: 700 !important;
+}
+
+body.high-contrast-mode .cg-tab-btn.active,
+body.high-contrast-mode .clin-tab-btn.active,
+body.high-contrast-mode .timeframe-pill.active,
+body.high-contrast-mode .channel-tab-pill.active,
+body.high-contrast-mode .game-category-tile.active-category,
+body.high-contrast-mode .mood-btn.selected {
+  background: #ffff00 !important;
+  color: #000000 !important;
+  border: 4px solid #000000 !important;
+  font-weight: 800 !important;
+}
+
+/* Status Badges & Pills */
+body.high-contrast-mode .routine-status-pill,
+body.high-contrast-mode .schedule-status-badge,
+body.high-contrast-mode .cb-preview-chip,
+body.high-contrast-mode .flag-type-badge,
+body.high-contrast-mode .patient-score-pill,
+body.high-contrast-mode .patient-game-score-badge,
+body.high-contrast-mode .attention-target-banner,
+body.high-contrast-mode .spec-badge {
+  background: #ffffff !important;
+  color: #000000 !important;
+  border: 3px solid #000000 !important;
+  font-weight: 800 !important;
+}
+
+body.high-contrast-mode .routine-status-pill.done-badge,
+body.high-contrast-mode .schedule-status-badge.active,
+body.high-contrast-mode .cb-preview-chip.chip-completed {
+  background: #ffff00 !important;
   color: #000000 !important;
   border: 3px solid #000000 !important;
 }
 
-body.high-contrast-mode :focus {
-  outline: 4px solid #000000 !important;
-  outline-offset: 3px !important;
+body.high-contrast-mode .overdue-alert-banner,
+body.high-contrast-mode .behavior-flag-card.severity-alert,
+body.high-contrast-mode .cb-preview-chip.chip-alert {
+  background: #ffffff !important;
+  color: #000000 !important;
+  border: 4px solid #000000 !important;
 }
 
+/* Inputs & Form Fields */
+body.high-contrast-mode .form-input,
+body.high-contrast-mode .form-select,
+body.high-contrast-mode .notes-textarea,
+body.high-contrast-mode .pin-input-field,
+body.high-contrast-mode .lang-selector {
+  background: #ffffff !important;
+  color: #000000 !important;
+  border: 3px solid #000000 !important;
+  font-weight: 700 !important;
+}
+
+body.high-contrast-mode .form-input:focus,
+body.high-contrast-mode .form-select:focus,
+body.high-contrast-mode .notes-textarea:focus,
+body.high-contrast-mode .pin-input-field:focus {
+  border-color: #000000 !important;
+  outline: 4px solid #000000 !important;
+}
+
+/* Toggle Switches */
+body.high-contrast-mode .toggle-switch .toggle-slider {
+  background: #ffffff !important;
+  border: 3px solid #000000 !important;
+}
+
+body.high-contrast-mode .toggle-switch input:checked + .toggle-slider {
+  background: #000000 !important;
+}
+
+body.high-contrast-mode .toggle-switch .toggle-slider:before {
+  background: #000000 !important;
+  border: 2px solid #ffffff !important;
+}
+
+body.high-contrast-mode .toggle-switch input:checked + .toggle-slider:before {
+  background: #ffff00 !important;
+  border: 2px solid #000000 !important;
+}
+
+/* Cognitive Game Takeover */
 body.high-contrast-mode .game-fullscreen-takeover {
   background: #ffffff !important;
 }
 
-body.high-contrast-mode .patient-score-pill,
-body.high-contrast-mode .patient-game-score-badge,
-body.high-contrast-mode .attention-target-banner,
 body.high-contrast-mode .flower-tile,
 body.high-contrast-mode .language-prompt-card,
 body.high-contrast-mode .language-option-card,
@@ -2640,10 +3568,220 @@ body.high-contrast-mode .game-exit-btn {
 
 body.high-contrast-mode .flower-tile.bloomed-target,
 body.high-contrast-mode .language-option-card.correct,
-body.high-contrast-mode .routine-slot.filled {
+body.high-contrast-mode .routine-slot.filled,
+body.high-contrast-mode .photo-card.matched,
+body.high-contrast-mode .harvest-choice-card.correct,
+body.high-contrast-mode .harmony-card.correct {
   border: 4px solid #000000 !important;
   background: #ffff00 !important;
   color: #000000 !important;
+  font-weight: 800 !important;
+}
+
+/* Trends Chart SVG in High Contrast */
+body.high-contrast-mode .trends-chart-container svg,
+body.high-contrast-mode .trends-svg-canvas {
+  background: #ffffff !important;
+  border: 3px solid #000000 !important;
+}
+
+body.high-contrast-mode .trends-chart-container svg line,
+body.high-contrast-mode .trends-svg-canvas line {
+  stroke: #000000 !important;
+  stroke-dasharray: 4,4 !important;
+  stroke-width: 1.5px !important;
+}
+
+body.high-contrast-mode .trends-chart-container svg text,
+body.high-contrast-mode .trends-svg-canvas text {
+  fill: #000000 !important;
+  font-weight: 800 !important;
+}
+
+body.high-contrast-mode .trends-chart-container svg polyline:first-of-type,
+body.high-contrast-mode .trends-svg-canvas polyline:first-of-type {
+  stroke: #000000 !important;
+  stroke-width: 4px !important;
+}
+
+body.high-contrast-mode .trends-chart-container svg polyline:last-of-type,
+body.high-contrast-mode .trends-svg-canvas polyline:last-of-type {
+  stroke: #000000 !important;
+  stroke-width: 3.5px !important;
+  stroke-dasharray: 8,6 !important;
+}
+
+body.high-contrast-mode .trends-chart-container svg circle,
+body.high-contrast-mode .trends-svg-canvas circle {
+  fill: #000000 !important;
+  stroke: #ffffff !important;
+  stroke-width: 2px !important;
+}
+
+/* ==========================================================================
+   HIGH CONTRAST MIDNIGHT DARK VARIANT (WCAG AAA Low-Glare White on Black)
+   ========================================================================== */
+body.high-contrast-mode.high-contrast-dark {
+  --surface: #000000 !important;
+  --on-surface: #ffffff !important;
+  --surface-dim: #000000 !important;
+  --surface-bright: #000000 !important;
+  --surface-container-lowest: #000000 !important;
+  --surface-container-low: #000000 !important;
+  --surface-container: #000000 !important;
+  --surface-container-high: #000000 !important;
+  --surface-container-highest: #000000 !important;
+  --on-surface-variant: #ffffff !important;
+  --outline: #ffffff !important;
+  --outline-variant: #ffffff !important;
+  --primary: #ffffff !important;
+  --on-primary: #000000 !important;
+  background: #000000 !important;
+  color: #ffffff !important;
+}
+
+body.high-contrast-mode.high-contrast-dark .patient-container,
+body.high-contrast-mode.high-contrast-dark .caregiver-container,
+body.high-contrast-mode.high-contrast-dark .clinical-container,
+body.high-contrast-mode.high-contrast-dark .login-container,
+body.high-contrast-mode.high-contrast-dark .login-screen-wrapper,
+body.high-contrast-mode.high-contrast-dark .modal-window,
+body.high-contrast-mode.high-contrast-dark .attention-card,
+body.high-contrast-mode.high-contrast-dark .current-routine-card,
+body.high-contrast-mode.high-contrast-dark .cg-panel-card,
+body.high-contrast-mode.high-contrast-dark .role-login-card,
+body.high-contrast-mode.high-contrast-dark .game-category-tile,
+body.high-contrast-mode.high-contrast-dark .photo-card,
+body.high-contrast-mode.high-contrast-dark .patient-action-tile,
+body.high-contrast-mode.high-contrast-dark .single-routine-prominent-card,
+body.high-contrast-mode.high-contrast-dark .secondary-patient-card,
+body.high-contrast-mode.high-contrast-dark .global-header,
+body.high-contrast-mode.high-contrast-dark .doctor-report-paper,
+body.high-contrast-mode.high-contrast-dark .asha-action-card,
+body.high-contrast-mode.high-contrast-dark .score-metric-card,
+body.high-contrast-mode.high-contrast-dark .behavior-flag-card,
+body.high-contrast-mode.high-contrast-dark .flag-evidence-box,
+body.high-contrast-mode.high-contrast-dark .timeline-node,
+body.high-contrast-mode.high-contrast-dark .note-item-card,
+body.high-contrast-mode.high-contrast-dark .care-team-card,
+body.high-contrast-mode.high-contrast-dark .pack-switch-bar,
+body.high-contrast-mode.high-contrast-dark .schedule-config-box,
+body.high-contrast-mode.high-contrast-dark .colorblind-preview-box,
+body.high-contrast-mode.high-contrast-dark .mood-cg-assisted-box,
+body.high-contrast-mode.high-contrast-dark .shared-device-switch-box,
+body.high-contrast-mode.high-contrast-dark .consent-warning-box,
+body.high-contrast-mode.high-contrast-dark .consent-explanation-box,
+body.high-contrast-mode.high-contrast-dark .asha-status-cue-box,
+body.high-contrast-mode.high-contrast-dark .telemed-handoff-card,
+body.high-contrast-mode.high-contrast-dark .overdue-alert-banner,
+body.high-contrast-mode.high-contrast-dark .pill-illustration-svg,
+body.high-contrast-mode.high-contrast-dark .reminder-pill-svg,
+body.high-contrast-mode.high-contrast-dark .trends-svg-canvas,
+body.high-contrast-mode.high-contrast-dark .authenticated-role-badge,
+body.high-contrast-mode.high-contrast-dark .brand-badge,
+body.high-contrast-mode.high-contrast-dark .emerg-notice-box,
+body.high-contrast-mode.high-contrast-dark .emerg-contact-row {
+  border: 3px solid #ffffff !important;
+  background: #000000 !important;
+  color: #ffffff !important;
+}
+
+body.high-contrast-mode.high-contrast-dark .emerg-contact-sub,
+body.high-contrast-mode.high-contrast-dark .overdue-desc,
+body.high-contrast-mode.high-contrast-dark .consent-step3-title,
+body.high-contrast-mode.high-contrast-dark .consent-step3-notice {
+  color: #ffffff !important;
+}
+
+body.high-contrast-mode.high-contrast-dark :focus {
+  outline: 4px solid #ffff00 !important;
+  outline-offset: 3px !important;
+}
+
+body.high-contrast-mode.high-contrast-dark button,
+body.high-contrast-mode.high-contrast-dark .take-med-big-btn,
+body.high-contrast-mode.high-contrast-dark .attention-action-btn.btn-done,
+body.high-contrast-mode.high-contrast-dark .profile-action-btn.primary-btn,
+body.high-contrast-mode.high-contrast-dark .cg-btn.primary,
+body.high-contrast-mode.high-contrast-dark .tile-action-button.play-btn,
+body.high-contrast-mode.high-contrast-dark .emergency-confirm-btn {
+  background: #ffffff !important;
+  color: #000000 !important;
+  border: 3px solid #ffffff !important;
+}
+
+body.high-contrast-mode.high-contrast-dark .attention-action-btn.btn-snooze,
+body.high-contrast-mode.high-contrast-dark .attention-action-btn.btn-help,
+body.high-contrast-mode.high-contrast-dark .cg-btn,
+body.high-contrast-mode.high-contrast-dark .secondary-patient-btn,
+body.high-contrast-mode.high-contrast-dark .profile-action-btn.secondary-btn,
+body.high-contrast-mode.high-contrast-dark .review-action-btn,
+body.high-contrast-mode.high-contrast-dark .checklist-action-btn,
+body.high-contrast-mode.high-contrast-dark .status-pill,
+body.high-contrast-mode.high-contrast-dark .emergency-trigger-btn,
+body.high-contrast-mode.high-contrast-dark .caregiver-gate-subtle-btn,
+body.high-contrast-mode.high-contrast-dark .logout-action-btn {
+  background: #000000 !important;
+  color: #ffffff !important;
+  border: 3px solid #ffffff !important;
+}
+
+body.high-contrast-mode.high-contrast-dark .cg-tab-btn.active,
+body.high-contrast-mode.high-contrast-dark .clin-tab-btn.active,
+body.high-contrast-mode.high-contrast-dark .timeframe-pill.active,
+body.high-contrast-mode.high-contrast-dark .channel-tab-pill.active,
+body.high-contrast-mode.high-contrast-dark .game-category-tile.active-category,
+body.high-contrast-mode.high-contrast-dark .flower-tile.bloomed-target,
+body.high-contrast-mode.high-contrast-dark .language-option-card.correct,
+body.high-contrast-mode.high-contrast-dark .routine-slot.filled,
+body.high-contrast-mode.high-contrast-dark .photo-card.matched,
+body.high-contrast-mode.high-contrast-dark .harvest-choice-card.correct,
+body.high-contrast-mode.high-contrast-dark .harmony-card.correct,
+body.high-contrast-mode.high-contrast-dark .mood-btn.selected {
+  background: #ffff00 !important;
+  color: #000000 !important;
+  border: 4px solid #ffffff !important;
+}
+
+body.high-contrast-mode.high-contrast-dark .form-input,
+body.high-contrast-mode.high-contrast-dark .form-select,
+body.high-contrast-mode.high-contrast-dark .notes-textarea,
+body.high-contrast-mode.high-contrast-dark .pin-input-field,
+body.high-contrast-mode.high-contrast-dark .lang-selector {
+  background: #000000 !important;
+  color: #ffffff !important;
+  border: 3px solid #ffffff !important;
+}
+
+body.high-contrast-mode.high-contrast-dark .game-fullscreen-takeover {
+  background: #000000 !important;
+}
+
+body.high-contrast-mode.high-contrast-dark .trends-chart-container svg,
+body.high-contrast-mode.high-contrast-dark .trends-svg-canvas {
+  background: #000000 !important;
+  border: 3px solid #ffffff !important;
+}
+
+body.high-contrast-mode.high-contrast-dark .trends-chart-container svg line,
+body.high-contrast-mode.high-contrast-dark .trends-svg-canvas line {
+  stroke: #ffffff !important;
+}
+
+body.high-contrast-mode.high-contrast-dark .trends-chart-container svg text,
+body.high-contrast-mode.high-contrast-dark .trends-svg-canvas text {
+  fill: #ffffff !important;
+}
+
+body.high-contrast-mode.high-contrast-dark .trends-chart-container svg polyline,
+body.high-contrast-mode.high-contrast-dark .trends-svg-canvas polyline {
+  stroke: #ffffff !important;
+}
+
+body.high-contrast-mode.high-contrast-dark .trends-chart-container svg circle,
+body.high-contrast-mode.high-contrast-dark .trends-svg-canvas circle {
+  fill: #ffffff !important;
+  stroke: #000000 !important;
 }
 
 /* ==========================================================================
@@ -2721,6 +3859,191 @@ body.dark-mode .game-category-tile.active-category {
   background: #111e3e !important;
   color: #f1f5f9 !important;
   border-color: #1e3164 !important;
+}
+
+body.dark-mode .profile-avatar-circle.avatar-caregiver {
+  background: #1e3a8a !important;
+  border-color: #60a5fa !important;
+}
+
+body.dark-mode .profile-avatar-circle.avatar-clinical {
+  background: #1e293b !important;
+  border-color: #94a3b8 !important;
+}
+
+body.dark-mode .pill-illustration-svg,
+body.dark-mode .reminder-pill-svg {
+  background: #16254c !important;
+}
+
+body.dark-mode .trends-svg-canvas {
+  background: #080f21 !important;
+  border-color: #1e3164 !important;
+}
+
+body.dark-mode .telemed-handoff-card {
+  background: #064e3b !important;
+  border-color: #059669 !important;
+}
+
+body.dark-mode .telemed-handoff-card h3,
+body.dark-mode .telemed-handoff-card p {
+  color: #ecfdf5 !important;
+}
+
+body.dark-mode .asha-status-cue-box {
+  background: #0d1e3d !important;
+  border-color: #2563eb !important;
+}
+
+body.dark-mode .asha-status-cue-box div:first-child {
+  color: #93c5fd !important;
+}
+
+body.dark-mode .asha-status-cue-box div:last-child {
+  color: #34d399 !important;
+}
+
+body.dark-mode .mood-cg-assisted-box,
+body.dark-mode .shared-device-switch-box,
+body.dark-mode .colorblind-preview-box {
+  background: #0d1730 !important;
+  border-color: #1e3164 !important;
+  color: #f1f5f9 !important;
+}
+
+body.dark-mode .consent-warning-box {
+  background: #451a03 !important;
+  border-color: #b45309 !important;
+  color: #fef08a !important;
+}
+
+body.dark-mode .consent-warning-box p,
+body.dark-mode .consent-warning-box span {
+  color: #fef08a !important;
+}
+
+body.dark-mode .consent-explanation-box {
+  background: #064e3b !important;
+  color: #ecfdf5 !important;
+}
+
+body.dark-mode .emerg-notice-box {
+  background: #3f1212 !important;
+  border-color: #ef4444 !important;
+  color: #fca5a5 !important;
+}
+
+body.dark-mode .emerg-contact-row {
+  background: #0d1730 !important;
+  border-color: #1e3164 !important;
+  color: #f1f5f9 !important;
+}
+
+body.dark-mode .emerg-contact-sub {
+  color: #94a3b8 !important;
+}
+
+body.dark-mode .overdue-desc {
+  color: #fed7aa !important;
+}
+
+body.dark-mode .consent-step3-title {
+  color: #fde68a !important;
+}
+
+body.dark-mode .consent-step3-notice {
+  color: #fef08a !important;
+}
+
+body.dark-mode .routine-card.completed {
+  background: #064e3b !important;
+  border-color: #10b981 !important;
+}
+
+body.dark-mode .routine-card.active {
+  background: #111e3e !important;
+  border-color: #34d399 !important;
+}
+
+body.dark-mode .behavior-flag-card {
+  background: #111e3e !important;
+  border-color: #b45309 !important;
+  color: #f1f5f9 !important;
+}
+
+body.dark-mode .behavior-flag-card.severity-alert {
+  background: #3f1212 !important;
+  border-color: #ef4444 !important;
+}
+
+body.dark-mode .flag-evidence-box {
+  background: #0d1730 !important;
+  border-color: #1e3164 !important;
+  color: #f1f5f9 !important;
+}
+
+body.dark-mode .flag-evidence-box code {
+  background: #1e293b !important;
+  color: #6ee7b7 !important;
+}
+
+body.dark-mode .review-action-btn {
+  background: #16254c !important;
+  color: #f1f5f9 !important;
+  border-color: #283f7d !important;
+}
+
+body.dark-mode .review-action-btn:hover {
+  background: #1e3164 !important;
+}
+
+body.dark-mode .review-action-btn.confirm {
+  background: #064e3b !important;
+  color: #6ee7b7 !important;
+  border-color: #059669 !important;
+}
+
+body.dark-mode .review-action-btn.dismiss {
+  background: #3f1212 !important;
+  color: #fca5a5 !important;
+  border-color: #b91c1c !important;
+}
+
+body.dark-mode .checklist-action-btn {
+  background: #16254c !important;
+  color: #f1f5f9 !important;
+  border-color: #283f7d !important;
+}
+
+body.dark-mode .checklist-action-btn.done {
+  background: #064e3b !important;
+  color: #6ee7b7 !important;
+  border-color: #059669 !important;
+}
+
+body.dark-mode .checklist-action-btn.delete {
+  background: #2a1515 !important;
+  color: #f87171 !important;
+  border-color: #7f1d1d !important;
+}
+
+body.dark-mode .cb-preview-chip.chip-completed {
+  background: #064e3b !important;
+  color: #6ee7b7 !important;
+  border-color: #059669 !important;
+}
+
+body.dark-mode .cb-preview-chip.chip-pending {
+  background: #1e3a8a !important;
+  color: #93c5fd !important;
+  border-color: #2563eb !important;
+}
+
+body.dark-mode .cb-preview-chip.chip-alert {
+  background: #451a03 !important;
+  color: #fde68a !important;
+  border-color: #b45309 !important;
 }
 
 body.dark-mode .form-input,
@@ -2820,7 +4143,10 @@ body.dark-mode .attention-target-banner {
 body.dark-mode .flower-tile,
 body.dark-mode .language-option-card,
 body.dark-mode .routine-choice-card,
-body.dark-mode .routine-slot {
+body.dark-mode .routine-slot,
+body.dark-mode .harvest-basket-item,
+body.dark-mode .harvest-choice-card,
+body.dark-mode .harmony-card {
   background: #16254c !important;
   border-color: #283f7d !important;
   color: #f1f5f9 !important;
@@ -2829,18 +4155,34 @@ body.dark-mode .routine-slot {
 body.dark-mode .flower-tile-label,
 body.dark-mode .language-option-card .option-label,
 body.dark-mode .routine-choice-card .choice-label,
-body.dark-mode .routine-slot-txt {
+body.dark-mode .routine-slot-txt,
+body.dark-mode .harmony-card .harmony-card-label,
+body.dark-mode .harvest-choice-card .choice-num-val,
+body.dark-mode .harvest-choice-card .choice-num-sub {
   color: #f1f5f9 !important;
 }
 
 body.dark-mode .flower-tile.bloomed-target,
 body.dark-mode .language-option-card.correct,
-body.dark-mode .routine-slot.filled {
+body.dark-mode .routine-slot.filled,
+body.dark-mode .harvest-choice-card.correct,
+body.dark-mode .harmony-card.correct {
   background: #064e3b !important;
   border-color: #22c55e !important;
 }
 
-body.dark-mode .language-prompt-card {
+body.dark-mode .harvest-basket-box {
+  background: linear-gradient(180deg, #111e3e 0%, #0d1730 100%) !important;
+  border-color: #d97706 !important;
+}
+
+body.dark-mode .harvest-basket-rim {
+  color: #fde68a !important;
+}
+
+body.dark-mode .language-prompt-card,
+body.dark-mode .harvest-prompt-card,
+body.dark-mode .harmony-prompt-card {
   background: #111e3e !important;
   border-color: #10b981 !important;
 }
@@ -2925,6 +4267,191 @@ body.dark-mode .overdue-alert-banner {
 
 body.dark-mode .overdue-alert-banner p {
   color: #fed7aa !important;
+}
+
+/* ==========================================================================
+   COLOURBLIND ACCESSIBILITY SYSTEM (CVD Safe Palettes & Symbol Markers)
+   WCAG 2.2 compliant: Color is never the sole indicator of state.
+   ========================================================================== */
+
+/* 1. DEUTERANOPIA & PROTANOPIA (Red-Green Deficient Safe) */
+body.cb-deuteranopia {
+  --primary: #1d4ed8 !important;
+  --on-primary: #ffffff !important;
+  --primary-container: #1e40af !important;
+  --on-primary-container: #dbeafe !important;
+  --mint-badge: #dbeafe !important;
+  --mint-badge-text: #1e40af !important;
+  --amber-badge: #fef3c7 !important;
+  --amber-badge-text: #92400e !important;
+  --error: #c026d3 !important;
+  --error-container: #fae8ff !important;
+  --on-error-container: #701a75 !important;
+}
+
+body.cb-deuteranopia .routine-status-pill.done-badge,
+body.cb-deuteranopia .cb-preview-chip.chip-completed {
+  background: #dbeafe !important;
+  color: #1e40af !important;
+  border-color: #3b82f6 !important;
+}
+
+body.cb-deuteranopia .routine-status-pill.pending-badge,
+body.cb-deuteranopia .cb-preview-chip.chip-pending {
+  background: #fef3c7 !important;
+  color: #92400e !important;
+  border-color: #f59e0b !important;
+}
+
+body.cb-deuteranopia .overdue-alert-banner,
+body.cb-deuteranopia .behavior-flag-card.severity-alert,
+body.cb-deuteranopia .emerg-notice-box,
+body.cb-deuteranopia .cb-preview-chip.chip-alert {
+  background: #fae8ff !important;
+  color: #701a75 !important;
+  border-color: #c026d3 !important;
+}
+
+body.cb-deuteranopia .flower-tile.bloomed-target,
+body.cb-deuteranopia .language-option-card.correct,
+body.cb-deuteranopia .routine-slot.filled,
+body.cb-deuteranopia .photo-card.matched {
+  background: #dbeafe !important;
+  border-color: #2563eb !important;
+}
+
+body.cb-deuteranopia .routine-card.completed {
+  background: #eff6ff !important;
+  border-color: #2563eb !important;
+}
+
+body.cb-deuteranopia .status-pill.online {
+  border-color: #2563eb !important;
+  color: #1e40af !important;
+}
+
+/* 2. TRITANOPIA (Blue-Yellow Deficient Safe) */
+body.cb-tritanopia {
+  --primary: #0d9488 !important;
+  --on-primary: #ffffff !important;
+  --primary-container: #0f766e !important;
+  --on-primary-container: #ccfbf1 !important;
+  --mint-badge: #ccfbf1 !important;
+  --mint-badge-text: #0f766e !important;
+  --amber-badge: #f3e8ff !important;
+  --amber-badge-text: #6b21a8 !important;
+  --error: #e11d48 !important;
+  --error-container: #ffe4e6 !important;
+  --on-error-container: #9f1239 !important;
+}
+
+body.cb-tritanopia .routine-status-pill.done-badge,
+body.cb-tritanopia .cb-preview-chip.chip-completed {
+  background: #ccfbf1 !important;
+  color: #0f766e !important;
+  border-color: #0d9488 !important;
+}
+
+body.cb-tritanopia .routine-status-pill.pending-badge,
+body.cb-tritanopia .cb-preview-chip.chip-pending {
+  background: #f3e8ff !important;
+  color: #6b21a8 !important;
+  border-color: #9333ea !important;
+}
+
+body.cb-tritanopia .overdue-alert-banner,
+body.cb-tritanopia .behavior-flag-card.severity-alert,
+body.cb-tritanopia .emerg-notice-box,
+body.cb-tritanopia .cb-preview-chip.chip-alert {
+  background: #ffe4e6 !important;
+  color: #9f1239 !important;
+  border-color: #e11d48 !important;
+}
+
+body.cb-tritanopia .flower-tile.bloomed-target,
+body.cb-tritanopia .language-option-card.correct,
+body.cb-tritanopia .routine-slot.filled,
+body.cb-tritanopia .photo-card.matched {
+  background: #ccfbf1 !important;
+  border-color: #0d9488 !important;
+}
+
+body.cb-tritanopia .routine-card.completed {
+  background: #f0fdfa !important;
+  border-color: #0d9488 !important;
+}
+
+/* 3. ACHROMATOPSIA (High-Luminance Monochrome) */
+body.cb-achromatopsia {
+  filter: grayscale(100%) contrast(115%);
+}
+
+body.cb-achromatopsia .routine-status-pill.done-badge {
+  background: #000000 !important;
+  color: #ffffff !important;
+  border-color: #000000 !important;
+}
+
+body.cb-achromatopsia .routine-status-pill.pending-badge {
+  background: #e2e8f0 !important;
+  color: #0f172a !important;
+  border-color: #475569 !important;
+}
+
+body.cb-achromatopsia .overdue-alert-banner,
+body.cb-achromatopsia .behavior-flag-card.severity-alert,
+body.cb-achromatopsia .emerg-notice-box {
+  background: #ffffff !important;
+  color: #000000 !important;
+  border: 3px double #000000 !important;
+}
+
+/* 4. ENHANCED SHAPE & PATTERN INDICATORS ("Color is never the only signal") */
+body.cb-patterns .routine-status-pill.done-badge:before {
+  content: "✓ ";
+  font-weight: 900;
+}
+
+body.cb-patterns .routine-status-pill.pending-badge:before {
+  content: "⏱ ";
+}
+
+body.cb-patterns .overdue-alert-banner:before,
+body.cb-patterns .emerg-notice-box:before {
+  content: "⚠️ ";
+  font-size: 1.5rem;
+}
+
+body.cb-patterns .behavior-flag-card.severity-alert {
+  border-left-width: 8px !important;
+  border-left-style: solid !important;
+}
+
+body.cb-patterns .routine-card.completed {
+  border-left-width: 8px !important;
+  border-left-style: solid !important;
+}
+
+body.cb-patterns .photo-card.matched:after {
+  content: "★";
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(0,0,0,0.75);
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+body.cb-patterns .flower-tile.bloomed-target:after {
+  content: "★";
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  font-size: 1.1rem;
+  color: #eab308;
 }
 
 /* Schedule Configuration Box in Settings */

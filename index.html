@@ -109,7 +109,7 @@
           <article class="role-login-card">
             <div>
               <div class="profile-avatar-row">
-                <div class="profile-avatar-circle" style="background:#dbeafe; border-color:#3b82f6;">👩</div>
+                <div class="profile-avatar-circle avatar-caregiver">👩</div>
                 <div class="profile-info">
                   <h3>Sarah Vance</h3>
                   <span data-i18n="login_cg_role">Family Caregiver</span>
@@ -132,7 +132,7 @@
           <article class="role-login-card">
             <div>
               <div class="profile-avatar-row">
-                <div class="profile-avatar-circle" style="background:#e2e8f0; border-color:#64748b;">🩺</div>
+                <div class="profile-avatar-circle avatar-clinical">🩺</div>
                 <div class="profile-info">
                   <h3 data-i18n="login_clin_title">Dr. Thorne / ASHA Lead</h3>
                   <span data-i18n="login_clin_role">Clinical & Community Health</span>
@@ -171,6 +171,9 @@
             <span class="patient-score-pill" id="patientHomeScorePill" title="Your Garden Bloom Stars">
               <span>⭐</span> <strong id="patientHomeScoreText">Garden Stars: 12</strong>
             </span>
+            <button type="button" class="patient-font-pill" onclick="app.cycleFontScale()" title="Change text size (20pt, 24pt, 28pt)" aria-label="Change text size">
+              <span>🔤</span> <strong id="patientFontScaleIndicator">20pt</strong>
+            </button>
           </div>
           <h1 class="orientation-greeting" data-i18n="greeting_morning">Good Morning, Eleanor!</h1>
           <p class="orientation-date" data-i18n="date_display">Thursday, October 24</p>
@@ -198,7 +201,7 @@
           <!-- Photographic & Specification Visual -->
           <div class="routine-visual-grid">
             <div class="routine-macro-photo-container" style="cursor:pointer;" onclick="app.openReminderAttention()" title="Tap to view full screen">
-              <svg viewBox="0 0 400 240" width="100%" height="100%" style="background:#e8dfd8; border-radius:16px;">
+              <svg viewBox="0 0 400 240" width="100%" height="100%" class="pill-illustration-svg">
                 <defs>
                   <linearGradient id="woodGrad" x1="0" y1="0" x2="1" y2="1">
                     <stop offset="0%" stop-color="#dfcfbe"/>
@@ -385,7 +388,7 @@
             <h4><span>🚨</span> <span data-i18n="cg_overdue_title">Critical Routine Reminder Overdue</span></h4>
             <span class="overdue-time-badge" id="overdueDurationText" data-i18n="overdue_time_badge">35m Overdue</span>
           </div>
-          <p style="font-size:1.1rem; color:#78350f;" data-i18n="cg_overdue_desc">
+          <p class="overdue-desc" style="font-size:1.1rem;" data-i18n="cg_overdue_desc">
             <strong>Morning Blood Pressure Pill (Lisinopril 10mg)</strong> has not been confirmed. 5-minute escalation target window active.
           </p>
           <div class="overdue-action-row">
@@ -448,7 +451,7 @@
               </div>
               
               <!-- Responsive SVG Line/Bar Chart -->
-              <svg viewBox="0 0 700 200" width="100%" height="180" style="background:#f8fafc; border-radius:12px; border:1px solid #e2e8f0;">
+              <svg viewBox="0 0 700 200" width="100%" height="180" class="trends-svg-canvas">
                 <!-- Grid Lines -->
                 <line x1="50" y1="30" x2="680" y2="30" stroke="#e2e8f0" stroke-dasharray="4"/>
                 <line x1="50" y1="80" x2="680" y2="80" stroke="#e2e8f0" stroke-dasharray="4"/>
@@ -746,7 +749,7 @@
             <div class="insight-panel-disclaimer" data-i18n="insight_notice">
               "This is an observation, not a diagnosis." — Panel Level Notice
             </div>
-            <div class="note-item-card" style="background:#f8fafc;">
+            <div class="note-item-card">
               <div class="insight-panel-disclaimer" style="margin-bottom:0.4rem;" data-i18n="insight_notice">
                 "This is an observation, not a diagnosis." — Panel Level Notice
               </div>
@@ -756,7 +759,7 @@
           </section>
 
           <!-- Telemedicine Referral & Handoff (PRD FR-9.14) -->
-          <section class="cg-panel-card" style="margin-top:1.5rem; background:#f0fdf4; border-color:#86efac;">
+          <section class="cg-panel-card telemed-handoff-card" style="margin-top:1.5rem;">
             <div class="cg-panel-header">
               <h3 style="color:#065f46;"><span>🏥</span> <span data-i18n="telemed_section_title">Telemedicine Handoff & District Referral</span></h3>
             </div>
@@ -783,7 +786,7 @@
             </p>
 
             <!-- Prominent Action Recommendation Cue (design.md Section 5.2) -->
-            <div style="background:#eff6ff; border:2px solid #3b82f6; border-radius:12px; padding:1rem; margin:1rem 0;">
+            <div class="asha-status-cue-box">
               <div style="font-size:1.15rem; font-weight:800; color:#1e3a8a;" data-i18n="asha_weekly_status">
                 Weekly Status: Adherence 94% • 0 missed critical medications
               </div>
@@ -795,24 +798,24 @@
             <div class="asha-priority-list">
               <div class="asha-priority-item">
                 <div>
-                  <strong style="font-size:1.15rem; color:#1e293b;" data-i18n="asha_item1_title">1. Medication Checkpoint (Lisinopril 10mg)</strong>
-                  <p style="color:#475569;" data-i18n="asha_item1_desc">Pillbox confirmed at 9:02 AM today. Inspect tablet storage during weekly visit.</p>
+                  <strong style="font-size:1.15rem;" data-i18n="asha_item1_title">1. Medication Checkpoint (Lisinopril 10mg)</strong>
+                  <p data-i18n="asha_item1_desc">Pillbox confirmed at 9:02 AM today. Inspect tablet storage during weekly visit.</p>
                 </div>
                 <span class="routine-status-pill done-badge" data-i18n="asha_item1_badge">Normal</span>
               </div>
 
               <div class="asha-priority-item">
                 <div>
-                  <strong style="font-size:1.15rem; color:#1e293b;" data-i18n="asha_item2_title">2. Water & Hydration Check</strong>
-                  <p style="color:#475569;" data-i18n="asha_item2_desc">Ensure clean boiled/filtered water pitcher is reachable at Eleanor's bedside.</p>
+                  <strong style="font-size:1.15rem;" data-i18n="asha_item2_title">2. Water & Hydration Check</strong>
+                  <p data-i18n="asha_item2_desc">Ensure clean boiled/filtered water pitcher is reachable at Eleanor's bedside.</p>
                 </div>
                 <span class="routine-status-pill done-badge" data-i18n="asha_item2_badge">Actioned</span>
               </div>
 
               <div class="asha-priority-item">
                 <div>
-                  <strong style="font-size:1.15rem; color:#1e293b;" data-i18n="asha_item3_title">3. Family Language Comfort</strong>
-                  <p style="color:#475569;" data-i18n="asha_item3_desc">High engagement during regional voice day narration.</p>
+                  <strong style="font-size:1.15rem;" data-i18n="asha_item3_title">3. Family Language Comfort</strong>
+                  <p data-i18n="asha_item3_desc">High engagement during regional voice day narration.</p>
                 </div>
                 <span class="routine-status-pill done-badge" data-i18n="asha_item3_badge">Positive</span>
               </div>
@@ -889,7 +892,7 @@
 
             <!-- Threaded Doctor Reply Mechanism (design.md Section 5.1, FR-5.5) -->
             <div class="doctor-reply-box">
-              <h4 style="font-size:1.1rem; color:#1e293b;" data-i18n="doctor_reply_title">Physician Threaded Clinical Note / Reply to Caregiver (FR-5.5)</h4>
+              <h4 style="font-size:1.1rem;" data-i18n="doctor_reply_title">Physician Threaded Clinical Note / Reply to Caregiver (FR-5.5)</h4>
               <textarea id="doctorReportReplyInput" class="notes-textarea" style="height:70px; margin-top:0.5rem;" placeholder="Enter physician feedback to be transmitted to Sarah's dashboard..." data-i18n-placeholder="doctor_reply_ph"></textarea>
               <div style="display:flex; justify-content:space-between; align-items:center; margin-top:0.5rem;">
                 <span style="font-size:0.85rem; color:#64748b;" data-i18n="doctor_reply_notice">Notifies Sarah Vance in Family Dashboard</span>
@@ -923,7 +926,7 @@
 
       <!-- Centered Photo Visual of Pill & Glass -->
       <div class="attention-visual-box">
-        <svg viewBox="0 0 400 220" width="100%" height="100%" style="background:#e8dfd8;">
+        <svg viewBox="0 0 400 220" width="100%" height="100%" class="reminder-pill-svg">
           <defs>
             <linearGradient id="attWood" x1="0" y1="0" x2="1" y2="1">
               <stop offset="0%" stop-color="#dfcfbe"/>
@@ -1026,7 +1029,7 @@
               <p data-i18n="pack_attention_sub">Garden Flower Focus</p>
             </div>
           </div>
-          <button class="tile-action-button play-btn" style="background:#0284c7;" data-i18n="play_attention_btn">Play Attention Game</button>
+          <button class="tile-action-button play-btn play-btn-attention" data-i18n="play_attention_btn">Play Attention Game</button>
         </article>
 
         <!-- Category 3: Language -->
@@ -1038,7 +1041,7 @@
               <p data-i18n="pack_language_sub">Word & Object Recall</p>
             </div>
           </div>
-          <button class="tile-action-button play-btn" style="background:#059669;" data-i18n="play_language_btn">Play Language Game</button>
+          <button class="tile-action-button play-btn play-btn-language" data-i18n="play_language_btn">Play Language Game</button>
         </article>
 
         <!-- Category 4: Problem Solving -->
@@ -1050,7 +1053,31 @@
               <p data-i18n="pack_problem_sub">Daily Routine Steps</p>
             </div>
           </div>
-          <button class="tile-action-button play-btn" style="background:#7c3aed;" data-i18n="play_routine_btn">Play Routine Game</button>
+          <button class="tile-action-button play-btn play-btn-routine" data-i18n="play_routine_btn">Play Routine Game</button>
+        </article>
+
+        <!-- Category 5: Harvest Count (Numeracy / Medium) -->
+        <article class="game-category-tile" onclick="app.startCategoryGame('harvest')">
+          <div class="category-tile-header">
+            <span class="category-tile-icon">🧺</span>
+            <div class="category-tile-text">
+              <h4 data-i18n="game_category_harvest">Harvest Count</h4>
+              <p data-i18n="pack_harvest_sub">Count Nature's Bounty</p>
+            </div>
+          </div>
+          <button class="tile-action-button play-btn play-btn-harvest" data-i18n="play_harvest_btn">Play Harvest Game</button>
+        </article>
+
+        <!-- Category 6: Nature Harmony (Odd-One-Out / Medium) -->
+        <article class="game-category-tile" onclick="app.startCategoryGame('harmony')">
+          <div class="category-tile-header">
+            <span class="category-tile-icon">🍃</span>
+            <div class="category-tile-text">
+              <h4 data-i18n="game_category_harmony">Nature Harmony</h4>
+              <p data-i18n="pack_harmony_sub">Spot the Special Item</p>
+            </div>
+          </div>
+          <button class="tile-action-button play-btn play-btn-harmony" data-i18n="play_harmony_btn">Play Harmony Game</button>
         </article>
       </div>
     </div>
@@ -1179,9 +1206,9 @@
       </div>
 
       <!-- Caregiver-Assisted Option (FR-6.2) -->
-      <div style="background:#f8fafc; border:1.5px solid var(--outline-variant); border-radius:8px; padding:0.75rem 1rem; margin-bottom:1rem; display:flex; align-items:center; gap:0.5rem;">
+      <div class="mood-cg-assisted-box">
         <input type="checkbox" id="moodCaregiverAssisted">
-        <label for="moodCaregiverAssisted" style="font-size:0.95rem; color:#475569; cursor:pointer;" data-i18n="mood_cg_assisted_label">
+        <label for="moodCaregiverAssisted" style="font-size:0.95rem; cursor:pointer;" data-i18n="mood_cg_assisted_label">
           Caregiver-assisted observation (recorded by Sarah on Eleanor's behalf)
         </label>
       </div>
@@ -1269,6 +1296,18 @@
           </label>
         </div>
 
+        <!-- High Contrast Palette Variant (Stark Light vs Midnight Dark) -->
+        <div class="settings-option-row" id="hcVariantRow">
+          <div class="settings-option-label">
+            <strong data-i18n="hc_variant_label">High-Contrast Palette</strong>
+            <span style="font-size:0.85rem; color:var(--on-surface-variant);">Stark black-on-white (Daylight) or midnight white-on-black (Low-glare AAA)</span>
+          </div>
+          <select class="form-select" id="hcVariantSelector" onchange="app.setHcVariant(this.value)" style="width:190px;">
+            <option value="light" data-i18n="hc_variant_light">Stark White (Black on White)</option>
+            <option value="dark" data-i18n="hc_variant_dark">Midnight Dark (White on Black)</option>
+          </select>
+        </div>
+
         <!-- High Contrast Scheduling Box -->
         <div class="schedule-config-box" id="hcScheduleBox">
           <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -1291,6 +1330,42 @@
               <input type="time" id="hcScheduleEnd" class="form-input" style="width:110px; padding:0.35rem 0.5rem; font-size:0.85rem;" value="21:00" onchange="app.updateHcScheduleTimes()">
             </div>
             <span class="schedule-status-badge inactive" id="hcScheduleBadge">Scheduled</span>
+          </div>
+        </div>
+
+        <!-- Colourblind Accessibility Mode (New Feature) -->
+        <div class="settings-option-row">
+          <div class="settings-option-label">
+            <strong data-i18n="cb_mode_label">Color Vision Deficiency (Colourblind Modes)</strong>
+            <span data-i18n="cb_mode_desc">Adjusts system palettes and adds shape markers for red-green, blue-yellow, or total color blindness</span>
+          </div>
+          <select class="form-select" id="colorblindSelector" onchange="app.setColorblindMode(this.value)" style="width:190px;">
+            <option value="off" data-i18n="cb_opt_off">Standard (Biophilic Emerald)</option>
+            <option value="deuteranopia" data-i18n="cb_opt_deuteranopia">Red-Green Safe (Deuteranopia / Protanopia)</option>
+            <option value="tritanopia" data-i18n="cb_opt_tritanopia">Blue-Yellow Safe (Tritanopia)</option>
+            <option value="achromatopsia" data-i18n="cb_opt_achromatopsia">High-Luminance Monochrome (Achromatopsia)</option>
+          </select>
+        </div>
+
+        <!-- Enhanced Shape & Pattern Markers Toggle -->
+        <div class="settings-option-row">
+          <div class="settings-option-label">
+            <strong data-i18n="cb_patterns_label">Enhanced Shape & Pattern Markers</strong>
+            <span data-i18n="cb_patterns_desc">Display distinct geometric symbols (✓, ⚠️, ★, ○) so color is never the only indicator</span>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="toggleCbPatterns" checked onchange="app.toggleCbPatterns(this.checked)">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
+        <!-- Live Colorblind & Status Preview Box -->
+        <div class="colorblind-preview-box" id="cbPreviewBox">
+          <div style="font-size:0.85rem; font-weight:700; margin-bottom:0.5rem;" data-i18n="cb_preview_label">Palette Status Preview:</div>
+          <div style="display:flex; gap:0.75rem; flex-wrap:wrap; align-items:center;">
+            <span class="cb-preview-chip chip-completed" data-i18n="cb_preview_completed">✓ Completed</span>
+            <span class="cb-preview-chip chip-pending" data-i18n="cb_preview_pending">○ Pending</span>
+            <span class="cb-preview-chip chip-alert" data-i18n="cb_preview_alert">⚠️ Overdue / Alert</span>
           </div>
         </div>
 
@@ -1347,7 +1422,7 @@
         </div>
 
         <!-- Shared Device / Profile Switcher (design.md Section 3.6) -->
-        <div style="margin-top:1.5rem; background:#f8fafc; border:1.5px solid var(--outline-variant); border-radius:12px; padding:1.25rem;">
+        <div class="shared-device-switch-box">
           <h4 style="margin-bottom:0.5rem; font-size:1.15rem;" data-i18n="shared_device_title">Shared Device Profile Switch (FR-9.11)</h4>
           <p style="font-size:0.95rem; color:var(--on-surface-variant); margin-bottom:1rem;" data-i18n="shared_device_desc">
             Switch between Eleanor's Bedside Tablet, Sarah's Caregiver Portal, or Dr. Thorne's Clinical Hub:
@@ -1398,9 +1473,9 @@
 
       <!-- SEPARATE DISTINCT AI CONSENT STEP (design.md Section 6.4 & rules.md Section 8) -->
       <div id="consentStep3" class="consent-step" style="display:none;">
-        <h4 style="font-size:1.2rem; color:#b45309; margin-bottom:0.5rem;" data-i18n="consent_step3_title">Step 3: Separate Consent for AI Pattern Monitoring</h4>
-        <div style="background:#fefce8; border:2px solid #fde047; padding:1rem; border-radius:8px; margin-bottom:1rem;">
-          <p style="font-size:0.95rem; color:#713f12;" data-i18n="consent_step3_notice">
+        <h4 class="consent-step3-title" style="font-size:1.2rem; margin-bottom:0.5rem;" data-i18n="consent_step3_title">Step 3: Separate Consent for AI Pattern Monitoring</h4>
+        <div class="consent-warning-box">
+          <p class="consent-step3-notice" style="font-size:0.95rem;" data-i18n="consent_step3_notice">
             <strong>Important Notice:</strong> Consenting to rule-based trend monitoring is completely optional. <em>Declining this step does NOT disable Eleanor's reminders, games, or routine logging.</em>
           </p>
           <div style="margin-top:0.75rem;">
@@ -1417,7 +1492,7 @@
 
       <div id="consentStep4" class="consent-step" style="display:none;">
         <h4 style="font-size:1.2rem; color:var(--primary); margin-bottom:0.5rem;" data-i18n="consent_step4_title">Step 4: Plain-Language Companion Explanation for Eleanor</h4>
-        <p style="font-size:1.1rem; color:var(--on-surface); line-height:1.5; background:#f0fdf4; padding:1rem; border-radius:8px; margin-bottom:1rem;" data-i18n="consent_step4_text">
+        <p class="consent-explanation-box" data-i18n="consent_step4_text">
           "This tablet is here to help you remember medicines, play sweet memory games with family pictures, and call Sarah anytime you need."
         </p>
         <button class="cg-btn primary" onclick="app.finishConsent()" data-i18n="btn_confirm_consent">Confirm & Save Consent Record</button>
@@ -1507,31 +1582,31 @@
         <button class="modal-close-btn" onclick="app.closeEmergencyModal()" aria-label="Close">✕</button>
       </div>
       <div style="padding:1rem 0;">
-        <p style="font-size:1.15rem; color:#7f1d1d; background:#fee2e2; padding:1rem; border-radius:8px; border:1px solid #fca5a5; margin-bottom:1rem;" data-i18n="emerg_modal_desc">
+        <p class="emerg-notice-box" style="font-size:1.15rem; margin-bottom:1rem;" data-i18n="emerg_modal_desc">
           <strong>Direct Emergency Help Triggered:</strong> Primary contacts and community responders are being notified immediately.
         </p>
         
         <div style="display:flex; flex-direction:column; gap:0.75rem;">
-          <div style="display:flex; justify-content:space-between; align-items:center; background:#f8fafc; padding:0.85rem 1rem; border-radius:8px; border:1px solid #cbd5e1;">
+          <div class="emerg-contact-row">
             <div>
               <strong data-i18n="emerg_contact1_title">1. Primary Daughter (Sarah Vance)</strong>
-              <div style="font-size:0.85rem; color:#64748b;" data-i18n="emerg_contact1_desc">Instant High-Priority Notification + SMS sent</div>
+              <div class="emerg-contact-sub" data-i18n="emerg_contact1_desc">Instant High-Priority Notification + SMS sent</div>
             </div>
             <span class="routine-status-pill done-badge" data-i18n="emerg_contact1_badge">Notified</span>
           </div>
 
-          <div style="display:flex; justify-content:space-between; align-items:center; background:#f8fafc; padding:0.85rem 1rem; border-radius:8px; border:1px solid #cbd5e1;">
+          <div class="emerg-contact-row">
             <div>
               <strong data-i18n="emerg_contact2_title">2. Secondary Sibling (Priya Vance)</strong>
-              <div style="font-size:0.85rem; color:#64748b;" data-i18n="emerg_contact2_desc">Standby Escalation (+91 98765 43211)</div>
+              <div class="emerg-contact-sub" data-i18n="emerg_contact2_desc">Standby Escalation (+91 98765 43211)</div>
             </div>
             <span class="routine-status-pill done-badge" data-i18n="emerg_contact2_badge">Queued</span>
           </div>
 
-          <div style="display:flex; justify-content:space-between; align-items:center; background:#f8fafc; padding:0.85rem 1rem; border-radius:8px; border:1px solid #cbd5e1;">
+          <div class="emerg-contact-row">
             <div>
               <strong data-i18n="emerg_contact3_title">3. Local Emergency Services (112)</strong>
-              <div style="font-size:0.85rem; color:#64748b;" data-i18n="emerg_contact3_desc">National Emergency Helpline Integration</div>
+              <div class="emerg-contact-sub" data-i18n="emerg_contact3_desc">National Emergency Helpline Integration</div>
             </div>
             <a href="tel:112" class="cg-btn primary" style="text-decoration:none; padding:0.4rem 0.8rem; font-size:0.85rem;" data-i18n="btn_call_112">Call 112</a>
           </div>
@@ -1539,7 +1614,7 @@
 
         <div style="display:flex; justify-content:flex-end; gap:0.75rem; margin-top:1.5rem;">
           <button class="cg-btn" onclick="app.closeEmergencyModal()" data-i18n="btn_cancel_alert">Cancel Alert</button>
-          <button class="cg-btn primary" style="background:#b91c1c; border-color:#b91c1c;" onclick="app.acknowledgeEmergency()" data-i18n="btn_confirm_help">Confirm Help Arriving</button>
+          <button class="cg-btn primary emergency-confirm-btn" onclick="app.acknowledgeEmergency()" data-i18n="btn_confirm_help">Confirm Help Arriving</button>
         </div>
       </div>
     </div>
@@ -1550,6 +1625,28 @@
     <span id="toastIcon">🌿</span>
     <span id="toastMsg" data-i18n="toast_default">Action completed successfully.</span>
   </div>
+
+  <!-- Colorblind SVG Filters for Visual Adaptation -->
+  <svg id="a11yFilters" style="position:absolute; width:0; height:0; overflow:hidden;" aria-hidden="true">
+    <defs>
+      <!-- Deuteranopia Filter (Green-Blind) -->
+      <filter id="filterDeuteranopia">
+        <feColorMatrix type="matrix" values="0.625 0.375 0 0 0  0.7 0.3 0 0 0  0 0.3 0.7 0 0  0 0 0 1 0" />
+      </filter>
+      <!-- Protanopia Filter (Red-Blind) -->
+      <filter id="filterProtanopia">
+        <feColorMatrix type="matrix" values="0.567 0.433 0 0 0  0.558 0.442 0 0 0  0 0.242 0.758 0 0  0 0 0 1 0" />
+      </filter>
+      <!-- Tritanopia Filter (Blue-Blind) -->
+      <filter id="filterTritanopia">
+        <feColorMatrix type="matrix" values="0.95 0.05 0 0 0  0 0.433 0.567 0 0  0 0.475 0.525 0 0  0 0 0 1 0" />
+      </filter>
+      <!-- Achromatopsia Filter (Monochrome) -->
+      <filter id="filterAchromatopsia">
+        <feColorMatrix type="matrix" values="0.299 0.587 0.114 0 0  0.299 0.587 0.114 0 0  0.299 0.587 0.114 0 0  0 0 0 1 0" />
+      </filter>
+    </defs>
+  </svg>
 
   <!-- Scripts -->
   <script src="js/db.js"></script>
